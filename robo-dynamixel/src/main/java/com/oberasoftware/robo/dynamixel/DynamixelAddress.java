@@ -1,0 +1,41 @@
+package com.oberasoftware.robo.dynamixel;
+
+/**
+ * @author Renze de Vries
+ */
+public enum DynamixelAddress {
+    MODEL_NUMBER_L(0x00),
+    MODEL_NUMBER_H(0x01),
+    VERSION_FIRMWARE(0x02),
+    ID(0x03),
+    BAUD_RATE(0x04),
+    RETURN_DELAY_TIME(0x05),
+    CCW_ANGLE_LIMIT_L(0x08),
+    ALARM_LED(0x11),
+    TORGUE_ENABLE(0x18),
+    LED(0x19),
+    MOVING_SPEED_L(0x20),
+    MOVING_SPEED_H(0x21),
+    TORGUE_LIMIT_L(0x22),
+    TORGUE_LIMIT_H(0x23),
+    GOAL_POSITION_L(0x1E),
+    GOAL_POSITION_H(0x1F);
+
+
+    private int address;
+
+    DynamixelAddress(int address) {
+        this.address = address;
+    }
+
+    public int getAddress() {
+        return address;
+    }
+
+    @Override
+    public String toString() {
+        return "DynamixelAddress{" +
+                "address=" + address +
+                '}';
+    }
+}
