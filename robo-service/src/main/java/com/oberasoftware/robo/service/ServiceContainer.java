@@ -20,6 +20,9 @@ import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
 import com.oberasoftware.robo.dynamixel.robomotion.MotionConverter;
+import com.oberasoftware.robo.service.model.MotionModel;
+import com.oberasoftware.robo.service.model.ServoModel;
+import com.sdl.odata.api.edm.registry.ODataEdmRegistry;
 import com.sdl.odata.service.ODataServiceConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +37,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * @author rdevries
@@ -56,6 +61,10 @@ public class ServiceContainer {
         SpringApplication springApplication = new SpringApplication(ServiceContainer.class);
         springApplication.setShowBanner(false);
         ConfigurableApplicationContext context = springApplication.run(args);
+
+        ODataEdmRegistry registry = context.getBean(ODataEdmRegistry.class);
+        registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class));
+
         RobotController controller = context.getBean(RobotController.class);
         MotionManager motionManager = context.getBean(MotionManager.class);
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
