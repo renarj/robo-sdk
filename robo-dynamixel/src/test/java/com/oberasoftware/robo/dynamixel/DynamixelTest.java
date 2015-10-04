@@ -52,16 +52,26 @@ public class DynamixelTest {
         Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
         controller.executeMotion(motionMap.get("Ready"));
 
-        LOG.debug("Doing a short walk in a bit");
-        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-        controller.executeMotion(motionMap.get("Forward walk"), 4);
+//        LOG.debug("Doing a short walk in a bit");
+//        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+//        controller.executeMotion(motionMap.get("Forward walk"), 4);
+//
+//        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
+//        controller.executeMotion(motionMap.get("Ready"));
 
-        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-        controller.executeMotion(motionMap.get("Ready"));
+        //Create a motion with two steps, containing a few servo's and their goal positions
+//        Motion motion = MotionBuilder.create("MoveServo").addStep(StepBuilder.create(1000)
+//                .servo("1", 500)
+//                .servo("10", 190).build())
+//                .addStep(StepBuilder.create(500)
+//                .servo("1", 550)
+//                .servo("10", 200)
+//                .servo("12", 500).build())
+//            .build();
+//        controller.executeMotion(motion);
 
         LOG.debug("Waiting for program end");
-        Uninterruptibles.sleepUninterruptibly(100, TimeUnit.SECONDS);
-
+        Uninterruptibles.sleepUninterruptibly(60, TimeUnit.SECONDS);
 
         System.exit(0);
     }

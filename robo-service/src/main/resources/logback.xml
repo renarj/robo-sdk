@@ -10,6 +10,7 @@
 
 
     <logger name="com.oberasoftware" level="debug"/>
+    <logger name="com.sdl" level="info"/>
 
     <root level="OFF">
         <appender-ref ref="STDOUT"/>

@@ -19,6 +19,7 @@
         <module>robo-api</module>
         <module>robo-dynamixel</module>
         <module>robo-core</module>
+        <module>robo-service</module>
     </modules>
 
     <repositories>
