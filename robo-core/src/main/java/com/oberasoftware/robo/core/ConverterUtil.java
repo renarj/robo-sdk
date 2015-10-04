@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.dynamixel;
+package com.oberasoftware.robo.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Renze de Vries
  */
-public class DynamixelUtil {
-    private static final Logger LOG = LoggerFactory.getLogger(DynamixelUtil.class);
+public class ConverterUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(ConverterUtil.class);
 
     public static int toSafeInt(String id) {
         try {

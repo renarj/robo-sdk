@@ -9,7 +9,8 @@
     </appender>
 
 
-    <logger name="com.oberasoftware" level="debug"/>
+    <logger name="com.oberasoftware.robo.dynamixel" level="info"/>
+    <logger name="com.oberasoftware.base" level="info"/>
     <logger name="com.sdl" level="info"/>
 
     <root level="OFF">

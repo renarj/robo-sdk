@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.dynamixel;
 
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.dynamixel.robomotion.RoboPlusMotionConverter;
+import com.oberasoftware.robo.core.robomotion.RoboPlusMotionConverter;
 import org.junit.Test;
 
 import java.util.List;
@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 public class RoboMotionConverterTest {
     @Test
     public void testConvert() {
-        List<Motion> motions = new RoboPlusMotionConverter().loadMotions("/bio_prm_kingspider_en.mtn");
+        List<Motion> motions = new RoboPlusMotionConverter().loadMotions("/src/test/resources/bio_prm_kingspider_en.mtn");
         assertThat(motions.size(), is(17));
 
 

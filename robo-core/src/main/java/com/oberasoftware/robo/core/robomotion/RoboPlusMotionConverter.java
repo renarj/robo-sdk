@@ -1,8 +1,9 @@
-package com.oberasoftware.robo.dynamixel.robomotion;
+package com.oberasoftware.robo.core.robomotion;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
+import com.oberasoftware.robo.api.MotionConverter;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.Step;
 import com.oberasoftware.robo.core.motion.MotionImpl;
@@ -25,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.oberasoftware.robo.dynamixel.DynamixelUtil.toSafeInt;
+import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
 import static java.lang.String.valueOf;
 import static java.util.Collections.emptyList;
 

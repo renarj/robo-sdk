@@ -1,6 +1,6 @@
-package com.oberasoftware.robo.dynamixel;
+package com.oberasoftware.robo.core;
 
-import com.oberasoftware.robo.core.CoreConfiguration;
+import com.oberasoftware.base.BaseConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -10,6 +10,6 @@ import org.springframework.context.annotation.Import;
  */
 @Configuration
 @ComponentScan
-@Import(CoreConfiguration.class)
-public class DynamixelConfiguration {
+@Import(BaseConfiguration.class)
+public class CoreConfiguration {
 }

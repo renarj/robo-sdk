@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.service.model;
 
+import com.oberasoftware.robo.service.QueryableEntity;
 import com.sdl.odata.api.edm.annotations.EdmEntity;
 import com.sdl.odata.api.edm.annotations.EdmEntitySet;
 import com.sdl.odata.api.edm.annotations.EdmProperty;
@@ -9,29 +10,35 @@ import com.sdl.odata.api.edm.annotations.EdmProperty;
  */
 @EdmEntity(name = "Motion", namespace = "Oberasoftware.Robot", key = "id", containerName = "Robots")
 @EdmEntitySet(name = "Motions")
-public class MotionModel {
-    @EdmProperty(name = "name", nullable = false)
-    private String name;
+public class MotionModel implements QueryableEntity {
+    @EdmProperty(name = "id", nullable = false)
+    private String id;
 
-    public MotionModel(String name) {
-        this.name = name;
+    public MotionModel(String id) {
+        this.id = id;
     }
 
     public MotionModel() {
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String getId() {
+        return id;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @Override
+    public String getProperty(String property) {
+        return property.equals("id") ? id : null;
     }
 
     @Override
     public String toString() {
         return "MotionModel{" +
-                "name='" + name + '\'' +
+                "id='" + id + '\'' +
                 '}';
     }
 }

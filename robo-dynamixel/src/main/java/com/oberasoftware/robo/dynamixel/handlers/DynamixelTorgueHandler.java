@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static com.oberasoftware.robo.dynamixel.DynamixelUtil.toSafeInt;
+import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
 
 /**
  * @author Renze de Vries

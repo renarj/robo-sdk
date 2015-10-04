@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.oberasoftware.robo.service;
+package com.oberasoftware.robo.container;
 
-import com.oberasoftware.base.BaseConfiguration;
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
-import com.oberasoftware.robo.dynamixel.robomotion.MotionConverter;
+import com.oberasoftware.robo.api.MotionConverter;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
 import com.sdl.odata.api.edm.registry.ODataEdmRegistry;
@@ -50,8 +49,6 @@ import static com.google.common.collect.Lists.newArrayList;
 @Import({
         ODataServiceConfiguration.class,
         DynamixelConfiguration.class,
-        BaseConfiguration.class
-
 })
 @ComponentScan
 public class ServiceContainer {
@@ -73,7 +70,5 @@ public class ServiceContainer {
 
         List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
         motions.stream().forEach(motionManager::storeMotion);
-
     }
-
 }

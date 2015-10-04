@@ -15,6 +15,7 @@
  */
 package com.oberasoftware.robo.service;
 
+import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.ServoProperty;
 import com.oberasoftware.robo.service.model.MotionModel;
@@ -46,6 +47,9 @@ public class RobotDataSourceProvider implements DataSourceProvider {
     @Autowired
     private RobotController controller;
 
+    @Autowired
+    private MotionManager motionManager;
+
     @Override
     public boolean isSuitableFor(ODataRequestContext oDataRequestContext, String entityType) throws ODataDataSourceException {
          Class<?> javaType = oDataRequestContext.getEntityDataModel().getType(entityType).getJavaType();
@@ -69,12 +73,24 @@ public class RobotDataSourceProvider implements DataSourceProvider {
         return () -> {
             LOG.debug("Executing query against Robot data: {}", targetType.typeName());
 
-            return controller.getServos().stream().map(s -> {
-                int speed = s.getData().getValue(ServoProperty.SPEED);
-                int position = s.getData().getValue(ServoProperty.POSITION);
+            Class<?> dataType = oDataRequestContext.getEntityDataModel().getType(targetType.typeName()).getJavaType();
+            List<QueryableEntity> entities;
+            if(dataType.equals(ServoModel.class)) {
+                entities = controller.getServos().stream().map(s -> {
+                    int speed = s.getData().getValue(ServoProperty.SPEED);
+                    int position = s.getData().getValue(ServoProperty.POSITION);
 
-                return new ServoModel(s.getId(), speed, position);
-            }).collect(Collectors.toList());
+                    return new ServoModel(s.getId(), speed, position);
+                }).collect(Collectors.toList());
+            } else {
+                entities = motionManager.findMotions().stream()
+                        .map(m -> new MotionModel(m.getName()))
+                        .collect(Collectors.toList());
+            }
+
+            return entities.stream().filter(p -> predicateList.stream()
+                    .allMatch(f -> f.test(p))).limit(limit).collect(Collectors.toList());
+
         };
     }
 }
