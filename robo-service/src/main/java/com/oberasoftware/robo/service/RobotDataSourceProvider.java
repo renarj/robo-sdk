@@ -15,6 +15,8 @@
  */
 package com.oberasoftware.robo.service;
 
+import com.oberasoftware.robo.api.RobotController;
+import com.oberasoftware.robo.api.ServoProperty;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
 import com.sdl.odata.api.ODataException;
@@ -30,9 +32,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Component
 public class RobotDataSourceProvider implements DataSourceProvider {
@@ -40,6 +42,9 @@ public class RobotDataSourceProvider implements DataSourceProvider {
 
     @Autowired
     private RobotDataSource robotDataSource;
+
+    @Autowired
+    private RobotController controller;
 
     @Override
     public boolean isSuitableFor(ODataRequestContext oDataRequestContext, String entityType) throws ODataDataSourceException {
@@ -63,16 +68,13 @@ public class RobotDataSourceProvider implements DataSourceProvider {
 
         return () -> {
             LOG.debug("Executing query against Robot data: {}", targetType.typeName());
-//            Stream<Person> personStream = inMemoryDataSource.getPersonConcurrentMap().values().stream();
-//
-//            List<Person> filteredPersons = personStream.filter(p -> predicateList.stream()
-//                    .allMatch(f -> f.test(p))).limit(limit).collect(Collectors.toList());
-//
-//
-//            LOG.debug("Found {} persons matching query", filteredPersons.size());
 
-//            return filteredPersons;
-            return new ArrayList<>();
+            return controller.getServos().stream().map(s -> {
+                int speed = s.getData().getValue(ServoProperty.SPEED);
+                int position = s.getData().getValue(ServoProperty.POSITION);
+
+                return new ServoModel(s.getId(), speed, position);
+            }).collect(Collectors.toList());
         };
     }
 }

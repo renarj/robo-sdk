@@ -74,12 +74,6 @@ public class ServiceContainer {
         List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
         motions.stream().forEach(motionManager::storeMotion);
 
-        if(controller.initialize()) {
-            LOG.info("Example Robot application container started");
-        } else {
-            LOG.error("Controller could not initialize");
-            System.exit(-1);
-        }
     }
 
 }
