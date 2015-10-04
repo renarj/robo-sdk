@@ -20,6 +20,7 @@ import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
 import com.oberasoftware.robo.api.MotionConverter;
+import com.oberasoftware.robo.service.MotionFunction;
 import com.oberasoftware.robo.service.ServiceConfiguration;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
@@ -64,7 +65,7 @@ public class ServiceContainer {
         ConfigurableApplicationContext context = springApplication.run(args);
 
         ODataEdmRegistry registry = context.getBean(ODataEdmRegistry.class);
-        registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class));
+        registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class, MotionFunction.class));
 
         RobotController controller = context.getBean(RobotController.class);
         MotionManager motionManager = context.getBean(MotionManager.class);
