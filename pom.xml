@@ -16,7 +16,7 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <odata.version>2.0.5-SNAPSHOT</odata.version>
+        <odata.version>2.0.4</odata.version>
     </properties>
 
     <modules>
