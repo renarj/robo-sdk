@@ -15,6 +15,7 @@
  */
 package com.oberasoftware.robo.service;
 
+import com.oberasoftware.base.BaseConfiguration;
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.motion.Motion;
@@ -48,7 +49,8 @@ import static com.google.common.collect.Lists.newArrayList;
         DataSourceTransactionManagerAutoConfiguration.class })
 @Import({
         ODataServiceConfiguration.class,
-        DynamixelConfiguration.class
+        DynamixelConfiguration.class,
+        BaseConfiguration.class
 
 })
 @ComponentScan
