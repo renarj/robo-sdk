@@ -71,7 +71,8 @@ public class ServiceContainer {
         MotionManager motionManager = context.getBean(MotionManager.class);
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
 
-        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
+//        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
+        List<Motion> motions = motionConverter.loadMotions("/bio_prm_humanoidtypea_en.mtn");
         motions.stream().forEach(motionManager::storeMotion);
     }
 }
