@@ -7,6 +7,7 @@ import com.oberasoftware.robo.api.ServoData;
 import com.oberasoftware.robo.api.ServoDataManager;
 import com.oberasoftware.robo.api.ServoProperty;
 import com.oberasoftware.robo.api.ServoUpdateEvent;
+import com.oberasoftware.robo.api.exceptions.RoboException;
 import com.oberasoftware.robo.core.commands.ReadPositionAndSpeedCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -135,7 +136,11 @@ public class DynamixelServoDataManager implements ServoDataManager, EventHandler
             try {
                 lock.lock();
 
-                condition.await();
+                boolean found = condition.await(60, TimeUnit.SECONDS);
+                if(!found) {
+                    LOG.error("Did not get a servo update for servo: {}", servoId);
+                    throw new RoboException("Could not read servo data for servo: " + servoId);
+                }
             } catch (InterruptedException e) {
                 LOG.error("", e);
             } finally {
