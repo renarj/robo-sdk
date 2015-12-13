@@ -16,9 +16,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
+import java.util.Queue;
+import java.util.concurrent.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,21 +32,57 @@ import java.util.stream.Collectors;
 public class DynamixelMotionExecutor implements MotionExecutor {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelMotionExecutor.class);
 
+    private static final int INTERVAL = 1000;
+
     @Autowired
     private EventBus eventBus;
 
     @Autowired
     private ServoDataManager dataManager;
 
+    private Queue<QueueItem> queue = new LinkedBlockingQueue<>();
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+    private volatile boolean running;
+
+    @PostConstruct
+    public void startListener() {
+        running = true;
+        executor.execute(() -> {
+            LOG.info("Starting motion queue");
+            while(running && !Thread.currentThread().isInterrupted()) {
+                QueueItem item = queue.poll();
+                if(item != null) {
+                    runMotion(item);
+                } else {
+                    Uninterruptibles.sleepUninterruptibly(INTERVAL, TimeUnit.MILLISECONDS);
+                }
+            }
+            LOG.info("Motion queue has stopped");
+        });
+    }
+
+    @PreDestroy
+    public void stopListener() {
+        LOG.debug("Shutting down motion queue");
+        running = false;
+        executor.shutdownNow();
+    }
+
     @Override
     public void execute(Motion motion) {
-        //no repeats exeternally specified, use defaults from the motion
-
         execute(motion, motion.getRepeats());
     }
 
     @Override
     public void execute(Motion motion, int repeats) {
+        LOG.debug("Scheduling motion in the queue: {} repeats: {}", motion, repeats);
+        queue.add(new QueueItem(motion, repeats));
+    }
+
+    private void runMotion(QueueItem item) {
+        int repeats = item.getRepeats();
+        Motion motion = item.getMotion();
+
         LOG.debug("Executing motion: {} repeats: {}", motion, repeats);
 
         int amount = repeats + 1; //repeats are 0 based, but we always execute at least once
@@ -109,5 +148,23 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         LOG.trace("Required speed: {}", speed);
 
         return speed;
+    }
+
+    private class QueueItem {
+        private Motion motion;
+        private int repeats;
+
+        public QueueItem(Motion motion, int repeats) {
+            this.motion = motion;
+            this.repeats = repeats;
+        }
+
+        public Motion getMotion() {
+            return motion;
+        }
+
+        public int getRepeats() {
+            return repeats;
+        }
     }
 }

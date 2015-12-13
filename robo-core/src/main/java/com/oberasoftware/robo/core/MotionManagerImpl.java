@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.dynamixel;
+package com.oberasoftware.robo.core;
 
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.motion.Motion;

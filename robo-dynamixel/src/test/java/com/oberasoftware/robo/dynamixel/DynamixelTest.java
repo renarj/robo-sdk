@@ -1,11 +1,10 @@
 package com.oberasoftware.robo.dynamixel;
 
 import com.google.common.util.concurrent.Uninterruptibles;
-import com.oberasoftware.base.BaseConfiguration;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.Servo;
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.dynamixel.robomotion.MotionConverter;
+import com.oberasoftware.robo.api.MotionConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -22,7 +21,7 @@ import java.util.stream.Collectors;
  * @author Renze de Vries
  */
 @SpringBootApplication
-@Import({DynamixelConfiguration.class, BaseConfiguration.class})
+@Import({DynamixelConfiguration.class})
 public class DynamixelTest {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelTest.class);
 
@@ -31,7 +30,7 @@ public class DynamixelTest {
 
         RobotController controller = context.getBean(RobotController.class);
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
-        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
+        List<Motion> motions = motionConverter.loadMotions("/src/test/resources/bio_prm_kingspider_en.mtn");
         Map<String, Motion> motionMap = motions.stream().collect(Collectors.toMap(Motion::getName, m -> m));
 
         boolean s = controller.initialize();

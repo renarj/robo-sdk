@@ -1,15 +1,18 @@
 package com.oberasoftware.robo.service.model;
 
+import com.oberasoftware.robo.service.QueryableEntity;
 import com.sdl.odata.api.edm.annotations.EdmEntity;
 import com.sdl.odata.api.edm.annotations.EdmEntitySet;
 import com.sdl.odata.api.edm.annotations.EdmProperty;
+
+import static java.lang.String.valueOf;
 
 /**
  * @author Renze de Vries
  */
 @EdmEntity(name = "Servo", namespace = "Oberasoftware.Robot", key = "id", containerName = "Robots")
 @EdmEntitySet(name = "Servos")
-public class ServoModel {
+public class ServoModel implements QueryableEntity {
 
     @EdmProperty(name = "id", nullable = false)
     private String id;
@@ -29,6 +32,7 @@ public class ServoModel {
     public ServoModel() {
     }
 
+    @Override
     public String getId() {
         return id;
     }
@@ -51,6 +55,20 @@ public class ServoModel {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    @Override
+    public String getProperty(String property) {
+        switch (property) {
+            case "id":
+                return getId();
+            case "speed":
+                return valueOf(getSpeed());
+            case "position":
+                return valueOf(getPosition());
+            default:
+                return null;
+        }
     }
 
     @Override

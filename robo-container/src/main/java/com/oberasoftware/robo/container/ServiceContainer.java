@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.oberasoftware.robo.service;
+package com.oberasoftware.robo.container;
 
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
-import com.oberasoftware.robo.dynamixel.robomotion.MotionConverter;
+import com.oberasoftware.robo.api.MotionConverter;
+import com.oberasoftware.robo.service.MotionFunction;
+import com.oberasoftware.robo.service.ServiceConfiguration;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
 import com.sdl.odata.api.edm.registry.ODataEdmRegistry;
@@ -48,8 +50,8 @@ import static com.google.common.collect.Lists.newArrayList;
         DataSourceTransactionManagerAutoConfiguration.class })
 @Import({
         ODataServiceConfiguration.class,
-        DynamixelConfiguration.class
-
+        DynamixelConfiguration.class,
+        ServiceConfiguration.class
 })
 @ComponentScan
 public class ServiceContainer {
@@ -63,21 +65,14 @@ public class ServiceContainer {
         ConfigurableApplicationContext context = springApplication.run(args);
 
         ODataEdmRegistry registry = context.getBean(ODataEdmRegistry.class);
-        registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class));
+        registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class, MotionFunction.class));
 
         RobotController controller = context.getBean(RobotController.class);
         MotionManager motionManager = context.getBean(MotionManager.class);
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
 
-        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
+//        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
+        List<Motion> motions = motionConverter.loadMotions("/bio_prm_humanoidtypea_en.mtn");
         motions.stream().forEach(motionManager::storeMotion);
-
-        if(controller.initialize()) {
-            LOG.info("Example Robot application container started");
-        } else {
-            LOG.error("Controller could not initialize");
-            System.exit(-1);
-        }
     }
-
 }

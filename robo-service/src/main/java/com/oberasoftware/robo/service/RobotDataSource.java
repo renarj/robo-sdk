@@ -45,7 +45,13 @@ public class RobotDataSource implements DataSource {
     @PostConstruct
     public void initialize() {
         LOG.info("Initializing datasource");
-        controller.initialize();
+
+        if(controller.initialize()) {
+            LOG.info("Example Robot application container started");
+        } else {
+            LOG.error("Controller could not initialize");
+            System.exit(-1);
+        }
     }
 
     @Override

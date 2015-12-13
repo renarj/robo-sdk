@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.dynamixel;
 
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.dynamixel.robomotion.RoboPlusMotionConverter;
+import com.oberasoftware.robo.core.robomotion.RoboPlusMotionConverter;
 import org.junit.Test;
 
 import java.util.List;
@@ -34,5 +34,10 @@ public class RoboMotionConverterTest {
         assertThat(readyMotion.getSteps().size(), is(1));
         assertThat(readyMotion.getSteps().get(0).getServoSteps().size(), is(18));
         assertThat(readyMotion.getSteps().get(0).getTimeInMs(), is(504l));
+    }
+
+    @Test
+    public void testConvertHumanoid() {
+        List<Motion> motions = new RoboPlusMotionConverter().loadMotions("/bio_prm_humanoidtypea_en.mtn");
     }
 }

@@ -17,8 +17,8 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 
 import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
-import static com.oberasoftware.robo.dynamixel.DynamixelUtil.byteToInt;
-import static com.oberasoftware.robo.dynamixel.DynamixelUtil.toSafeInt;
+import static com.oberasoftware.robo.core.ConverterUtil.byteToInt;
+import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
 import static java.lang.String.valueOf;
 
 /**

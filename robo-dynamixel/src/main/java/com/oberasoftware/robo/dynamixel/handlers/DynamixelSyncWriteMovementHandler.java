@@ -20,8 +20,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
-import static com.oberasoftware.robo.dynamixel.DynamixelUtil.intTo16BitByte;
-import static com.oberasoftware.robo.dynamixel.DynamixelUtil.toSafeInt;
+import static com.oberasoftware.robo.core.ConverterUtil.intTo16BitByte;
+import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
 
 /**
  * @author Renze de Vries
