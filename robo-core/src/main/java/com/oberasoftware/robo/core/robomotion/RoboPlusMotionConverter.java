@@ -6,6 +6,7 @@ import com.google.common.collect.Multimap;
 import com.oberasoftware.robo.api.MotionConverter;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.Step;
+import com.oberasoftware.robo.core.ConverterUtil;
 import com.oberasoftware.robo.core.motion.MotionImpl;
 import com.oberasoftware.robo.core.motion.StepBuilder;
 import org.slf4j.Logger;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
 import static java.lang.String.valueOf;
+import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 
 /**
@@ -41,6 +43,7 @@ public class RoboPlusMotionConverter implements MotionConverter {
     private static final String STEP = "step";
     private static final String PAGE_END = "page_end";
     private static final String PAGE_BEGIN = "page_begin";
+    public static final int SERVO_ENABLED = 1;
 
     @Override
     public List<Motion> loadMotions(String motionFile) {
@@ -66,6 +69,11 @@ public class RoboPlusMotionConverter implements MotionConverter {
 
     private List<Motion> loadMotions(LineNumberReader reader) throws IOException {
         List<Motion> motions = new ArrayList<>();
+        String enabledServos = advanceToLine(reader, "enable");
+        String[] servoStringIndexes = enabledServos != null ? enabledServos.split(" ") : new String[] {};
+        List<Integer> servoIndexes = asList(servoStringIndexes).stream()
+                .map(ConverterUtil::toSafeInt).collect(Collectors.toList());
+
         while(advanceToNextPage(reader)) {
             Multimap<String, String> attributes = loadAttributes(reader);
 
@@ -73,7 +81,7 @@ public class RoboPlusMotionConverter implements MotionConverter {
             if(!StringUtils.isEmpty(motionName)) {
                 LOG.debug("Found a motion: {}", motionName);
 
-                List<Step> steps = loadSteps(attributes.get(STEP));
+                List<Step> steps = loadSteps(attributes.get(STEP), servoIndexes);
                 motions.add(new MotionImpl(motionName, 0, steps));
             }
         }
@@ -81,23 +89,25 @@ public class RoboPlusMotionConverter implements MotionConverter {
         return motions;
     }
 
-    private List<Step> loadSteps(Collection<String> steps) {
-        return steps.stream().map(this::loadStep).collect(Collectors.toList());
+    private List<Step> loadSteps(Collection<String> steps, List<Integer> servoIndexes) {
+        return steps.stream().map(s -> loadStep(s, servoIndexes))
+                .collect(Collectors.toList());
     }
 
-    private Step loadStep(String step) {
+    private Step loadStep(String step, List<Integer> servoIndexes) {
 
         String[] stepData = step.split(" ");
         double time = Double.parseDouble(stepData[stepData.length - 1]);
         double msTime = time * 1000;
 
         StepBuilder stepBuilder = StepBuilder.create((long)msTime);
-        for(int i=1; i<stepData.length; i++) {
-            int value = toSafeInt(stepData[i]);
-            if(value == 0) {
-                break;
+        for(int i=0; i<(servoIndexes.size()); i++) {
+            if(servoIndexes.get(i) == SERVO_ENABLED) {
+                int value = toSafeInt(stepData[i]);
+                stepBuilder.servo(valueOf(i), value, 50);
+            } else {
+                LOG.debug("Servo: {} is disabled", i);
             }
-            stepBuilder.servo(valueOf(i), value, 50);
         }
 
         return stepBuilder.build();
@@ -119,14 +129,17 @@ public class RoboPlusMotionConverter implements MotionConverter {
     }
 
     private boolean advanceToNextPage(LineNumberReader lineNumberReader) throws IOException {
+        return advanceToLine(lineNumberReader, PAGE_BEGIN) != null;
+    }
+
+    private String advanceToLine(LineNumberReader lineNumberReader, String lineBegin) throws IOException {
         String line;
         while ((line = lineNumberReader.readLine()) != null) {
-            if(line.equals(PAGE_BEGIN)) {
-                return true;
+            if(line.startsWith(lineBegin)) {
+                return line;
             }
         }
 
-        LOG.debug("No more pages found");
-        return false;
+        return null;
     }
 }

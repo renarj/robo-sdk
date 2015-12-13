@@ -19,7 +19,7 @@ import static org.junit.Assert.assertThat;
 public class RoboMotionConverterTest {
     @Test
     public void testConvert() {
-        List<Motion> motions = new RoboPlusMotionConverter().loadMotions("/src/test/resources/bio_prm_kingspider_en.mtn");
+        List<Motion> motions = new RoboPlusMotionConverter().loadMotions("/bio_prm_kingspider_en.mtn");
         assertThat(motions.size(), is(17));
 
 
@@ -34,5 +34,10 @@ public class RoboMotionConverterTest {
         assertThat(readyMotion.getSteps().size(), is(1));
         assertThat(readyMotion.getSteps().get(0).getServoSteps().size(), is(18));
         assertThat(readyMotion.getSteps().get(0).getTimeInMs(), is(504l));
+    }
+
+    @Test
+    public void testConvertHumanoid() {
+        List<Motion> motions = new RoboPlusMotionConverter().loadMotions("/bio_prm_humanoidtypea_en.mtn");
     }
 }
