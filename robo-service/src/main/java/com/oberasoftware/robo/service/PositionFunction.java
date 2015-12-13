@@ -17,10 +17,10 @@ import org.slf4j.LoggerFactory;
 /**
  * @author Renze de Vries
  */
-@EdmFunction(name = "Servo", namespace = "Oberasoftware.Robot", isBound = true)
+@EdmFunction(name = "Position", namespace = "Oberasoftware.Robot", isBound = true)
 @EdmReturnType(type = "Edm.String")
-public class ServoFunction implements Operation<String> {
-    private static final Logger LOG = LoggerFactory.getLogger(ServoFunction.class);
+public class PositionFunction implements Operation<String> {
+    private static final Logger LOG = LoggerFactory.getLogger(PositionFunction.class);
 
     @EdmParameter(name = "servoId", nullable = false)
     private String servoId;
