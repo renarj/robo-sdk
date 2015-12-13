@@ -37,7 +37,7 @@ public class DynamixelReadPositionHandler implements EventHandler {
         LOG.debug("Sending Read command for speed and position for servo: {}", servoId);
 
         byte[] data = new DynamixelCommandPacket(DynamixelInstruction.READ_DATA, servoId)
-                .addParam(DynamixelAddress.GOAL_POSITION_L, 0x04)
+                .addParam(DynamixelAddress.PRESENT_POSITION_L, 0x04)
                 .build();
         byte[] received = connector.sendAndReceive(data);
 

@@ -19,7 +19,11 @@ public enum DynamixelAddress {
     TORGUE_LIMIT_L(0x22),
     TORGUE_LIMIT_H(0x23),
     GOAL_POSITION_L(0x1E),
-    GOAL_POSITION_H(0x1F);
+    GOAL_POSITION_H(0x1F),
+    PRESENT_POSITION_L(0x24),
+    PRESENT_POSITION_H(0x25),
+    PRESENT_SPEED_L(0x26),
+    PRESENT_SPEED_H(0x27);
 
 
     private int address;
