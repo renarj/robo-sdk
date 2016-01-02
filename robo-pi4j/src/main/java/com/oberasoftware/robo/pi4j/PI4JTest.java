@@ -5,7 +5,6 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -63,7 +62,7 @@ public class PI4JTest {
         }
     }
 
-    public void SetBitRate(byte rate) {
+    public void SetBitRate(int rate) {
         switch (rate) {
             case 12:
                 config1 = UpdateByte(config1, 2, false);
@@ -161,7 +160,7 @@ public class PI4JTest {
         int raw = ReadRaw(channel); // get the raw value
         // check to see if the sign bit is present, if it is then the voltage is negative and can be ignored.
         if (signbit) {
-            return 0.0;  // returned a negative voltage so return 0
+            return -1;  // returned a negative voltage so return 0
         } else {
             double voltage = (raw * (lsb / pga)) * 2.471; // calculate the voltage and return it
             return voltage;
@@ -330,18 +329,18 @@ public class PI4JTest {
     }    
     
     public static void main(String[] args) {
-        SpringApplication springApplication = new SpringApplication(PI4JTest.class);
-
         try {
             PI4JTest test = new PI4JTest((byte)0x68, (byte)0x69);
             test.connect();
-            test.SetPGA(4);
+            test.SetPGA(1);
+            test.SetBitRate(16);
 
             LOG.info("Connected");
             while(true) {
                 double voltage = test.ReadVoltage((byte) 0x01);
-                LOG.info("Voltage: {}", voltage);
-
+                if(voltage > 0) {
+                    LOG.info("Voltage: {}", voltage);
+                }
                 Thread.sleep(1000);
             }
         } catch (Exception e) {
