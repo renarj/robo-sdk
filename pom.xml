@@ -25,6 +25,7 @@
         <module>robo-core</module>
         <module>robo-service</module>
         <module>robo-container</module>
+        <module>robo-pi4j</module>
     </modules>
 
     <repositories>
