@@ -6,22 +6,16 @@ import com.pi4j.io.gpio.GpioPinAnalogInput;
 import com.pi4j.io.i2c.I2CBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 
 /**
  * @author Renze de Vries
  */
-@EnableAutoConfiguration
-@Configuration
-@ComponentScan
 public class AnotherPiTest {
     private static final Logger LOG = LoggerFactory.getLogger(AnotherPiTest.class);
 
-    public static void main(String[] args) {
+    public static void maxin(String[] args) {
         final GpioController gpio = GpioFactory.getInstance();
 
         try {
@@ -41,8 +35,8 @@ public class AnotherPiTest {
             for(int i=0; i<50; i++) {
                 LOG.info("Reading");
 
-                double voltage = gpioProvider.getProgrammableGainAmplifier(distanceSensorPin).getVoltage();
-                LOG.info("Voltage: {]", voltage);
+                LOG.info("Voltage: {}", gpioProvider.getImmediateValue(ADSPin.INPUT_A0));
+
 
                 Thread.sleep(1000);
             }

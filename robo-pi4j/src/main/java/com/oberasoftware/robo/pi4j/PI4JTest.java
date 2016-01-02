@@ -6,12 +6,18 @@ import com.pi4j.io.i2c.I2CFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import java.io.IOException;
 
 /**
  * @author Renze de Vries
  */
+@EnableAutoConfiguration
+@Configuration
+@ComponentScan
 public class PI4JTest {
     private static final Logger LOG = LoggerFactory.getLogger(PI4JTest.class);
 
@@ -35,7 +41,7 @@ public class PI4JTest {
 //
 //        LOG.info("Result: {}", Double.longBitsToDouble((upper << 32) + lower));
 //    }
-    public static void maxin(String[] args) {
+    public static void main(String[] args) {
         SpringApplication springApplication = new SpringApplication(PI4JTest.class);
 
         try {
@@ -58,7 +64,7 @@ public class PI4JTest {
 //                int t = ((h & 0x00000011) << 16) | (m << 8) | l;
                 LOG.info("Val h: {} m: {} l: {} s: {}", h, m, l, s);
 
-                int maskedH = h & 0x00000011;
+                int maskedH = h & 3;
                 int shiftH = maskedH << 16;
                 int shiftM = m << 8;
 
