@@ -5,18 +5,15 @@ import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 /**
  * @author Renze de Vries
  */
-@EnableAutoConfiguration
-@Configuration
-@ComponentScan
-public class PI4JTest {
-    private static final Logger LOG = LoggerFactory.getLogger(PI4JTest.class);
+//@EnableAutoConfiguration
+//@Configuration
+//@ComponentScan
+public class ADCPlus {
+    private static final Logger LOG = LoggerFactory.getLogger(ADCPlus.class);
 
     private final byte address1;
     private final byte address2;
@@ -36,7 +33,7 @@ public class PI4JTest {
 
 //    Byte[] __adcreading = { 0, 0, 0, 0 };
 
-    public PI4JTest(byte i2caddress1, byte i2caddress2) {
+    public ADCPlus(byte i2caddress1, byte i2caddress2) {
         address1 = i2caddress1;
         address2 = i2caddress2;
         isConnected = false;
@@ -328,9 +325,9 @@ public class PI4JTest {
         WriteI2CSingleByte(device2, config2);
     }    
     
-    public static void main(String[] args) {
+    public static void test(String[] args) {
         try {
-            PI4JTest test = new PI4JTest((byte)0x68, (byte)0x69);
+            ADCPlus test = new ADCPlus((byte)0x68, (byte)0x69);
             test.connect();
             test.SetPGA(1);
             test.SetBitRate(16);
