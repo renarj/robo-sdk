@@ -22,9 +22,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
@@ -74,16 +72,23 @@ public class RoboPlusMotionConverter implements MotionConverter {
         List<Integer> servoIndexes = asList(servoStringIndexes).stream()
                 .map(ConverterUtil::toSafeInt).collect(Collectors.toList());
 
+        int counter = 1;
         while(advanceToNextPage(reader)) {
             Multimap<String, String> attributes = loadAttributes(reader);
 
             String motionName = Iterables.getFirst(attributes.get(NAME), null);
-            if(!StringUtils.isEmpty(motionName)) {
-                LOG.debug("Found a motion: {}", motionName);
+            motionName = StringUtils.isEmpty(motionName) ? Integer.toString(counter) : motionName;
 
-                List<Step> steps = loadSteps(attributes.get(STEP), servoIndexes);
-                motions.add(new MotionImpl(motionName, 0, steps));
-            }
+            String playParams = Iterables.getFirst(attributes.get("play_param"), null);
+            String[] params = playParams != null ? playParams.split(" ") : new String[0];
+            String nextMotion = params.length > 1 ? params[0] : null;
+            String exitMotion = params.length > 1 ? params[1] : null;
+
+            LOG.info("Found a motion[{}]: {}", counter, motionName);
+
+            List<Step> steps = loadSteps(attributes.get(STEP), servoIndexes);
+            motions.add(new MotionImpl(Integer.toString(counter), motionName, 0, nextMotion, exitMotion, steps));
+            counter++;
         }
 
         return motions;

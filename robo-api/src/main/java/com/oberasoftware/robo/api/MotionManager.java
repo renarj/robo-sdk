@@ -11,7 +11,9 @@ import java.util.Optional;
 public interface MotionManager {
     void storeMotion(Motion motion);
 
-    Optional<Motion> findMotion(String motionName);
+    Optional<Motion> findMotionByName(String motionName);
+
+    Optional<Motion> findMotionById(String motionId);
 
     List<Motion> findMotions();
 }

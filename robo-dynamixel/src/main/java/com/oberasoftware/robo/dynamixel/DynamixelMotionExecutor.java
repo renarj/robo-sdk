@@ -3,6 +3,7 @@ package com.oberasoftware.robo.dynamixel;
 import com.google.common.base.Stopwatch;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.base.event.EventBus;
+import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.ServoDataManager;
 import com.oberasoftware.robo.api.ServoProperty;
 import com.oberasoftware.robo.api.motion.Motion;
@@ -20,8 +21,12 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,6 +44,9 @@ public class DynamixelMotionExecutor implements MotionExecutor {
 
     @Autowired
     private ServoDataManager dataManager;
+
+    @Autowired
+    private MotionManager motionManager;
 
     private Queue<QueueItem> queue = new LinkedBlockingQueue<>();
     private ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -80,9 +88,10 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     }
 
     private void runMotion(QueueItem item) {
-        int repeats = item.getRepeats();
-        Motion motion = item.getMotion();
+        runMotion(item.getMotion(), item.getRepeats());
+    }
 
+    private void runMotion(Motion motion, int repeats) {
         LOG.debug("Executing motion: {} repeats: {}", motion, repeats);
 
         int amount = repeats + 1; //repeats are 0 based, but we always execute at least once
@@ -106,6 +115,19 @@ public class DynamixelMotionExecutor implements MotionExecutor {
                 executeStep(previousStep, step);
 
                 LOG.debug("Finished step: {} execution in: {} ms.", c, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+            }
+            checkAndExceuteNextMotion(motion);
+
+        }
+    }
+
+    private void checkAndExceuteNextMotion(Motion currentMotion) {
+        String nextMotionId = currentMotion.getNextMotion();
+        if(nextMotionId != null) {
+            Optional<Motion> nextMotion = motionManager.findMotionById(nextMotionId);
+            if(nextMotion.isPresent()) {
+                LOG.info("A chain of motions is present, executing next motion: {} ({})", nextMotionId, nextMotion.get().getName());
+                runMotion(nextMotion.get(), 0);
             }
         }
     }

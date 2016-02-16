@@ -69,3 +69,10 @@ more mature we will provide artefacts via Maven Central.
 ## Build Requirements
 * Java >= 8
 * Maven >= 3.1.x
+
+
+# OData Functions
+
+```
+curl -X GET http://robomax:8080/robot.svc/Motions/Oberasoftware.Robot.Execute(motion='Stand%20up',repeats=0)
+```

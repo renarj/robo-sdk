@@ -24,8 +24,13 @@ public class MotionManagerImpl implements MotionManager {
     }
 
     @Override
-    public Optional<Motion> findMotion(String motionName) {
+    public Optional<Motion> findMotionByName(String motionName) {
         return Optional.ofNullable(motions.get(motionName));
+    }
+
+    @Override
+    public Optional<Motion> findMotionById(String motionId) {
+        return motions.values().stream().filter(m -> m.getId().equals(motionId)).findFirst();
     }
 
     @Override

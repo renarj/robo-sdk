@@ -36,7 +36,7 @@ public class MotionFunction implements Operation<String> {
         MotionManager motionManager = ApplicationContextProvider.getContext().getBean(MotionManager.class);
         MotionExecutor motionExecutor = ApplicationContextProvider.getContext().getBean(MotionExecutor.class);
 
-        Optional<Motion> motion = motionManager.findMotion(motionName);
+        Optional<Motion> motion = motionManager.findMotionByName(motionName);
         if(motion.isPresent()) {
             LOG.info("Motion was found, triggering movement");
             motionExecutor.execute(motion.get(), repeats);

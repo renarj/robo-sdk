@@ -33,6 +33,6 @@ public class MotionBuilder {
     }
 
     public Motion build() {
-        return new MotionImpl(name, repeats, steps);
+        return new MotionImpl(name, name, repeats, null, null, steps);
     }
 }
