@@ -51,7 +51,7 @@ public class DynamixelServoDataManager implements ServoDataManager, EventHandler
         ensureDataHolder(servoId);
         ServoDataHolder holder = servoDataMap.get(servoId);
 
-        if(holder.isUpdatedInTimeFrame(property, 50, TimeUnit.MILLISECONDS)) {
+        if(holder.isUpdatedInTimeFrame(property, 200, TimeUnit.MILLISECONDS)) {
             LOG.debug("Servo: {} has has a value update for property: {} in last 50 ms. sending current data", servoId, property);
             return holder.getValue(property);
         } else {
