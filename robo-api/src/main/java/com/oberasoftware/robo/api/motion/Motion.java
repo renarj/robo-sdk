@@ -10,7 +10,7 @@ public interface Motion {
 
     String getName();
 
-    List<Step> getSteps();
+    List<KeyFrame> getKeyFrames();
 
     String getNextMotion();
 

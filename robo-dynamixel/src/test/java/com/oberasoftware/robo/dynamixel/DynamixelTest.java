@@ -1,10 +1,11 @@
 package com.oberasoftware.robo.dynamixel;
 
 import com.google.common.util.concurrent.Uninterruptibles;
+import com.oberasoftware.robo.api.MotionConverter;
+import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.Servo;
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.api.MotionConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -13,9 +14,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Import;
 
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 /**
  * @author Renze de Vries
@@ -30,8 +29,10 @@ public class DynamixelTest {
 
         RobotController controller = context.getBean(RobotController.class);
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
-        List<Motion> motions = motionConverter.loadMotions("/src/test/resources/bio_prm_kingspider_en.mtn");
-        Map<String, Motion> motionMap = motions.stream().collect(Collectors.toMap(Motion::getName, m -> m));
+        MotionManager motionManager = context.getBean(MotionManager.class);
+        List<Motion> motions = motionConverter.loadMotions("/bio_prm_humanoidtypea_en.mtn");
+        motions.stream().forEach(motionManager::storeMotion);
+//        Map<String, Motion> motionMap = motions.stream().collect(Collectors.toMap(Motion::getName, m -> m));
 
         boolean s = controller.initialize();
         if(s) {
@@ -49,7 +50,8 @@ public class DynamixelTest {
 
         LOG.debug("Readying the robot");
         Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
-        controller.executeMotion(motionMap.get("Ready"));
+        controller.executeMotion(motionManager.findMotionByName("Stand up").get());
+        controller.executeMotion(motionManager.findMotionByName("F_S_L").get(), 10);
 
 //        LOG.debug("Doing a short walk in a bit");
 //        Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);

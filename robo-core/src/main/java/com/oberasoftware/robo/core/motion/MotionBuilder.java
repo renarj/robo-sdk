@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.core.motion;
 
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.api.motion.Step;
+import com.oberasoftware.robo.api.motion.KeyFrame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import java.util.List;
  * @author Renze de Vries
  */
 public class MotionBuilder {
-    private final List<Step> steps = new ArrayList<>();
+    private final List<KeyFrame> keyFrames = new ArrayList<>();
     private final String name;
     private final int repeats;
 
@@ -27,12 +27,12 @@ public class MotionBuilder {
         return new MotionBuilder(motionName, repeats);
     }
 
-    public MotionBuilder addStep(Step step) {
-        this.steps.add(step);
+    public MotionBuilder addStep(KeyFrame keyFrame) {
+        this.keyFrames.add(keyFrame);
         return this;
     }
 
     public Motion build() {
-        return new MotionImpl(name, name, repeats, null, null, steps);
+        return new MotionImpl(name, name, repeats, null, null, keyFrames);
     }
 }

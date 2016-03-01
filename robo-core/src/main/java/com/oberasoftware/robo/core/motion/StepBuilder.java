@@ -1,6 +1,6 @@
 package com.oberasoftware.robo.core.motion;
 
-import com.oberasoftware.robo.api.motion.Step;
+import com.oberasoftware.robo.api.motion.KeyFrame;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +38,8 @@ public class StepBuilder {
         return this;
     }
 
-    public Step build() {
-        StepImpl step = new StepImpl(timeInMs);
+    public KeyFrame build() {
+        KeyFrameImpl step = new KeyFrameImpl(timeInMs);
         servoSteps.forEach(step::addServoStep);
 
         return step;

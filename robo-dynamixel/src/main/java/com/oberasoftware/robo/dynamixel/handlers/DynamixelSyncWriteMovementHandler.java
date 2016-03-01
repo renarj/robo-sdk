@@ -1,13 +1,14 @@
 package com.oberasoftware.robo.dynamixel.handlers;
 
+import com.google.common.base.Stopwatch;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.robo.core.commands.BulkPositionSpeedCommand;
+import com.oberasoftware.robo.core.commands.PositionAndSpeedCommand;
 import com.oberasoftware.robo.dynamixel.DynamixelAddress;
 import com.oberasoftware.robo.dynamixel.DynamixelCommandPacket;
 import com.oberasoftware.robo.dynamixel.DynamixelConnector;
 import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
-import com.oberasoftware.robo.core.commands.BulkPositionSpeedCommand;
-import com.oberasoftware.robo.core.commands.PositionAndSpeedCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
 import static com.oberasoftware.robo.core.ConverterUtil.intTo16BitByte;
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
+import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
 
 /**
  * @author Renze de Vries
@@ -37,6 +38,7 @@ public class DynamixelSyncWriteMovementHandler implements EventHandler {
     public void receive(BulkPositionSpeedCommand command) {
         LOG.debug("Received a bulk command: {}", command);
 
+        Stopwatch stopwatch = Stopwatch.createStarted();
         Map<String, PositionAndSpeedCommand> commands = command.getCommands();
 
         DynamixelCommandPacket packet = new DynamixelCommandPacket(DynamixelInstruction.SYNC_WRITE,

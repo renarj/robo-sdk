@@ -1,17 +1,17 @@
 package com.oberasoftware.robo.dynamixel;
 
 import com.google.common.base.Stopwatch;
-import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.ServoDataManager;
 import com.oberasoftware.robo.api.ServoProperty;
+import com.oberasoftware.robo.api.motion.KeyFrame;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionExecutor;
 import com.oberasoftware.robo.api.motion.ServoStep;
-import com.oberasoftware.robo.api.motion.Step;
 import com.oberasoftware.robo.core.commands.BulkPositionSpeedCommand;
 import com.oberasoftware.robo.core.commands.PositionAndSpeedCommand;
+import com.oberasoftware.robo.dynamixel.handlers.DynamixelSyncWriteMovementHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,17 +19,17 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
+import static com.google.common.base.Stopwatch.createStarted;
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
+import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 /**
  * @author Renze de Vries
@@ -49,6 +49,9 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     @Autowired
     private MotionManager motionManager;
 
+    @Autowired
+    private DynamixelSyncWriteMovementHandler syncWriteMovementHandler;
+
     private Queue<QueueItem> queue = new LinkedBlockingQueue<>();
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile boolean running;
@@ -65,7 +68,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
                 if(item != null) {
                     runMotion(item);
                 } else {
-                    Uninterruptibles.sleepUninterruptibly(INTERVAL, TimeUnit.MILLISECONDS);
+                    sleepUninterruptibly(INTERVAL, MILLISECONDS);
                 }
             }
             LOG.info("Motion queue has stopped");
@@ -96,98 +99,98 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     }
 
     private void runMotion(Motion motion, int repeats) {
-        runMotion(motion, null, repeats);
+        runSingleMotion(motion, null, repeats, true);
     }
 
-    private void runMotion(Motion motion, Step lastExecutedStep, int repeats) {
-        LOG.debug("Executing motion: {} repeats: {}", motion, repeats);
+    private void runSingleMotion(Motion motion, KeyFrame lastExecutedKeyFrame, int repeats, boolean executeExitMotion) {
+        LOG.info("Executing motion: {} repeats: {}", motion, repeats);
 
-
+        Motion currentMotion = motion;
         int amount = repeats + 1; //repeats are 0 based, but we always execute at least once
-        for(int i=0; i<amount; i++) {
-            LOG.info("Motion: {} execution round: {}", motion.getName(), (i + i));
-            List<Step> steps = motion.getSteps();
+        int i = 0;
+        Motion lastExecuted = null;
+        KeyFrame previousKeyFrame = lastExecutedKeyFrame;
+        while(currentMotion != null && i < amount) {
 
-            Stopwatch motionWatch = Stopwatch.createStarted();
-            for(int c=0; c<steps.size(); c++) {
-                Stopwatch stopwatch = Stopwatch.createStarted();
-                LOG.debug("Executing step: {}", c);
+            LOG.info("Motion: {} execution round: {}", currentMotion.getName(), (i + 1));
+            List<KeyFrame> keyFrames = currentMotion.getKeyFrames();
 
-                Step step = steps.get(c);
-                Step previousStep = lastExecutedStep;
-                if(c > 0) {
-                    previousStep = steps.get(c - 1);
-                } else if(i > 0) {
-                    //if we are doing a repeat its simply last step of the motion
-                    previousStep = steps.get(steps.size() - 1);
+            Stopwatch motionWatch = createStarted();
+            for (int c = 0; c < keyFrames.size(); c++) {
+                Stopwatch stopwatch = createStarted();
+                LOG.debug("Executing keyFrame: {}", c);
+
+                KeyFrame keyFrame = keyFrames.get(c);
+
+                if (c > 0) {
+                    previousKeyFrame = keyFrames.get(c - 1);
+                } else if (i > 0) {
+                    //if we are doing a repeat its simply last keyFrame of the motion
+                    previousKeyFrame = keyFrames.get(keyFrames.size() - 1);
                 }
 
-                executeStep(previousStep, step);
+                executeKeyFrame(previousKeyFrame, keyFrame);
 
-                LOG.info("Finished step: {} execution in: {} ms.", c, stopwatch.elapsed(TimeUnit.MILLISECONDS));
+                LOG.info("Finished keyFrame: {} execution in: {} ms. target time: {}", c,
+                        stopwatch.elapsed(MILLISECONDS), keyFrame.getTimeInMs());
             }
-            LOG.info("Finished motion: {} execution in: {} ms.", motion.getName(), motionWatch.elapsed(TimeUnit.MILLISECONDS));
-            checkAndExceuteNextMotion(motion);
+            LOG.info("Finished motion: {} execution in: {} ms.", currentMotion.getName(), motionWatch.elapsed(MILLISECONDS));
+            lastExecuted = currentMotion;
+            currentMotion = getNextChainedMotion(currentMotion);
 
+            i++;
+        }
+
+        LOG.info("Going to execute exit motion for motion: {}", lastExecuted);
+        Motion exitMotion = getExitMotion(lastExecuted);
+        if(exitMotion != null && executeExitMotion) {
+            LOG.info("Lets run it baby");
+            runSingleMotion(exitMotion, null, 0, false);
         }
     }
 
-    private void checkAndExceuteNextMotion(Motion currentMotion) {
-        if(loopCount.get() < 10) {
-            LOG.info("Loopcount under 10");
-            String nextMotionId = currentMotion.getNextMotion();
-            LOG.info("Execution next motion: {}", nextMotionId);
-            if (nextMotionId != null) {
-                Optional<Motion> nextMotion = motionManager.findMotionById(nextMotionId);
-                if (nextMotion.isPresent()) {
-                    LOG.info("A chain of motions is present, executing next motion: {} ({})", nextMotionId, nextMotion.get().getName());
-                    loopCount.incrementAndGet();
-                    List<Step> lastSteps = currentMotion.getSteps();
-                    Step lastStep = lastSteps.get(lastSteps.size() - 1);
-
-                    runMotion(nextMotion.get(), lastStep, 0);
-                } else {
-                    LOG.warn("Next motion: {} could not be found", nextMotionId);
-                }
-            }
-        } else {
-            String exitMotionId = currentMotion.getExitMotion();
-            LOG.info("Execution exit motion: {}", exitMotionId);
-            if (exitMotionId != null) {
-                Optional<Motion> exitMotion = motionManager.findMotionById(exitMotionId);
-                if (exitMotion.isPresent()) {
-                    List<Step> lastSteps = currentMotion.getSteps();
-                    Step lastStep = lastSteps.get(lastSteps.size() - 1);
-
-                    runMotion(exitMotion.get(), lastStep, 0);
-                } else {
-                    LOG.warn("Exit motion: {} could not be found", exitMotionId);
-                }
-            }
-
-        }
+    private Motion getExitMotion(Motion currentMotion) {
+        String nextMotionId = currentMotion.getExitMotion();
+        return findMotion(nextMotionId);
     }
 
-    private void executeStep(Step previousStep, Step step) {
-        Stopwatch stopwatch = Stopwatch.createStarted();
-        Map<String, PositionAndSpeedCommand> commands = step.getServoSteps().stream()
+    private Motion getNextChainedMotion(Motion currentMotion) {
+        String nextMotionId = currentMotion.getNextMotion();
+        return findMotion(nextMotionId);
+    }
+
+    private Motion findMotion(String motionId) {
+        if (motionId != null) {
+            Optional<Motion> motion = motionManager.findMotionById(motionId);
+            if (motion.isPresent()) {
+                return motion.get();
+            } else {
+                LOG.debug("Motion: {} could not be found", motionId);
+            }
+        }
+        return null;
+
+    }
+
+    private void executeKeyFrame(KeyFrame previousKeyFrame, KeyFrame keyFrame) {
+        long timeInMs = keyFrame.getTimeInMs();
+
+        Map<String, PositionAndSpeedCommand> commands = keyFrame.getServoSteps().stream()
                 .map(s -> new PositionAndSpeedCommand(s.getServoId(), s.getTargetPosition(),
-                        calculateSpeed(previousStep, s.getServoId(), s.getTargetPosition(), step.getTimeInMs())))
+                        calculateSpeed(previousKeyFrame, s.getServoId(), s.getTargetPosition(), timeInMs)))
                 .collect(Collectors.toMap(PositionAndSpeedCommand::getServoId, Function.identity()));
-        long duration = stopwatch.elapsed(TimeUnit.MILLISECONDS);
-        if(duration > 50) {
-            LOG.warn("It took a long time to calculate diff: {} ms.", duration);
-        }
-        LOG.debug("Executing step: {} calculation in: {} ms.", step, duration);
-        eventBus.publish(new BulkPositionSpeedCommand(commands));
 
-        Uninterruptibles.sleepUninterruptibly(step.getTimeInMs(), TimeUnit.MILLISECONDS);
+        Stopwatch stopwatch = createStarted();
+        syncWriteMovementHandler.receive(new BulkPositionSpeedCommand(commands));
+
+        //sleep minus the time it took to write to the bus
+        sleepUninterruptibly(timeInMs - stopwatch.elapsed(MILLISECONDS), MILLISECONDS);
     }
 
-    private int calculateSpeed(Step previousStep, String servoId, int targetPosition, long timeInMs) {
+    private int calculateSpeed(KeyFrame previousKeyFrame, String servoId, int targetPosition, long timeInMs) {
         int currentPosition;
-        if(previousStep != null) {
-            ServoStep previousServoStep = previousStep.getServoSteps().stream().filter(s -> s.getServoId().equals(servoId)).findFirst().get();
+        if(previousKeyFrame != null) {
+            ServoStep previousServoStep = previousKeyFrame.getServoSteps().stream().filter(s -> s.getServoId().equals(servoId)).findFirst().get();
             currentPosition = previousServoStep.getTargetPosition();
         } else {
             currentPosition = dataManager.readServoProperty(servoId, ServoProperty.POSITION);
@@ -201,10 +204,11 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         double unitRotationsPerSecond = (0.111 / 60);
         int delta = Math.abs(targetPosition - currentPosition);
         double rotationsNeeded = ((double)delta / 1023);
-        double timeInSeconds = ((double)timeInMs / 1000) / 1.2;
+        double timeInSeconds = ((double)timeInMs / 1000);
         double rotationsPerSec = rotationsNeeded / timeInSeconds;
 
         int speed = (int)(rotationsPerSec / unitRotationsPerSecond);
+        speed = speed * 2;
         LOG.trace("Required speed: {}", speed);
 
         return speed;

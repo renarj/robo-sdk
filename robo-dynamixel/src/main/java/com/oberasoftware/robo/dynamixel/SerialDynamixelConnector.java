@@ -76,7 +76,7 @@ public class SerialDynamixelConnector implements DynamixelConnector {
         try {
             boolean writeSuccess = serialPort.writeBytes(bytes);
             if(writeSuccess) {
-                Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+                Uninterruptibles.sleepUninterruptibly(10, TimeUnit.MILLISECONDS);
                 return readBytes();
             } else {
                 LOG.warn("Write was not successful");

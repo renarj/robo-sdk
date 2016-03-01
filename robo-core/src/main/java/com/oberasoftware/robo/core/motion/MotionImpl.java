@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.core.motion;
 
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.api.motion.Step;
+import com.oberasoftware.robo.api.motion.KeyFrame;
 
 import java.util.List;
 
@@ -13,16 +13,16 @@ public class MotionImpl implements Motion {
     private final String id;
     private final int repeats;
 
-    private final List<Step> steps;
+    private final List<KeyFrame> keyFrames;
 
     private final String nextMotion;
     private final String exitMotion;
 
-    public MotionImpl(String id, String name, int repeats, String nextMotion, String exitMotion, List<Step> steps) {
+    public MotionImpl(String id, String name, int repeats, String nextMotion, String exitMotion, List<KeyFrame> keyFrames) {
         this.id = id;
         this.name = name;
         this.repeats = repeats;
-        this.steps = steps;
+        this.keyFrames = keyFrames;
         this.nextMotion = nextMotion;
         this.exitMotion = exitMotion;
     }
@@ -52,9 +52,8 @@ public class MotionImpl implements Motion {
         return repeats;
     }
 
-    @Override
-    public List<Step> getSteps() {
-        return steps;
+    public List<KeyFrame> getKeyFrames() {
+        return keyFrames;
     }
 
     @Override
@@ -62,7 +61,7 @@ public class MotionImpl implements Motion {
         return "MotionImpl{" +
                 "name='" + name + '\'' +
                 ", repeats=" + repeats +
-                ", steps=" + steps +
+                ", keyFrames=" + keyFrames +
                 '}';
     }
 }

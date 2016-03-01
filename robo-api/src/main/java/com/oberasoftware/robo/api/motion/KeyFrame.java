@@ -6,7 +6,7 @@ import java.util.Set;
 /**
  * @author Renze de Vries
  */
-public interface Step {
+public interface KeyFrame {
     Set<String> getServoIds();
 
     List<ServoStep> getServoSteps();

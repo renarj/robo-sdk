@@ -43,7 +43,7 @@ public class DynamixelTest {
         Uninterruptibles.sleepUninterruptibly(2, TimeUnit.SECONDS);
         controller.executeMotion(motionMap.get("Ready"));
 
-        //Create a motion with two steps, containing a few servo's and their goal positions
+        //Create a motion with two keyFrames, containing a few servo's and their goal positions
         Motion motion = MotionBuilder.create("MoveServo").addStep(StepBuilder.create(1000)
                 .servo("1", 500)
                 .servo("10", 190).build())

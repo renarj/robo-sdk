@@ -4,8 +4,8 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
 import com.oberasoftware.robo.api.MotionConverter;
+import com.oberasoftware.robo.api.motion.KeyFrame;
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.api.motion.Step;
 import com.oberasoftware.robo.core.ConverterUtil;
 import com.oberasoftware.robo.core.motion.MotionImpl;
 import com.oberasoftware.robo.core.motion.StepBuilder;
@@ -83,27 +83,27 @@ public class RoboPlusMotionConverter implements MotionConverter {
             String[] params = playParams != null ? playParams.split(" ") : new String[0];
             String nextMotion = params.length > 1 ? params[0] : null;
             String exitMotion = params.length > 1 ? params[1] : null;
+            double speedRate = Double.parseDouble(params.length > 1 ? params[3] : "1");
 
             LOG.info("Found a motion[{}]: {} linkedMotion: {}", counter, motionName, nextMotion);
 
-            List<Step> steps = loadSteps(attributes.get(STEP), servoIndexes);
-            motions.add(new MotionImpl(Integer.toString(counter), motionName, 0, nextMotion, exitMotion, steps));
+            List<KeyFrame> keyFrames = loadSteps(attributes.get(STEP), servoIndexes, speedRate);
+            motions.add(new MotionImpl(Integer.toString(counter), motionName, 0, nextMotion, exitMotion, keyFrames));
             counter++;
         }
 
         return motions;
     }
 
-    private List<Step> loadSteps(Collection<String> steps, List<Integer> servoIndexes) {
-        return steps.stream().map(s -> loadStep(s, servoIndexes))
+    private List<KeyFrame> loadSteps(Collection<String> steps, List<Integer> servoIndexes, double speedRate) {
+        return steps.stream().map(s -> loadStep(s, servoIndexes, speedRate))
                 .collect(Collectors.toList());
     }
 
-    private Step loadStep(String step, List<Integer> servoIndexes) {
-
+    private KeyFrame loadStep(String step, List<Integer> servoIndexes, double speedRate) {
         String[] stepData = step.split(" ");
         double time = Double.parseDouble(stepData[stepData.length - 1]);
-        double msTime = time * 1000;
+        double msTime = (time * 1000) / speedRate;
 
         StepBuilder stepBuilder = StepBuilder.create((long)msTime);
         for(int i=0; i<(servoIndexes.size()); i++) {

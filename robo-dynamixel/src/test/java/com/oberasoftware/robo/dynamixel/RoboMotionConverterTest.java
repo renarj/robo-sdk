@@ -31,9 +31,9 @@ public class RoboMotionConverterTest {
                 "Attack front", "Behavior1", "Behavior2", "Behavior3", "Behavior4"));
 
         Motion readyMotion = motionMap.get("Ready");
-        assertThat(readyMotion.getSteps().size(), is(1));
-        assertThat(readyMotion.getSteps().get(0).getServoSteps().size(), is(18));
-        assertThat(readyMotion.getSteps().get(0).getTimeInMs(), is(504l));
+        assertThat(readyMotion.getKeyFrames().size(), is(1));
+        assertThat(readyMotion.getKeyFrames().get(0).getServoSteps().size(), is(18));
+        assertThat(readyMotion.getKeyFrames().get(0).getTimeInMs(), is(504l));
     }
 
     @Test
