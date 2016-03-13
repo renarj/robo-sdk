@@ -12,19 +12,13 @@ import java.util.List;
 public class MotionBuilder {
     private final List<KeyFrame> keyFrames = new ArrayList<>();
     private final String name;
-    private final int repeats;
 
-    private MotionBuilder(String name, int repeats) {
+    private MotionBuilder(String name) {
         this.name = name;
-        this.repeats = repeats;
     }
 
     public static MotionBuilder create(String motionName) {
-        return new MotionBuilder(motionName, 0);
-    }
-
-    public static MotionBuilder create(String motionName, int repeats) {
-        return new MotionBuilder(motionName, repeats);
+        return new MotionBuilder(motionName);
     }
 
     public MotionBuilder addStep(KeyFrame keyFrame) {
@@ -33,6 +27,6 @@ public class MotionBuilder {
     }
 
     public Motion build() {
-        return new MotionImpl(name, name, repeats, null, null, keyFrames);
+        return new MotionImpl(name, name, null, null, keyFrames);
     }
 }

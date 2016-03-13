@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.Servo;
-import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,15 +91,15 @@ public class DynamixelController implements RobotController {
     public Servo getServo(String servoId) {
         return servos.get(parseInt(servoId));
     }
-
-    @Override
-    public void executeMotion(Motion motion) {
-        executeMotion(motion, 0);
-    }
-
-    @Override
-    public void executeMotion(Motion motion, int repeats) {
-        LOG.debug("Received a motion request: {}", motion);
-        motionExecutor.execute(motion, repeats);
-    }
+//
+//    @Override
+//    public void executeMotion(Motion motion) {
+//        executeMotion(motion, 0);
+//    }
+//
+//    @Override
+//    public void executeMotion(Motion motion, int repeats) {
+//        LOG.debug("Received a motion request: {}", motion);
+//        motionExecutor.execute(motion, repeats);
+//    }
 }

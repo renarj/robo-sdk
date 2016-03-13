@@ -3,14 +3,15 @@ package com.oberasoftware.robo.dynamixel;
 import com.google.common.base.Stopwatch;
 import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.robo.api.MotionManager;
+import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.ServoDataManager;
 import com.oberasoftware.robo.api.ServoProperty;
+import com.oberasoftware.robo.api.commands.BulkPositionSpeedCommand;
+import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
 import com.oberasoftware.robo.api.motion.KeyFrame;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionExecutor;
 import com.oberasoftware.robo.api.motion.ServoStep;
-import com.oberasoftware.robo.core.commands.BulkPositionSpeedCommand;
-import com.oberasoftware.robo.core.commands.PositionAndSpeedCommand;
 import com.oberasoftware.robo.dynamixel.handlers.DynamixelSyncWriteMovementHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +20,14 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -52,11 +56,9 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     @Autowired
     private DynamixelSyncWriteMovementHandler syncWriteMovementHandler;
 
-    private Queue<QueueItem> queue = new LinkedBlockingQueue<>();
+    private Queue<MotionTask> queue = new LinkedBlockingQueue<>();
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile boolean running;
-
-    private AtomicInteger loopCount = new AtomicInteger(0);
 
     @PostConstruct
     public void startListener() {
@@ -64,9 +66,9 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         executor.execute(() -> {
             LOG.info("Starting motion queue");
             while(running && !Thread.currentThread().isInterrupted()) {
-                QueueItem item = queue.poll();
+                MotionTask item = queue.poll();
                 if(item != null) {
-                    runMotion(item);
+                    runMotion(item, null);
                 } else {
                     sleepUninterruptibly(INTERVAL, MILLISECONDS);
                 }
@@ -83,70 +85,55 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     }
 
     @Override
-    public void execute(Motion motion) {
-        execute(motion, motion.getRepeats());
+    public MotionTask execute(Motion motion) {
+        MotionTask motionTask = new MotionTaskImpl(motion);
+
+        LOG.debug("Scheduling motion in the queue: {}", motion);
+        queue.add(motionTask);
+
+        return motionTask;
     }
 
-    @Override
-    public void execute(Motion motion, int repeats) {
-        LOG.debug("Scheduling motion in the queue: {} repeats: {}", motion, repeats);
-        loopCount.set(0);
-        queue.add(new QueueItem(motion, repeats));
-    }
+    private void runMotion(MotionTask motionTask, KeyFrame lastExecutedKeyFrame) {
+        LOG.info("Executing motion task: {}", motionTask);
+        motionTask.start();
 
-    private void runMotion(QueueItem item) {
-        runMotion(item.getMotion(), item.getRepeats());
-    }
-
-    private void runMotion(Motion motion, int repeats) {
-        runSingleMotion(motion, null, repeats, true);
-    }
-
-    private void runSingleMotion(Motion motion, KeyFrame lastExecutedKeyFrame, int repeats, boolean executeExitMotion) {
-        LOG.info("Executing motion: {} repeats: {}", motion, repeats);
-
-        Motion currentMotion = motion;
-        int amount = repeats + 1; //repeats are 0 based, but we always execute at least once
-        int i = 0;
+        Motion motion = motionTask.getMotion();
         Motion lastExecuted = null;
-        KeyFrame previousKeyFrame = lastExecutedKeyFrame;
-        while(currentMotion != null && i < amount) {
+        KeyFrame lastKeyFrame = lastExecutedKeyFrame;
+        while(motion != null && motionTask.isRunning()) {
+            lastKeyFrame = executeMotion(motion, lastKeyFrame);
+            lastExecuted = motion;
 
-            LOG.info("Motion: {} execution round: {}", currentMotion.getName(), (i + 1));
-            List<KeyFrame> keyFrames = currentMotion.getKeyFrames();
-
-            Stopwatch motionWatch = createStarted();
-            for (int c = 0; c < keyFrames.size(); c++) {
-                Stopwatch stopwatch = createStarted();
-                LOG.debug("Executing keyFrame: {}", c);
-
-                KeyFrame keyFrame = keyFrames.get(c);
-
-                if (c > 0) {
-                    previousKeyFrame = keyFrames.get(c - 1);
-                } else if (i > 0) {
-                    //if we are doing a repeat its simply last keyFrame of the motion
-                    previousKeyFrame = keyFrames.get(keyFrames.size() - 1);
-                }
-
-                executeKeyFrame(previousKeyFrame, keyFrame);
-
-                LOG.info("Finished keyFrame: {} execution in: {} ms. target time: {}", c,
-                        stopwatch.elapsed(MILLISECONDS), keyFrame.getTimeInMs());
-            }
-            LOG.info("Finished motion: {} execution in: {} ms.", currentMotion.getName(), motionWatch.elapsed(MILLISECONDS));
-            lastExecuted = currentMotion;
-            currentMotion = getNextChainedMotion(currentMotion);
-
-            i++;
+            motion = getNextChainedMotion(motion);
         }
 
-        LOG.info("Going to execute exit motion for motion: {}", lastExecuted);
         Motion exitMotion = getExitMotion(lastExecuted);
-        if(exitMotion != null && executeExitMotion) {
-            LOG.info("Lets run it baby");
-            runSingleMotion(exitMotion, null, 0, false);
+        if(exitMotion != null) {
+            LOG.info("Going to execute exit motion: {} for motion: {}", exitMotion, lastExecuted);
+            runMotion(new MotionTaskImpl(exitMotion), lastKeyFrame);
         }
+    }
+
+    private KeyFrame executeMotion(Motion motion, KeyFrame previousKeyFrame) {
+        LOG.info("Motion: {} execution", motion.getName());
+        List<KeyFrame> keyFrames = motion.getKeyFrames();
+        KeyFrame lastKeyFrame = previousKeyFrame;
+        Stopwatch motionWatch = createStarted();
+        for (int c = 0; c < keyFrames.size(); c++) {
+            Stopwatch stopwatch = createStarted();
+            LOG.debug("Executing keyFrame: {}", c);
+
+            KeyFrame keyFrame = keyFrames.get(c);
+
+            executeKeyFrame(lastKeyFrame, keyFrame);
+            lastKeyFrame = keyFrame;
+
+            LOG.info("Finished keyFrame: {} execution in: {} ms. target time: {}", c,
+                    stopwatch.elapsed(MILLISECONDS), keyFrame.getTimeInMs());
+        }
+        LOG.info("Finished motion: {} execution in: {} ms.", motion.getName(), motionWatch.elapsed(MILLISECONDS));
+        return lastKeyFrame;
     }
 
     private Motion getExitMotion(Motion currentMotion) {
@@ -214,21 +201,38 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         return speed;
     }
 
-    private class QueueItem {
-        private Motion motion;
-        private int repeats;
+    private class MotionTaskImpl implements MotionTask {
 
-        public QueueItem(Motion motion, int repeats) {
+        private final Motion motion;
+        private final AtomicBoolean running = new AtomicBoolean(false);
+
+        public MotionTaskImpl(Motion motion) {
             this.motion = motion;
-            this.repeats = repeats;
         }
 
+        @Override
         public Motion getMotion() {
-            return motion;
+            return this.motion;
         }
 
-        public int getRepeats() {
-            return repeats;
+        @Override
+        public boolean isStopped() {
+            return !running.get();
+        }
+
+        @Override
+        public boolean isRunning() {
+            return running.get();
+        }
+
+        @Override
+        public void cancel() {
+            running.set(false);
+        }
+
+        @Override
+        public void start() {
+            this.running.set(true);
         }
     }
 }

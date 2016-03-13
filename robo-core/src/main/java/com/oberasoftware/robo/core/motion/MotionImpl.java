@@ -11,17 +11,15 @@ import java.util.List;
 public class MotionImpl implements Motion {
     private final String name;
     private final String id;
-    private final int repeats;
 
     private final List<KeyFrame> keyFrames;
 
     private final String nextMotion;
     private final String exitMotion;
 
-    public MotionImpl(String id, String name, int repeats, String nextMotion, String exitMotion, List<KeyFrame> keyFrames) {
+    public MotionImpl(String id, String name, String nextMotion, String exitMotion, List<KeyFrame> keyFrames) {
         this.id = id;
         this.name = name;
-        this.repeats = repeats;
         this.keyFrames = keyFrames;
         this.nextMotion = nextMotion;
         this.exitMotion = exitMotion;
@@ -47,11 +45,6 @@ public class MotionImpl implements Motion {
         return name;
     }
 
-    @Override
-    public int getRepeats() {
-        return repeats;
-    }
-
     public List<KeyFrame> getKeyFrames() {
         return keyFrames;
     }
@@ -60,8 +53,7 @@ public class MotionImpl implements Motion {
     public String toString() {
         return "MotionImpl{" +
                 "name='" + name + '\'' +
-                ", repeats=" + repeats +
-                ", keyFrames=" + keyFrames +
+                ", keyFrames=" + keyFrames.size() +
                 '}';
     }
 }

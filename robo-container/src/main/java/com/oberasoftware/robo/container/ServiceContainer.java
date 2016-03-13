@@ -15,14 +15,14 @@
  */
 package com.oberasoftware.robo.container;
 
+import com.oberasoftware.robo.api.MotionConverter;
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
-import com.oberasoftware.robo.api.MotionConverter;
 import com.oberasoftware.robo.service.MotionFunction;
-import com.oberasoftware.robo.service.ServiceConfiguration;
 import com.oberasoftware.robo.service.PositionFunction;
+import com.oberasoftware.robo.service.ServiceConfiguration;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
 import com.sdl.odata.api.edm.registry.ODataEdmRegistry;
@@ -75,5 +75,17 @@ public class ServiceContainer {
 //        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
         List<Motion> motions = motionConverter.loadMotions("/bio_prm_humanoidtypea_en.mtn");
         motions.stream().forEach(motionManager::storeMotion);
+
+//        ADS1115Driver adsDriver = new ADS1115Driver();
+//        Robot robot = new RobotBuilder()
+//                .motionEngine(new RoboPlusMotionEngine()
+//                        .motionResource(new RoboPlusClassPathMotion()))
+//                .servoDriver(new DynamixelServoDriver("/dev/ttyAMA0"))
+//                .sensor(new DistanceSensor(new AnalogPort(adsDriver, "A0"), new AnalogToDistanceConverter()))
+//                .sensor(new GyroSensor(new AnalogPort(adsDriver, "A2"), new AnalogPort(adsDriver, "A3"), new AnalogToPercentageConverter()))
+//                .build();
+//        RobotEventHandler eventHandler = new RobotEventHandler();
+//        robot.listen(eventHandler);
+//        robot.subscribe("gyro", eventHandler);
     }
 }

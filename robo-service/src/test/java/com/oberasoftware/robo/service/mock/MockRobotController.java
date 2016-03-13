@@ -2,7 +2,6 @@ package com.oberasoftware.robo.service.mock;
 
 import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.Servo;
-import com.oberasoftware.robo.api.motion.Motion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -48,14 +47,14 @@ public class MockRobotController implements RobotController {
     public Servo getServo(String servoId) {
         return servoMap.get(servoId);
     }
-
-    @Override
-    public void executeMotion(Motion motion) {
-        executeMotion(motion, 0);
-    }
-
-    @Override
-    public void executeMotion(Motion motion, int repeats) {
-        LOG.info("Executing motion: {} repeats: {}", motion, repeats);
-    }
+//
+//    @Override
+//    public void executeMotion(Motion motion) {
+//        executeMotion(motion, 0);
+//    }
+//
+//    @Override
+//    public void executeMotion(Motion motion, int repeats) {
+//        LOG.info("Executing motion: {} repeats: {}", motion, repeats);
+//    }
 }

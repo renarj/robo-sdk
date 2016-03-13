@@ -1,9 +1,9 @@
 package com.oberasoftware.robo.service;
 
 import com.oberasoftware.base.event.EventBus;
-import com.oberasoftware.robo.core.commands.PositionAndSpeedCommand;
-import com.oberasoftware.robo.core.commands.PositionCommand;
-import com.oberasoftware.robo.core.commands.SpeedCommand;
+import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
+import com.oberasoftware.robo.api.commands.PositionCommand;
+import com.oberasoftware.robo.api.commands.SpeedCommand;
 import com.sdl.odata.api.ODataException;
 import com.sdl.odata.api.edm.annotations.EdmFunction;
 import com.sdl.odata.api.edm.annotations.EdmParameter;

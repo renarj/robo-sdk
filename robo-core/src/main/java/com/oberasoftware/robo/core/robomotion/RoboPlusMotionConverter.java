@@ -85,10 +85,10 @@ public class RoboPlusMotionConverter implements MotionConverter {
             String exitMotion = params.length > 1 ? params[1] : null;
             double speedRate = Double.parseDouble(params.length > 1 ? params[3] : "1");
 
-            LOG.info("Found a motion[{}]: {} linkedMotion: {}", counter, motionName, nextMotion);
+            LOG.debug("Found a motion[{}]: {} linkedMotion: {}", counter, motionName, nextMotion);
 
             List<KeyFrame> keyFrames = loadSteps(attributes.get(STEP), servoIndexes, speedRate);
-            motions.add(new MotionImpl(Integer.toString(counter), motionName, 0, nextMotion, exitMotion, keyFrames));
+            motions.add(new MotionImpl(Integer.toString(counter), motionName, nextMotion, exitMotion, keyFrames));
             counter++;
         }
 

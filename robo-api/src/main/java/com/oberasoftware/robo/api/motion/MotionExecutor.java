@@ -1,10 +1,10 @@
 package com.oberasoftware.robo.api.motion;
 
+import com.oberasoftware.robo.api.MotionTask;
+
 /**
  * @author Renze de Vries
  */
 public interface MotionExecutor {
-    void execute(Motion motion);
-
-    void execute(Motion motion, int repeats);
+    MotionTask execute(Motion motion);
 }

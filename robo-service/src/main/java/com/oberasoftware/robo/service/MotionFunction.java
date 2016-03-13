@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.service;
 
 import com.oberasoftware.robo.api.MotionManager;
+import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionExecutor;
 import com.sdl.odata.api.ODataException;
@@ -23,15 +24,12 @@ import java.util.Optional;
 public class MotionFunction implements Operation<String> {
     private static final Logger LOG = LoggerFactory.getLogger(MotionFunction.class);
 
-    @EdmParameter(name = "repeats", nullable = false)
-    private int repeats;
-
     @EdmParameter(name = "motion", nullable = false)
     private String motionName;
 
     @Override
     public String doOperation(ODataRequestContext requestContext, DataSourceFactory dataSourceFactory) throws ODataException {
-        LOG.info("Executing motion: {}, repeats: {}", motionName, repeats);
+        LOG.info("Received command to execute motion: {}", motionName);
 
         MotionManager motionManager = ApplicationContextProvider.getContext().getBean(MotionManager.class);
         MotionExecutor motionExecutor = ApplicationContextProvider.getContext().getBean(MotionExecutor.class);
@@ -39,7 +37,7 @@ public class MotionFunction implements Operation<String> {
         Optional<Motion> motion = motionManager.findMotionByName(motionName);
         if(motion.isPresent()) {
             LOG.info("Motion was found, triggering movement");
-            motionExecutor.execute(motion.get(), repeats);
+            MotionTask motionTask = motionExecutor.execute(motion.get());
 
             return "Executing Motion: " + motionName;
         }
