@@ -8,7 +8,5 @@ import com.oberasoftware.base.event.EventHandler;
 public interface Robot {
     void listen(EventHandler robotEventHandler);
 
-    void subscribe(String source, EventHandler eventHandler);
-
     MotionEngine getMotionEngine();
 }

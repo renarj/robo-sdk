@@ -15,11 +15,20 @@
  */
 package com.oberasoftware.robo.container;
 
-import com.oberasoftware.robo.api.MotionConverter;
-import com.oberasoftware.robo.api.MotionManager;
-import com.oberasoftware.robo.api.RobotController;
-import com.oberasoftware.robo.api.motion.Motion;
+import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.robo.api.*;
+import com.oberasoftware.robo.api.events.DistanceSensorEvent;
+import com.oberasoftware.robo.api.sensors.EventSource;
+import com.oberasoftware.robo.core.SpringAwareRobotBuilder;
+import com.oberasoftware.robo.core.sensors.AnalogToDistanceConverter;
+import com.oberasoftware.robo.core.sensors.AnalogToPercentageConverter;
+import com.oberasoftware.robo.core.sensors.DistanceSensor;
+import com.oberasoftware.robo.core.sensors.GyroSensor;
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
+import com.oberasoftware.robo.dynamixel.DynamixelServoDriver;
+import com.oberasoftware.robo.dynamixel.RoboPlusClassPathResource;
+import com.oberasoftware.robo.dynamixel.RoboPlusMotionEngine;
+import com.oberasoftware.robo.pi4j.ADS1115Driver;
 import com.oberasoftware.robo.service.MotionFunction;
 import com.oberasoftware.robo.service.PositionFunction;
 import com.oberasoftware.robo.service.ServiceConfiguration;
@@ -38,8 +47,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 
@@ -73,19 +80,27 @@ public class ServiceContainer {
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
 
 //        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
-        List<Motion> motions = motionConverter.loadMotions("/bio_prm_humanoidtypea_en.mtn");
-        motions.stream().forEach(motionManager::storeMotion);
+//        List<Motion> motions = motionConverter.loadMotions("/bio_prm_humanoidtypea_en.mtn");
+//        motions.stream().forEach(motionManager::storeMotion);
 
-//        ADS1115Driver adsDriver = new ADS1115Driver();
-//        Robot robot = new RobotBuilder()
-//                .motionEngine(new RoboPlusMotionEngine()
-//                        .motionResource(new RoboPlusClassPathMotion()))
-//                .servoDriver(new DynamixelServoDriver("/dev/ttyAMA0"))
-//                .sensor(new DistanceSensor(new AnalogPort(adsDriver, "A0"), new AnalogToDistanceConverter()))
-//                .sensor(new GyroSensor(new AnalogPort(adsDriver, "A2"), new AnalogPort(adsDriver, "A3"), new AnalogToPercentageConverter()))
-//                .build();
-//        RobotEventHandler eventHandler = new RobotEventHandler();
+        ADS1115Driver adsDriver = new ADS1115Driver();
+        Robot robot = new SpringAwareRobotBuilder(context)
+                .motionEngine(RoboPlusMotionEngine.class, new RoboPlusClassPathResource("/bio_prm_humanoidtypea_en.mtn"))
+                .servoDriver(DynamixelServoDriver.class, "/dev/ttyAMA0")
+                .sensor(new DistanceSensor("distance", adsDriver.getPort("A0"), new AnalogToDistanceConverter()))
+                .sensor(new GyroSensor("gyro", adsDriver.getPort("A2"), adsDriver.getPort("A3"), new AnalogToPercentageConverter()))
+                .build();
+        RobotEventHandler eventHandler = new RobotEventHandler();
 //        robot.listen(eventHandler);
 //        robot.subscribe("gyro", eventHandler);
+        robot.listen(eventHandler);
+    }
+
+    private static class RobotEventHandler implements GenericRobotEventHandler {
+        @EventSubscribe
+        @EventSource("distance")
+        public void receive(DistanceSensorEvent event) {
+
+        }
     }
 }

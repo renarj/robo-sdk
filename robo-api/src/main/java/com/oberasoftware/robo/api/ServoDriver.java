@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * @author Renze de Vries
  */
-public interface ServoDriver {
+public interface ServoDriver extends ActivatableCapability {
     boolean setServoSpeed(String servoId, int speed);
 
     boolean setTargetPosition(String servoId, int targetPosition);

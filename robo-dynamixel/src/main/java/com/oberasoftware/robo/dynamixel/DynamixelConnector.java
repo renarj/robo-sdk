@@ -4,7 +4,7 @@ package com.oberasoftware.robo.dynamixel;
  * @author Renze de Vries
  */
 public interface DynamixelConnector {
-    void connect();
+    void connect(String serialPort);
 
     void disconnect();
 

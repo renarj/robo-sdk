@@ -7,13 +7,17 @@ import com.oberasoftware.robo.api.motion.Motion;
  */
 public interface MotionTask {
 
+    String getTaskId();
+
     Motion getMotion();
 
-    boolean isStopped();
+    boolean isCancelled();
 
     boolean isRunning();
 
     void cancel();
 
     void start();
+
+    void awaitCompletion();
 }

@@ -64,6 +64,13 @@
                 <artifactId>odata_common</artifactId>
                 <version>${odata.version}</version>
             </dependency>
+
+            <!-- project deps -->
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
+                <artifactId>robo-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

@@ -7,10 +7,8 @@ import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,16 +24,15 @@ import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
 public class SerialDynamixelConnector implements DynamixelConnector {
     private static final Logger LOG = LoggerFactory.getLogger(SerialDynamixelConnector.class);
 
-    @Value("${dynamixel.serial.port}")
-    private String portName;
-
     private SerialPort serialPort;
+
+    private String portName;
 
     private List<Byte> buffer = new CopyOnWriteArrayList<>();
 
     @Override
-    @PostConstruct
-    public void connect() {
+    public void connect(String portName) {
+        this.portName = portName;
         LOG.info("Connecting to serial port: {}", portName);
 
         serialPort = new SerialPort(portName);

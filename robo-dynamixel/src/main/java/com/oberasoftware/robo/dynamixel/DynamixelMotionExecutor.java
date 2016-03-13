@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.dynamixel;
 
 import com.google.common.base.Stopwatch;
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.MotionTask;
@@ -20,10 +21,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Queue;
+import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -56,7 +55,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     @Autowired
     private DynamixelSyncWriteMovementHandler syncWriteMovementHandler;
 
-    private Queue<MotionTask> queue = new LinkedBlockingQueue<>();
+    private Queue<MotionTaskImpl> queue = new LinkedBlockingQueue<>();
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile boolean running;
 
@@ -66,9 +65,13 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         executor.execute(() -> {
             LOG.info("Starting motion queue");
             while(running && !Thread.currentThread().isInterrupted()) {
-                MotionTask item = queue.poll();
-                if(item != null) {
-                    runMotion(item, null);
+                MotionTaskImpl item = queue.poll();
+                if(item != null && !item.isCancelled()) {
+                    try {
+                        runMotion(item, null);
+                    } finally {
+                        item.complete();
+                    }
                 } else {
                     sleepUninterruptibly(INTERVAL, MILLISECONDS);
                 }
@@ -86,7 +89,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
 
     @Override
     public MotionTask execute(Motion motion) {
-        MotionTask motionTask = new MotionTaskImpl(motion);
+        MotionTaskImpl motionTask = new MotionTaskImpl(motion);
 
         LOG.debug("Scheduling motion in the queue: {}", motion);
         queue.add(motionTask);
@@ -204,10 +207,18 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     private class MotionTaskImpl implements MotionTask {
 
         private final Motion motion;
+        private final String taskId = UUID.randomUUID().toString();
         private final AtomicBoolean running = new AtomicBoolean(false);
+        private final AtomicBoolean cancelled = new AtomicBoolean(false);
+        private final CountDownLatch latch = new CountDownLatch(1);
 
         public MotionTaskImpl(Motion motion) {
             this.motion = motion;
+        }
+
+        @Override
+        public String getTaskId() {
+            return taskId;
         }
 
         @Override
@@ -216,23 +227,33 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         }
 
         @Override
-        public boolean isStopped() {
-            return !running.get();
+        public boolean isCancelled() {
+            return cancelled.get();
         }
 
         @Override
         public boolean isRunning() {
-            return running.get();
+            return running.get() && !isCancelled();
         }
 
         @Override
         public void cancel() {
             running.set(false);
+            cancelled.set(true);
         }
 
         @Override
         public void start() {
             this.running.set(true);
+        }
+
+        private void complete() {
+            latch.countDown();
+        }
+
+        @Override
+        public void awaitCompletion() {
+            Uninterruptibles.awaitUninterruptibly(latch);
         }
     }
 }
