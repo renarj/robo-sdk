@@ -16,7 +16,7 @@
 package com.oberasoftware.robo.service;
 
 import com.oberasoftware.robo.api.MotionManager;
-import com.oberasoftware.robo.api.RobotController;
+import com.oberasoftware.robo.api.ServoDriver;
 import com.oberasoftware.robo.api.ServoProperty;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
@@ -45,7 +45,7 @@ public class RobotDataSourceProvider implements DataSourceProvider {
     private RobotDataSource robotDataSource;
 
     @Autowired
-    private RobotController controller;
+    private ServoDriver servoDriver;
 
     @Autowired
     private MotionManager motionManager;
@@ -76,7 +76,7 @@ public class RobotDataSourceProvider implements DataSourceProvider {
             Class<?> dataType = oDataRequestContext.getEntityDataModel().getType(targetType.typeName()).getJavaType();
             List<QueryableEntity> entities;
             if(dataType.equals(ServoModel.class)) {
-                entities = controller.getServos().stream().map(s -> {
+                entities = servoDriver.getServos().stream().map(s -> {
                     int speed = s.getData().getValue(ServoProperty.SPEED);
                     int position = s.getData().getValue(ServoProperty.POSITION);
 

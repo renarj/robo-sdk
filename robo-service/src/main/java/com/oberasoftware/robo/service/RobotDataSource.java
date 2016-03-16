@@ -15,45 +15,18 @@
  */
 package com.oberasoftware.robo.service;
 
-import com.oberasoftware.robo.api.MotionManager;
-import com.oberasoftware.robo.api.RobotController;
 import com.sdl.odata.api.ODataException;
 import com.sdl.odata.api.edm.model.EntityDataModel;
 import com.sdl.odata.api.parser.ODataUri;
 import com.sdl.odata.api.processor.datasource.DataSource;
 import com.sdl.odata.api.processor.link.ODataLink;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.annotation.PostConstruct;
 
 /**
  * @author rdevries
  */
 @Component
 public class RobotDataSource implements DataSource {
-    private static final Logger LOG = LoggerFactory.getLogger(RobotDataSource.class);
-
-    @Autowired
-    private RobotController controller;
-
-    @Autowired
-    private MotionManager motionManager;
-
-    @PostConstruct
-    public void initialize() {
-        LOG.info("Initializing datasource");
-
-        if(controller.initialize()) {
-            LOG.info("Example Robot application container started");
-        } else {
-            LOG.error("Controller could not initialize");
-            System.exit(-1);
-        }
-    }
-
     @Override
     public Object create(ODataUri oDataUri, Object o, EntityDataModel entityDataModel) throws ODataException {
         throw new UnsupportedOperationException("Not implemented");
