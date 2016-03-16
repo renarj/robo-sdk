@@ -71,7 +71,7 @@ public class DynamixelServoDriver implements ServoDriver {
                 try {
                     DynamixelReturnPacket packet = new DynamixelReturnPacket(received);
                     if (packet.getErrorCode() == 0) {
-                        LOG.debug("Ping received from Servo: {}", m);
+                        LOG.info("Ping received from Servo: {}", m);
 
                         DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m);
                         servos.put(Integer.toString(m), servo);
@@ -80,11 +80,11 @@ public class DynamixelServoDriver implements ServoDriver {
                     LOG.error("Could not read servo response on ping");
                 }
             } else {
-                LOG.debug("No Servo detected on ID: {}", m);
+                LOG.info("No Servo detected on ID: {}", m);
             }
         });
 
-        LOG.debug("Servos found: {}", servos.keySet());
+        LOG.info("Servos found: {}", servos.keySet());
         return !servos.isEmpty();
     }
 

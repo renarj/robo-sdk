@@ -25,7 +25,7 @@ public class DistanceSensor implements PublishableSensor<DistanceValue> {
             Double voltage = e.getRaw();
             int distance = converter.convert(voltage);
 
-            LOG.debug("Received a voltage: {} on port: {} distance is: {}", voltage, port, distance);
+            LOG.info("Received a voltage: {} on port: {} distance is: {}", voltage, port, distance);
             this.eventBus.publish(new DistanceSensorEvent(name, distance));
         });
     }
