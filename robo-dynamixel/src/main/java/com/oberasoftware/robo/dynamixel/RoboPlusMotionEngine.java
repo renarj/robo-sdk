@@ -7,6 +7,8 @@ import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionExecutor;
 import com.oberasoftware.robo.core.robomotion.RoboPlusMotionConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,7 @@ import static com.google.common.collect.Lists.newArrayList;
  */
 @Component
 public class RoboPlusMotionEngine implements MotionEngine {
+    private static final Logger LOG = LoggerFactory.getLogger(RoboPlusMotionEngine.class);
 
     private static final String WALK_MOTION = "F_S_L";
     private static final String PREPARE_WALK = "Stand up";
@@ -65,6 +68,11 @@ public class RoboPlusMotionEngine implements MotionEngine {
         return walkingTask;
     }
 
+    @Override
+    public MotionTask runMotion(String motionName) {
+        return executeMotion(motionName, false);
+    }
+
     private MotionTask executeMotion(String motionName, boolean await) {
         Optional<Motion> motion = motionManager.findMotionByName(motionName);
         if(motion.isPresent()) {
@@ -87,6 +95,22 @@ public class RoboPlusMotionEngine implements MotionEngine {
     @Override
     public boolean stopWalking() {
         stopCurrentWalkingTask();
+        return true;
+    }
+
+    @Override
+    public boolean stopTask(MotionTask task) {
+        LOG.info("Stopping motion task: {}", task);
+        task.cancel();
+        task.awaitCompletion();
+        runningTasks.remove(task.getTaskId());
+
+        return true;
+    }
+
+    @Override
+    public boolean stopAllTasks() {
+        getActiveTasks().forEach(this::stopTask);
         return true;
     }
 

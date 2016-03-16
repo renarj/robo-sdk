@@ -10,13 +10,22 @@ import org.slf4j.LoggerFactory;
 public class AnalogToDistanceConverter implements SensorConverter<Double, Integer> {
     private static final Logger LOG = LoggerFactory.getLogger(AnalogToDistanceConverter.class);
 
-    private final static Double MAX_SCALE = 2.4;
+    //TODO: Hardcoded for now, needs to be fixed
+    private final static Double MAX_SCALE_VOLT = 2.4;
+    private final static Double MIN_SCALE_VOLT = 0.02;
 
+    private final static Double MAX_DISTANCE = 80.0;
+    private final static Double MIN_DISTANCE = 10.0;
 
     @Override
     public Integer convert(Double input) {
-        LOG.info("Converting voltage: {} to distance");
+        LOG.info("Converting voltage: {} to distance", input);
 
-        return 0;
+        Double oldRange = MAX_SCALE_VOLT - MIN_SCALE_VOLT;
+        Double newRange = MAX_DISTANCE - MIN_DISTANCE;
+
+        Double newValue = (((input - MIN_SCALE_VOLT) * newRange) / oldRange) + MIN_DISTANCE;
+
+        return newValue.intValue();
     }
 }

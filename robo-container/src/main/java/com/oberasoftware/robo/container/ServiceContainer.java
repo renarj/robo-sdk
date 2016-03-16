@@ -86,15 +86,26 @@ public class ServiceContainer {
                 .sensor(new DistanceSensor("distance", adsDriver.getPort("A0"), new AnalogToDistanceConverter()))
                 .sensor(new GyroSensor("gyro", adsDriver.getPort("A2"), adsDriver.getPort("A3"), new AnalogToPercentageConverter()))
                 .build();
-        RobotEventHandler eventHandler = new RobotEventHandler();
+        RobotEventHandler eventHandler = new RobotEventHandler(robot);
         robot.listen(eventHandler);
     }
 
     public static class RobotEventHandler implements GenericRobotEventHandler {
+        private Robot robot;
+
+        public RobotEventHandler(Robot robot) {
+            this.robot = robot;
+        }
+
         @EventSubscribe
         @EventSource("distance")
         public void receive(DistanceSensorEvent event) {
             LOG.info("Received a distance event: {}", event);
+
+            if(event.getDistance() < 20) {
+                LOG.info("Killing all tasks");
+                robot.getMotionEngine().stopAllTasks();
+            }
         }
     }
 }

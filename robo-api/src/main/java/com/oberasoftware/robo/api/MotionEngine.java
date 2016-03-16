@@ -13,7 +13,13 @@ public interface MotionEngine {
 
     MotionTask walk();
 
+    MotionTask runMotion(String motionName);
+
     List<MotionTask> getActiveTasks();
+
+    boolean stopTask(MotionTask task);
+
+    boolean stopAllTasks();
 
     boolean stopWalking();
 }

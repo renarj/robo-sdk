@@ -1,9 +1,9 @@
 package com.oberasoftware.robo.service;
 
+import com.oberasoftware.robo.api.MotionEngine;
 import com.oberasoftware.robo.api.MotionManager;
 import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.motion.Motion;
-import com.oberasoftware.robo.api.motion.MotionExecutor;
 import com.sdl.odata.api.ODataException;
 import com.sdl.odata.api.edm.annotations.EdmFunction;
 import com.sdl.odata.api.edm.annotations.EdmParameter;
@@ -32,14 +32,14 @@ public class MotionFunction implements Operation<String> {
         LOG.info("Received command to execute motion: {}", motionName);
 
         MotionManager motionManager = ApplicationContextProvider.getContext().getBean(MotionManager.class);
-        MotionExecutor motionExecutor = ApplicationContextProvider.getContext().getBean(MotionExecutor.class);
+        MotionEngine motionEngine = ApplicationContextProvider.getContext().getBean(MotionEngine.class);
 
         Optional<Motion> motion = motionManager.findMotionByName(motionName);
         if(motion.isPresent()) {
             LOG.info("Motion was found, triggering movement");
-            MotionTask motionTask = motionExecutor.execute(motion.get());
+            MotionTask motionTask = motionEngine.runMotion(motionName);
 
-            return "Executing Motion: " + motionName;
+            return "Executing Motion: " + motionName + " task: " + motionTask.getTaskId();
         }
 
         return "Could not find motion: " + motionName;
