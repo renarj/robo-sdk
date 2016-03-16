@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.stream.IntStream;
  * @author Renze de Vries
  */
 @Component
+@Scope("prototype")
 public class DynamixelServoDriver implements ServoDriver {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelServoDriver.class);
 
@@ -41,6 +43,9 @@ public class DynamixelServoDriver implements ServoDriver {
     private Map<String, Servo> servos = new HashMap<>();
 
     private String portName;
+
+    public DynamixelServoDriver() {
+    }
 
     public DynamixelServoDriver(String portName) {
         this.portName = portName;

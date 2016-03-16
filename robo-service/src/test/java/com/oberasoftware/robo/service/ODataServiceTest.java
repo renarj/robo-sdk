@@ -1,10 +1,9 @@
 package com.oberasoftware.robo.service;
 
+import com.oberasoftware.robo.api.MotionConverter;
 import com.oberasoftware.robo.api.MotionManager;
-import com.oberasoftware.robo.api.RobotController;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.core.CoreConfiguration;
-import com.oberasoftware.robo.api.MotionConverter;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
 import com.sdl.odata.api.edm.registry.ODataEdmRegistry;
@@ -40,7 +39,7 @@ public class ODataServiceTest {
         ODataEdmRegistry registry = context.getBean(ODataEdmRegistry.class);
         registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class, MotionFunction.class));
 
-        RobotController controller = context.getBean(RobotController.class);
+//        RobotController controller = context.getBean(RobotController.class);
         MotionManager motionManager = context.getBean(MotionManager.class);
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
 
