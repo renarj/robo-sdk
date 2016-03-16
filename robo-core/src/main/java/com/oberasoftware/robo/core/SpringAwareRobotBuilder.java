@@ -32,27 +32,25 @@ public class SpringAwareRobotBuilder {
         this.eventBus = context.getBean(EventBus.class);
     }
 
-    public SpringAwareRobotBuilder motionEngine(MotionEngine motionEngine) {
+    public SpringAwareRobotBuilder motionEngine(MotionEngine motionEngine, MotionResource resource) {
         this.motionEngine = motionEngine;
-        return this;
-    }
-
-    public SpringAwareRobotBuilder motionEngine(Class<? extends MotionEngine> motionEngineClass, MotionResource resource, Object... args) {
-        this.motionEngine = context.getBean(motionEngineClass, args);
         this.motionEngine.loadResource(resource);
 
         return this;
     }
 
+    public SpringAwareRobotBuilder motionEngine(Class<? extends MotionEngine> motionEngineClass, MotionResource resource, Object... args) {
+        return motionEngine(context.getBean(motionEngineClass, args), resource);
+    }
 
     public SpringAwareRobotBuilder servoDriver(ServoDriver servoDriver) {
         this.servoDriver = servoDriver;
+        this.servoDriver.activate();
         return this;
     }
 
     public SpringAwareRobotBuilder servoDriver(Class<? extends ServoDriver> servoDriverClass, Object... args) {
-        this.servoDriver = context.getBean(servoDriverClass, args);
-        return this;
+        return servoDriver(context.getBean(servoDriverClass, args));
     }
 
     public SpringAwareRobotBuilder sensor(Sensor sensor) {

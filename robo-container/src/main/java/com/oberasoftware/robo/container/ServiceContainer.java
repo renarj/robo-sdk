@@ -75,15 +75,9 @@ public class ServiceContainer {
         ODataEdmRegistry registry = context.getBean(ODataEdmRegistry.class);
         registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class, MotionFunction.class, PositionFunction.class));
 
-        RobotController controller = context.getBean(RobotController.class);
-        MotionManager motionManager = context.getBean(MotionManager.class);
-        MotionConverter motionConverter = context.getBean(MotionConverter.class);
-
-//        List<Motion> motions = motionConverter.loadMotions("/bio_prm_kingspider_en.mtn");
-//        List<Motion> motions = motionConverter.loadMotions("/bio_prm_humanoidtypea_en.mtn");
-//        motions.stream().forEach(motionManager::storeMotion);
-
         ADS1115Driver adsDriver = new ADS1115Driver();
+        adsDriver.init();
+
         Robot robot = new SpringAwareRobotBuilder(context)
                 .motionEngine(RoboPlusMotionEngine.class, new RoboPlusClassPathResource("/bio_prm_humanoidtypea_en.mtn"))
                 .servoDriver(DynamixelServoDriver.class, "/dev/ttyAMA0")
@@ -91,8 +85,6 @@ public class ServiceContainer {
                 .sensor(new GyroSensor("gyro", adsDriver.getPort("A2"), adsDriver.getPort("A3"), new AnalogToPercentageConverter()))
                 .build();
         RobotEventHandler eventHandler = new RobotEventHandler();
-//        robot.listen(eventHandler);
-//        robot.subscribe("gyro", eventHandler);
         robot.listen(eventHandler);
     }
 

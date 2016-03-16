@@ -2,6 +2,7 @@ package com.oberasoftware.robo.api;
 
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,4 +16,6 @@ public interface ServoDriver extends ActivatableCapability {
     boolean setPositionAndSpeed(String servoId, int speed, int targetPosition);
 
     boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands);
+
+    List<Servo> getServos();
 }

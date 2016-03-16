@@ -25,7 +25,7 @@ public class DynamixelTest {
     public static void main(String[] args) {
         ConfigurableApplicationContext context = SpringApplication.run(DynamixelTest.class, args);
 
-        RobotController controller = context.getBean(RobotController.class);
+        Robot robot = null;
         MotionConverter motionConverter = context.getBean(MotionConverter.class);
         MotionManager motionManager = context.getBean(MotionManager.class);
         MotionExecutor motionExecutor = context.getBean(MotionExecutor.class);
@@ -33,15 +33,9 @@ public class DynamixelTest {
         motions.stream().forEach(motionManager::storeMotion);
 //        Map<String, Motion> motionMap = motions.stream().collect(Collectors.toMap(Motion::getName, m -> m));
 
-        boolean s = controller.initialize();
-        if(s) {
-            LOG.info("Controller succesfully initialized");
-        } else {
-            LOG.error("Controller could not initialize");
-            System.exit(-1);
-        }
+        assert robot != null;
 
-        List<Servo> servoList = controller.getServos();
+        List<Servo> servoList = robot.getServoDriver().getServos();
         LOG.debug("Found servos: {}", servoList);
 
         LOG.debug("Enabling torgue");
