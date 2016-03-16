@@ -15,8 +15,10 @@
  */
 package com.oberasoftware.robo.container;
 
+import com.google.common.collect.ImmutableMap;
 import com.oberasoftware.base.event.EventSubscribe;
-import com.oberasoftware.robo.api.*;
+import com.oberasoftware.robo.api.GenericRobotEventHandler;
+import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.events.DistanceSensorEvent;
 import com.oberasoftware.robo.api.sensors.EventSource;
 import com.oberasoftware.robo.core.SpringAwareRobotBuilder;
@@ -80,7 +82,7 @@ public class ServiceContainer {
 
         Robot robot = new SpringAwareRobotBuilder(context)
                 .motionEngine(RoboPlusMotionEngine.class, new RoboPlusClassPathResource("/bio_prm_humanoidtypea_en.mtn"))
-                .servoDriver(DynamixelServoDriver.class, "/dev/ttyACM0")
+                .servoDriver(DynamixelServoDriver.class, ImmutableMap.<String, String>builder().put(DynamixelServoDriver.PORT, "/dev/ttyACM0").build())
                 .sensor(new DistanceSensor("distance", adsDriver.getPort("A0"), new AnalogToDistanceConverter()))
                 .sensor(new GyroSensor("gyro", adsDriver.getPort("A2"), adsDriver.getPort("A3"), new AnalogToPercentageConverter()))
                 .build();
@@ -88,7 +90,7 @@ public class ServiceContainer {
         robot.listen(eventHandler);
     }
 
-    private static class RobotEventHandler implements GenericRobotEventHandler {
+    public static class RobotEventHandler implements GenericRobotEventHandler {
         @EventSubscribe
         @EventSource("distance")
         public void receive(DistanceSensorEvent event) {

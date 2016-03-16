@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Renze de Vries
@@ -39,18 +40,18 @@ public class SpringAwareRobotBuilder {
         return this;
     }
 
-    public SpringAwareRobotBuilder motionEngine(Class<? extends MotionEngine> motionEngineClass, MotionResource resource, Object... args) {
-        return motionEngine(context.getBean(motionEngineClass, args), resource);
+    public SpringAwareRobotBuilder motionEngine(Class<? extends MotionEngine> motionEngineClass, MotionResource resource) {
+        return motionEngine(context.getBean(motionEngineClass), resource);
     }
 
-    public SpringAwareRobotBuilder servoDriver(ServoDriver servoDriver) {
+    public SpringAwareRobotBuilder servoDriver(ServoDriver servoDriver, Map<String, String> properties) {
         this.servoDriver = servoDriver;
-        this.servoDriver.activate();
+        this.servoDriver.activate(properties);
         return this;
     }
 
-    public SpringAwareRobotBuilder servoDriver(Class<? extends ServoDriver> servoDriverClass, Object... args) {
-        return servoDriver(context.getBean(servoDriverClass, args));
+    public SpringAwareRobotBuilder servoDriver(Class<? extends ServoDriver> servoDriverClass, Map<String, String> properties) {
+        return servoDriver(context.getBean(servoDriverClass), properties);
     }
 
     public SpringAwareRobotBuilder sensor(Sensor sensor) {

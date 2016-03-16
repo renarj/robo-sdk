@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -25,11 +24,11 @@ import java.util.stream.IntStream;
  * @author Renze de Vries
  */
 @Component
-@Scope("prototype")
 public class DynamixelServoDriver implements ServoDriver {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelServoDriver.class);
 
     private static final int MAX_ID = 250;
+    public static final String PORT = "port";
 
     @Autowired
     private SerialDynamixelConnector connector;
@@ -44,15 +43,9 @@ public class DynamixelServoDriver implements ServoDriver {
 
     private String portName;
 
-    public DynamixelServoDriver() {
-    }
-
-    public DynamixelServoDriver(String portName) {
-        this.portName = portName;
-    }
-
     @Override
-    public void activate() {
+    public void activate(Map<String, String> properties) {
+        this.portName = properties.get(PORT);
         connector.connect(portName);
 
         if(!initialize()) {
@@ -71,7 +64,7 @@ public class DynamixelServoDriver implements ServoDriver {
                 try {
                     DynamixelReturnPacket packet = new DynamixelReturnPacket(received);
                     if (packet.getErrorCode() == 0) {
-                        LOG.info("Ping received from Servo: {}", m);
+                        LOG.debug("Ping received from Servo: {}", m);
 
                         DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m);
                         servos.put(Integer.toString(m), servo);
@@ -80,7 +73,7 @@ public class DynamixelServoDriver implements ServoDriver {
                     LOG.error("Could not read servo response on ping");
                 }
             } else {
-                LOG.info("No Servo detected on ID: {}", m);
+                LOG.debug("No Servo detected on ID: {}", m);
             }
         });
 
