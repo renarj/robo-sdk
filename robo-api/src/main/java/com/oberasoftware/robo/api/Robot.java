@@ -9,4 +9,6 @@ public interface Robot {
     void listen(EventHandler robotEventHandler);
 
     MotionEngine getMotionEngine();
+
+    ServoDriver getServoDriver();
 }

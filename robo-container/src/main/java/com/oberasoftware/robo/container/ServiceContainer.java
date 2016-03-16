@@ -100,7 +100,7 @@ public class ServiceContainer {
         @EventSubscribe
         @EventSource("distance")
         public void receive(DistanceSensorEvent event) {
-
+            LOG.info("Received a distance event: {}", event);
         }
     }
 }
