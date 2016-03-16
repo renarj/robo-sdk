@@ -80,7 +80,7 @@ public class ServiceContainer {
 
         Robot robot = new SpringAwareRobotBuilder(context)
                 .motionEngine(RoboPlusMotionEngine.class, new RoboPlusClassPathResource("/bio_prm_humanoidtypea_en.mtn"))
-                .servoDriver(DynamixelServoDriver.class, "/dev/ttyAMA0")
+                .servoDriver(DynamixelServoDriver.class, "/dev/ttyACM0")
                 .sensor(new DistanceSensor("distance", adsDriver.getPort("A0"), new AnalogToDistanceConverter()))
                 .sensor(new GyroSensor("gyro", adsDriver.getPort("A2"), adsDriver.getPort("A3"), new AnalogToPercentageConverter()))
                 .build();
