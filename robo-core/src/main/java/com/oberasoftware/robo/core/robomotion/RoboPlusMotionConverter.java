@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
@@ -96,16 +97,18 @@ public class RoboPlusMotionConverter implements MotionConverter {
     }
 
     private List<KeyFrame> loadSteps(Collection<String> steps, List<Integer> servoIndexes, double speedRate) {
-        return steps.stream().map(s -> loadStep(s, servoIndexes, speedRate))
+        final AtomicInteger stepCounter = new AtomicInteger(0);
+
+        return steps.stream().map(s -> loadStep(stepCounter.incrementAndGet(), s, servoIndexes, speedRate))
                 .collect(Collectors.toList());
     }
 
-    private KeyFrame loadStep(String step, List<Integer> servoIndexes, double speedRate) {
+    private KeyFrame loadStep(int frameId, String step, List<Integer> servoIndexes, double speedRate) {
         String[] stepData = step.split(" ");
         double time = Double.parseDouble(stepData[stepData.length - 1]);
         double msTime = (time * 1000) / speedRate;
 
-        StepBuilder stepBuilder = StepBuilder.create((long)msTime);
+        StepBuilder stepBuilder = StepBuilder.create(Integer.toString(frameId), (long)msTime);
         for(int i=0; i<(servoIndexes.size()); i++) {
             if(servoIndexes.get(i) == SERVO_ENABLED) {
                 int value = toSafeInt(stepData[i]);

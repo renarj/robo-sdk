@@ -1,6 +1,5 @@
 package com.oberasoftware.robo.dynamixel.handlers;
 
-import com.google.common.base.Stopwatch;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.commands.BulkPositionSpeedCommand;
@@ -15,14 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.oberasoftware.robo.core.ConverterUtil.intTo16BitByte;
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
-import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
 
 /**
  * @author Renze de Vries
@@ -38,32 +34,35 @@ public class DynamixelSyncWriteMovementHandler implements EventHandler {
     public void receive(BulkPositionSpeedCommand command) {
         LOG.debug("Received a bulk command: {}", command);
 
-        Stopwatch stopwatch = Stopwatch.createStarted();
         Map<String, PositionAndSpeedCommand> commands = command.getCommands();
-
         DynamixelCommandPacket packet = new DynamixelCommandPacket(DynamixelInstruction.SYNC_WRITE,
                 DynamixelCommandPacket.BROADCAST_ID);
 
-        List<Byte> servoBytes = commands.values().stream().map(this::getServoBytes)
-                .flatMap(Collection::stream).collect(Collectors.toList());
+        List<Byte> servoBytes = new ArrayList<>();
+        commands.forEach((k, v) -> {
+            getServoBytes(servoBytes, v);
+        });
+
+//        List<Byte> servoBytes = commands.values().stream().map(this::getServoBytes)
+//                .flatMap(Collection::stream).collect(Collectors.toList());
         servoBytes.add(0, (byte)0x04); //add param length
 
         packet.addParam(DynamixelAddress.GOAL_POSITION_L, servoBytes);
         byte[] data = packet.build();
-        LOG.debug("This would be the package: {}", bb2hex(data));
+//        LOG.debug("This would be the package: {}", bb2hex(data));
 
         connector.sendAndReceive(data);
     }
 
-    private List<Byte> getServoBytes(PositionAndSpeedCommand command) {
+    private void getServoBytes(List<Byte> servoBytes, PositionAndSpeedCommand command) {
         int servoId = toSafeInt(command.getServoId());
 
-        List<Byte> servoBytes = new ArrayList<>();
+//        List<Byte> servoBytes = new ArrayList<>();
         servoBytes.add((byte)servoId);
         byte[] bytes = intTo16BitByte(command.getPosition(), command.getSpeed());
         for(byte b : bytes) {
             servoBytes.add(b);
         }
-        return servoBytes;
+//        return servoBytes;
     }
 }

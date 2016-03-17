@@ -7,6 +7,8 @@ import java.util.Set;
  * @author Renze de Vries
  */
 public interface KeyFrame {
+    String getKeyFrameId();
+
     Set<String> getServoIds();
 
     List<ServoStep> getServoSteps();

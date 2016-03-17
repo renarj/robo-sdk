@@ -11,10 +11,17 @@ import java.util.*;
 public class KeyFrameImpl implements KeyFrame {
 
     private final Map<String, ServoStep> servoSteps = new LinkedHashMap<>();
-    private long timeInMs;
+    private final long timeInMs;
+    private final String keyFrameId;
 
-    public KeyFrameImpl(long timeInMs) {
+    public KeyFrameImpl(String keyFrameId, long timeInMs) {
+        this.keyFrameId = keyFrameId;
         this.timeInMs = timeInMs;
+    }
+
+    @Override
+    public String getKeyFrameId() {
+        return this.keyFrameId;
     }
 
     @Override
@@ -40,6 +47,8 @@ public class KeyFrameImpl implements KeyFrame {
     public String toString() {
         return "KeyFrameImpl{" +
                 "servoSteps=" + servoSteps +
+                ", timeInMs=" + timeInMs +
+                ", keyFrameId='" + keyFrameId + '\'' +
                 '}';
     }
 }

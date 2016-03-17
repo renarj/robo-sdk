@@ -22,10 +22,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -58,6 +55,8 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     private Queue<MotionTaskImpl> queue = new LinkedBlockingQueue<>();
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private volatile boolean running;
+
+    private Map<String, BulkPositionSpeedCommand> cachedCommands = new HashMap<>();
 
     @PostConstruct
     public void startListener() {
@@ -129,7 +128,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
 
             KeyFrame keyFrame = keyFrames.get(c);
 
-            executeKeyFrame(lastKeyFrame, keyFrame);
+            executeKeyFrame(motion.getId(), lastKeyFrame, keyFrame);
             lastKeyFrame = keyFrame;
 
             LOG.info("Finished keyFrame: {} execution in: {} ms. target time: {}", c,
@@ -162,16 +161,21 @@ public class DynamixelMotionExecutor implements MotionExecutor {
 
     }
 
-    private void executeKeyFrame(KeyFrame previousKeyFrame, KeyFrame keyFrame) {
+    private void executeKeyFrame(String motionId, KeyFrame previousKeyFrame, KeyFrame keyFrame) {
         long timeInMs = keyFrame.getTimeInMs();
 
-        Map<String, PositionAndSpeedCommand> commands = keyFrame.getServoSteps().stream()
-                .map(s -> new PositionAndSpeedCommand(s.getServoId(), s.getTargetPosition(),
-                        calculateSpeed(previousKeyFrame, s.getServoId(), s.getTargetPosition(), timeInMs)))
-                .collect(Collectors.toMap(PositionAndSpeedCommand::getServoId, Function.identity()));
+        String previousFrameId = previousKeyFrame != null ? previousKeyFrame.getKeyFrameId() : "";
+        String cacheKey = motionId + "_" + previousFrameId + "_" + keyFrame.getKeyFrameId();
+        if(!cachedCommands.containsKey(cacheKey)) {
+            Map<String, PositionAndSpeedCommand> commands = keyFrame.getServoSteps().stream()
+                    .map(s -> new PositionAndSpeedCommand(s.getServoId(), s.getTargetPosition(),
+                            calculateSpeed(previousKeyFrame, s.getServoId(), s.getTargetPosition(), timeInMs)))
+                    .collect(Collectors.toMap(PositionAndSpeedCommand::getServoId, Function.identity()));
+            cachedCommands.put(cacheKey, new BulkPositionSpeedCommand(commands));
+        }
 
         Stopwatch stopwatch = createStarted();
-        syncWriteMovementHandler.receive(new BulkPositionSpeedCommand(commands));
+        syncWriteMovementHandler.receive(cachedCommands.get(cacheKey));
 
         //sleep minus the time it took to write to the bus
         sleepUninterruptibly(timeInMs - stopwatch.elapsed(MILLISECONDS), MILLISECONDS);
