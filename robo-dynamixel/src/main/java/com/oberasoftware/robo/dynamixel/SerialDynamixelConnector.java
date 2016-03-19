@@ -54,7 +54,6 @@ public class SerialDynamixelConnector implements DynamixelConnector {
     }
 
     @Override
-    @PreDestroy
     public void disconnect() {
         LOG.info("Disconnecting from serial port: {}", portName);
 

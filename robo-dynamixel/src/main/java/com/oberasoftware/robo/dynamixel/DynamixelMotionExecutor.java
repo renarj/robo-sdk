@@ -101,19 +101,11 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         motionTask.start();
 
         Motion motion = motionTask.getMotion();
-        Motion lastExecuted = null;
         KeyFrame lastKeyFrame = lastExecutedKeyFrame;
-        while(motion != null && motionTask.isRunning()) {
+        while(motion != null) {
             lastKeyFrame = executeMotion(motion, lastKeyFrame);
-            lastExecuted = motion;
 
-            motion = getNextChainedMotion(motion);
-        }
-
-        Motion exitMotion = getExitMotion(lastExecuted);
-        if(exitMotion != null) {
-            LOG.info("Going to execute exit motion: {} for motion: {}", exitMotion, lastExecuted);
-            runMotion(new MotionTaskImpl(exitMotion), lastKeyFrame);
+            motion = getNextChainedMotion(motion, !motionTask.isRunning());
         }
     }
 
@@ -138,13 +130,11 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         return lastKeyFrame;
     }
 
-    private Motion getExitMotion(Motion currentMotion) {
-        String nextMotionId = currentMotion.getExitMotion();
-        return findMotion(nextMotionId);
-    }
-
-    private Motion getNextChainedMotion(Motion currentMotion) {
+    private Motion getNextChainedMotion(Motion currentMotion, boolean exitMotion) {
         String nextMotionId = currentMotion.getNextMotion();
+        if(exitMotion) {
+            nextMotionId = currentMotion.getExitMotion();
+        }
         return findMotion(nextMotionId);
     }
 

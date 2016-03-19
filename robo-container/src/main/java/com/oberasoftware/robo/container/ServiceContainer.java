@@ -77,17 +77,22 @@ public class ServiceContainer {
         ODataEdmRegistry registry = context.getBean(ODataEdmRegistry.class);
         registry.registerClasses(newArrayList(MotionModel.class, ServoModel.class, MotionFunction.class, PositionFunction.class));
 
+
         ADS1115Driver adsDriver = new ADS1115Driver();
         adsDriver.init();
-
         Robot robot = new SpringAwareRobotBuilder(context)
                 .motionEngine(RoboPlusMotionEngine.class, new RoboPlusClassPathResource("/bio_prm_humanoidtypea_en.mtn"))
-                .servoDriver(DynamixelServoDriver.class, ImmutableMap.<String, String>builder().put(DynamixelServoDriver.PORT, "/dev/ttyACM0").build())
+                .servoDriver(DynamixelServoDriver.class, ImmutableMap.<String, String>builder().put(DynamixelServoDriver.PORT, "/dev/tty.usbmodem1411").build())
                 .sensor(new DistanceSensor("distance", adsDriver.getPort("A0"), new AnalogToDistanceConverter()))
                 .sensor(new GyroSensor("gyro", adsDriver.getPort("A2"), adsDriver.getPort("A3"), new AnalogToPercentageConverter()))
                 .build();
         RobotEventHandler eventHandler = new RobotEventHandler(robot);
         robot.listen(eventHandler);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            LOG.info("Killing the robot gracefully on shutdown");
+            robot.shutdown();
+        }));
     }
 
     public static class RobotEventHandler implements GenericRobotEventHandler {

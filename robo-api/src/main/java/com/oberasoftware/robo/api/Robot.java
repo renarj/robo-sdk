@@ -11,4 +11,6 @@ public interface Robot {
     MotionEngine getMotionEngine();
 
     ServoDriver getServoDriver();
+
+    void shutdown();
 }

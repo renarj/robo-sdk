@@ -18,4 +18,6 @@ public interface ServoDriver extends ActivatableCapability {
     boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands);
 
     List<Servo> getServos();
+
+    void shutdown();
 }

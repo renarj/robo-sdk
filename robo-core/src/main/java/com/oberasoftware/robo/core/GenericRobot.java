@@ -46,4 +46,10 @@ public class GenericRobot implements Robot {
     public MotionEngine getMotionEngine() {
         return this.motionEngine;
     }
+
+    @Override
+    public void shutdown() {
+        motionEngine.stopAllTasks();
+        servoDriver.shutdown();
+    }
 }

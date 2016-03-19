@@ -53,6 +53,11 @@ public class DynamixelServoDriver implements ServoDriver {
         }
     }
 
+    @Override
+    public void shutdown() {
+        this.connector.disconnect();
+    }
+
     private boolean initialize() {
         LOG.info("Starting servo scan");
         Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
