@@ -1,10 +1,7 @@
 package com.oberasoftware.robo.core;
 
 import com.oberasoftware.base.event.EventBus;
-import com.oberasoftware.robo.api.MotionEngine;
-import com.oberasoftware.robo.api.MotionResource;
-import com.oberasoftware.robo.api.Robot;
-import com.oberasoftware.robo.api.ServoDriver;
+import com.oberasoftware.robo.api.*;
 import com.oberasoftware.robo.api.sensors.PublishableSensor;
 import com.oberasoftware.robo.api.sensors.Sensor;
 import org.slf4j.Logger;
@@ -52,6 +49,10 @@ public class SpringAwareRobotBuilder {
 
     public SpringAwareRobotBuilder servoDriver(Class<? extends ServoDriver> servoDriverClass, Map<String, String> properties) {
         return servoDriver(context.getBean(servoDriverClass), properties);
+    }
+
+    public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector) {
+        return this;
     }
 
     public SpringAwareRobotBuilder sensor(Sensor sensor) {
