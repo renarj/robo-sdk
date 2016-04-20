@@ -1,6 +1,5 @@
 package com.oberasoftware.robo.api.sensors;
 
-import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.robo.api.Capability;
 
 /**

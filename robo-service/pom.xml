@@ -25,5 +25,10 @@
             <groupId>com.sdl</groupId>
             <artifactId>odata_common</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

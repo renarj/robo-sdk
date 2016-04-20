@@ -1,14 +1,16 @@
 package com.oberasoftware.robo.core;
 
 import com.oberasoftware.base.event.EventBus;
+import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.*;
-import com.oberasoftware.robo.api.sensors.PublishableSensor;
+import com.oberasoftware.robo.api.sensors.ListenableSensor;
 import com.oberasoftware.robo.api.sensors.Sensor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,16 +25,18 @@ public class SpringAwareRobotBuilder {
     private MotionEngine motionEngine;
     private ServoDriver servoDriver;
     private List<Sensor> sensors = new ArrayList<>();
-    private EventBus eventBus;
+    private final EventBus eventBus = new LocalEventBus();
+    private RemoteDriver remoteDriver = null;
 
     public SpringAwareRobotBuilder(ApplicationContext context) {
         this.context = context;
-        this.eventBus = context.getBean(EventBus.class);
     }
 
     public SpringAwareRobotBuilder motionEngine(MotionEngine motionEngine, MotionResource resource) {
         this.motionEngine = motionEngine;
-        this.motionEngine.loadResource(resource);
+        if(resource != null) {
+            this.motionEngine.loadResource(resource);
+        }
 
         return this;
     }
@@ -41,10 +45,18 @@ public class SpringAwareRobotBuilder {
         return motionEngine(context.getBean(motionEngineClass), resource);
     }
 
+    public SpringAwareRobotBuilder motionEngine(Class<? extends MotionEngine> motionEngineClass) {
+        return motionEngine(context.getBean(motionEngineClass), null);
+    }
+
     public SpringAwareRobotBuilder servoDriver(ServoDriver servoDriver, Map<String, String> properties) {
         this.servoDriver = servoDriver;
         this.servoDriver.activate(properties);
         return this;
+    }
+
+    public SpringAwareRobotBuilder servoDriver(Class<? extends ServoDriver> servoDriver) {
+        return servoDriver(context.getBean(servoDriver), new HashMap<>());
     }
 
     public SpringAwareRobotBuilder servoDriver(Class<? extends ServoDriver> servoDriverClass, Map<String, String> properties) {
@@ -52,19 +64,26 @@ public class SpringAwareRobotBuilder {
     }
 
     public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector) {
+        this.remoteDriver = context.getBean(remoteConnector);
         return this;
     }
 
     public SpringAwareRobotBuilder sensor(Sensor sensor) {
-        if(sensor instanceof PublishableSensor) {
+        if(sensor instanceof ListenableSensor) {
             LOG.info("Activating publishable sensor: {}", sensor);
-            ((PublishableSensor)sensor).activate(eventBus);
+            ((ListenableSensor)sensor).listen(event -> eventBus.publish(event));
         }
         this.sensors.add(sensor);
         return this;
     }
 
     public Robot build() {
-        return new GenericRobot(eventBus, motionEngine, servoDriver, sensors);
+        Robot robot = new GenericRobot(eventBus, motionEngine, servoDriver, sensors);
+        if(remoteDriver != null) {
+            LOG.info("Remote robot control is enabled");
+            return new RemoteEnabledRobot(remoteDriver, robot);
+        } else {
+            return robot;
+        }
     }
 }

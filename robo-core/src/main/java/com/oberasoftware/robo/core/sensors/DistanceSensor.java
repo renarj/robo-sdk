@@ -1,38 +1,51 @@
 package com.oberasoftware.robo.core.sensors;
 
-import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.robo.api.events.DistanceSensorEvent;
 import com.oberasoftware.robo.api.sensors.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+
 /**
  * @author Renze de Vries
  */
-public class DistanceSensor implements PublishableSensor<DistanceValue> {
+public class DistanceSensor implements ListenableSensor<DistanceValue> {
     private static final Logger LOG = LoggerFactory.getLogger(DistanceSensor.class);
 
     private final String name;
-    private final AnalogPort port;
+    private final Port port;
 
-    private EventBus eventBus;
+    private List<SensorListener<DistanceValue>> sensorListeners = new CopyOnWriteArrayList<>();
+
+    private AtomicInteger lastDistance = new AtomicInteger(0);
 
     public DistanceSensor(String name, AnalogPort port, SensorConverter<Double, Integer> converter) {
         this.name = name;
         this.port = port;
 
-        this.port.listen(e -> {
-            Double voltage = e.getRaw();
-            int distance = converter.convert(voltage);
+        port.listen(e -> notifyListeners(converter.convert(e.getRaw())));
+    }
 
-            LOG.info("Received a voltage: {} on port: {} distance is: {}", voltage, port, distance);
-            this.eventBus.publish(new DistanceSensorEvent(name, distance));
-        });
+    public DistanceSensor(String name, DirectPort<SensorValue<Integer>> directPort) {
+        this.name = name;
+        this.port = directPort;
+
+        directPort.listen(e -> notifyListeners(e.getRaw()));
+    }
+
+    private void notifyListeners(int distance) {
+        LOG.debug("Received a Distance: {} on port: {}", distance, port);
+
+        DistanceSensorEvent event = new DistanceSensorEvent(name, distance);
+        sensorListeners.forEach(l -> l.receive(event));
     }
 
     @Override
     public DistanceValue getValue() {
-        return null;
+        return () -> lastDistance.get();
     }
 
     @Override
@@ -41,7 +54,7 @@ public class DistanceSensor implements PublishableSensor<DistanceValue> {
     }
 
     @Override
-    public void activate(EventBus eventBus) {
-        this.eventBus = eventBus;
+    public void listen(SensorListener<DistanceValue> listener) {
+        this.sensorListeners.add(listener);
     }
 }

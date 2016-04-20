@@ -6,5 +6,5 @@ package com.oberasoftware.robo.api;
 public enum ServoProperty {
     POSITION,
     TORGUE,
-    SPEED;
+    SPEED
 }

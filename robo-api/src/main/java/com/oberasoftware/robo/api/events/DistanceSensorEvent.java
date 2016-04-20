@@ -1,11 +1,11 @@
 package com.oberasoftware.robo.api.events;
 
-import com.oberasoftware.base.event.Event;
+import com.oberasoftware.robo.api.sensors.DistanceValue;
 
 /**
  * @author Renze de Vries
  */
-public class DistanceSensorEvent implements Event {
+public class DistanceSensorEvent implements SensorEvent<DistanceValue> {
     private final String source;
     private final int distance;
 
@@ -14,12 +14,18 @@ public class DistanceSensorEvent implements Event {
         this.distance = distance;
     }
 
+    @Override
     public String getSource() {
         return source;
     }
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public DistanceValue getValue() {
+        return () -> distance;
     }
 
     @Override
