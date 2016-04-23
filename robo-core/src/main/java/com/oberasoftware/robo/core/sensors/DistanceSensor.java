@@ -15,25 +15,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class DistanceSensor implements ListenableSensor<DistanceValue> {
     private static final Logger LOG = LoggerFactory.getLogger(DistanceSensor.class);
 
+    private static final AnalogToDistanceConverter CONVERTER = new AnalogToDistanceConverter();
+
     private final String name;
-    private final Port port;
+    private final String portName;
+    private Port port;
 
     private List<SensorListener<DistanceValue>> sensorListeners = new CopyOnWriteArrayList<>();
 
     private AtomicInteger lastDistance = new AtomicInteger(0);
 
-    public DistanceSensor(String name, AnalogPort port, SensorConverter<Double, Integer> converter) {
+    public DistanceSensor(String name, String portName) {
         this.name = name;
-        this.port = port;
+        this.portName = portName;
 
-        port.listen(e -> notifyListeners(converter.convert(e.getRaw())));
-    }
 
-    public DistanceSensor(String name, DirectPort<SensorValue<Integer>> directPort) {
-        this.name = name;
-        this.port = directPort;
-
-        directPort.listen(e -> notifyListeners(e.getRaw()));
     }
 
     private void notifyListeners(int distance) {
@@ -56,5 +52,15 @@ public class DistanceSensor implements ListenableSensor<DistanceValue> {
     @Override
     public void listen(SensorListener<DistanceValue> listener) {
         this.sensorListeners.add(listener);
+    }
+
+    @Override
+    public void activate(SensorDriver sensorDriver) {
+        this.port = sensorDriver.getPort(portName);
+        if(this.port instanceof AnalogPort) {
+            ((AnalogPort)this.port).listen(e -> notifyListeners(CONVERTER.convert(e.getRaw())));
+        } else {
+            ((DirectPort<SensorValue<Integer>>)this.port).listen(e -> notifyListeners(e.getRaw()));
+        }
     }
 }

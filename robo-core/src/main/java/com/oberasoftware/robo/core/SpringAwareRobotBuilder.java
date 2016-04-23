@@ -5,6 +5,7 @@ import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.*;
 import com.oberasoftware.robo.api.sensors.ListenableSensor;
 import com.oberasoftware.robo.api.sensors.Sensor;
+import com.oberasoftware.robo.api.sensors.SensorDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -27,6 +28,7 @@ public class SpringAwareRobotBuilder {
     private List<Sensor> sensors = new ArrayList<>();
     private final EventBus eventBus = new LocalEventBus();
     private RemoteDriver remoteDriver = null;
+    private List<SensorDriver> sensorDrivers = new ArrayList<>();
 
     public SpringAwareRobotBuilder(ApplicationContext context) {
         this.context = context;
@@ -37,6 +39,7 @@ public class SpringAwareRobotBuilder {
         if(resource != null) {
             this.motionEngine.loadResource(resource);
         }
+        this.motionEngine.activate(new HashMap<>());
 
         return this;
     }
@@ -68,7 +71,15 @@ public class SpringAwareRobotBuilder {
         return this;
     }
 
-    public SpringAwareRobotBuilder sensor(Sensor sensor) {
+    public SpringAwareRobotBuilder sensor(Sensor sensor, Class<? extends SensorDriver> sensorDriverClass) {
+        if(sensorDriverClass != null) {
+            SensorDriver sensorDriver = context.getBean(sensorDriverClass);
+            sensorDriver.initialize();
+            sensorDrivers.add(sensorDriver);
+
+            LOG.info("Sensor requires a driver, activating and configuring driver");
+            sensor.activate(sensorDriver);
+        }
         if(sensor instanceof ListenableSensor) {
             LOG.info("Activating publishable sensor: {}", sensor);
             ((ListenableSensor)sensor).listen(event -> eventBus.publish(event));
@@ -78,7 +89,7 @@ public class SpringAwareRobotBuilder {
     }
 
     public Robot build() {
-        Robot robot = new GenericRobot(eventBus, motionEngine, servoDriver, sensors);
+        Robot robot = new GenericRobot(eventBus, motionEngine, servoDriver, sensorDrivers, sensors);
         if(remoteDriver != null) {
             LOG.info("Remote robot control is enabled");
             return new RemoteEnabledRobot(remoteDriver, robot);

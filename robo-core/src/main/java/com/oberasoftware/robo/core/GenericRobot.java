@@ -6,6 +6,7 @@ import com.oberasoftware.robo.api.MotionEngine;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.ServoDriver;
 import com.oberasoftware.robo.api.sensors.Sensor;
+import com.oberasoftware.robo.api.sensors.SensorDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,12 +23,15 @@ public class GenericRobot implements Robot {
     private EventBus eventBus;
 
     private final Map<String, Sensor> sensors;
+    private final List<SensorDriver> sensorDrivers;
     private final MotionEngine motionEngine;
     private final ServoDriver servoDriver;
 
-    public GenericRobot(EventBus eventBus, MotionEngine motionEngine, ServoDriver servoDriver, List<Sensor> sensors) {
+    public GenericRobot(EventBus eventBus, MotionEngine motionEngine, ServoDriver servoDriver, List<SensorDriver> sensorDrivers,
+                        List<Sensor> sensors) {
         this.eventBus = eventBus;
         this.sensors = sensors.stream().collect(Collectors.toMap(Sensor::getName, sensor -> sensor));
+        this.sensorDrivers = sensorDrivers;
         this.servoDriver = servoDriver;
         this.motionEngine = motionEngine;
     }
@@ -49,6 +53,7 @@ public class GenericRobot implements Robot {
 
     @Override
     public void shutdown() {
+        sensorDrivers.forEach(SensorDriver::close);
         motionEngine.stopAllTasks();
         servoDriver.shutdown();
     }

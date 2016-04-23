@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author Renze de Vries
  */
-public interface MotionEngine {
+public interface MotionEngine extends ActivatableCapability {
 
     boolean prepareWalk();
 

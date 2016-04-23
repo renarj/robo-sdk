@@ -9,4 +9,8 @@ public interface Sensor<T extends SensorValue> extends Capability {
     String getName();
 
     T getValue();
+
+    default void activate(SensorDriver sensorDriver) {
+        //no activiation needed by default
+    }
 }
