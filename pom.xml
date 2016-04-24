@@ -17,12 +17,14 @@
 
     <properties>
         <odata.version>2.0.4</odata.version>
+        <home.core.version>1.0-SNAPSHOT</home.core.version>
     </properties>
 
     <modules>
         <module>robo-api</module>
         <module>robo-core</module>
         <module>robo-service</module>
+        <module>robot-cloud</module>
     </modules>
 
     <licenses>
@@ -81,6 +83,11 @@
                 <groupId>com.oberasoftware</groupId>
                 <artifactId>robo-api</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
+                <artifactId>eventbus-mqtt</artifactId>
+                <version>${home.core.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
