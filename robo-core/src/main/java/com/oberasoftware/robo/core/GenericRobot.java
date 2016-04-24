@@ -53,6 +53,7 @@ public class GenericRobot implements Robot {
 
     @Override
     public void shutdown() {
+        motionEngine.rest();
         sensorDrivers.forEach(SensorDriver::close);
         motionEngine.stopAllTasks();
         servoDriver.shutdown();

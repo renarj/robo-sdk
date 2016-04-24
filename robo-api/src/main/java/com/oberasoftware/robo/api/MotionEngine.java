@@ -9,6 +9,8 @@ public interface MotionEngine extends ActivatableCapability {
 
     boolean prepareWalk();
 
+    boolean rest();
+
     void loadResource(MotionResource resource);
 
     MotionTask walk();
