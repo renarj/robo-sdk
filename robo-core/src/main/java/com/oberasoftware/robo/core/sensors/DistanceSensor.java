@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.core.sensors;
 
+import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.events.DistanceSensorEvent;
 import com.oberasoftware.robo.api.sensors.*;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ public class DistanceSensor implements ListenableSensor<DistanceValue> {
 
     private final String name;
     private final String portName;
+
+    private Robot robot;
     private Port port;
 
     private List<SensorListener<DistanceValue>> sensorListeners = new CopyOnWriteArrayList<>();
@@ -28,14 +31,12 @@ public class DistanceSensor implements ListenableSensor<DistanceValue> {
     public DistanceSensor(String name, String portName) {
         this.name = name;
         this.portName = portName;
-
-
     }
 
     private void notifyListeners(int distance) {
         LOG.debug("Received a Distance: {} on port: {}", distance, port);
 
-        DistanceSensorEvent event = new DistanceSensorEvent(name, distance);
+        DistanceSensorEvent event = new DistanceSensorEvent(robot.getName(), portName, name, distance);
         sensorListeners.forEach(l -> l.receive(event));
     }
 
@@ -55,7 +56,13 @@ public class DistanceSensor implements ListenableSensor<DistanceValue> {
     }
 
     @Override
-    public void activate(SensorDriver sensorDriver) {
+    public void activate(Robot robot) {
+        this.robot = robot;
+    }
+
+    @Override
+    public void activate(Robot robot, SensorDriver sensorDriver) {
+        activate(robot);
         this.port = sensorDriver.getPort(portName);
         if(this.port instanceof AnalogPort) {
             ((AnalogPort)this.port).listen(e -> notifyListeners(CONVERTER.convert(e.getRaw())));

@@ -7,15 +7,29 @@ import com.oberasoftware.robo.api.sensors.DistanceValue;
  */
 public class DistanceSensorEvent implements SensorEvent<DistanceValue> {
     private final String source;
+    private final String robotId;
+    private final String capability;
     private final int distance;
 
-    public DistanceSensorEvent(String source, int distance) {
+    public DistanceSensorEvent(String robotId, String capability, String source, int distance) {
         this.source = source;
+        this.robotId = robotId;
+        this.capability = capability;
         this.distance = distance;
     }
 
     @Override
-    public String getSource() {
+    public String getRobotName() {
+        return robotId;
+    }
+
+    @Override
+    public String getCapability() {
+        return capability;
+    }
+
+    @Override
+    public String getSourceName() {
         return source;
     }
 

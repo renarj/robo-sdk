@@ -24,7 +24,7 @@
         <module>robo-api</module>
         <module>robo-core</module>
         <module>robo-service</module>
-        <module>robot-cloud</module>
+        <module>robo-cloud</module>
     </modules>
 
     <licenses>

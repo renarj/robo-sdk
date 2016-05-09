@@ -22,18 +22,29 @@ public class GenericRobot implements Robot {
 
     private EventBus eventBus;
 
-    private final Map<String, Sensor> sensors;
     private final List<SensorDriver> sensorDrivers;
     private final MotionEngine motionEngine;
     private final ServoDriver servoDriver;
+    private final String robotName;
 
-    public GenericRobot(EventBus eventBus, MotionEngine motionEngine, ServoDriver servoDriver, List<SensorDriver> sensorDrivers,
-                        List<Sensor> sensors) {
+    private Map<String, Sensor> sensors;
+
+    public GenericRobot(String robotName, EventBus eventBus, MotionEngine motionEngine,
+                        ServoDriver servoDriver, List<SensorDriver> sensorDrivers) {
+        this.robotName = robotName;
         this.eventBus = eventBus;
-        this.sensors = sensors.stream().collect(Collectors.toMap(Sensor::getName, sensor -> sensor));
-        this.sensorDrivers = sensorDrivers;
         this.servoDriver = servoDriver;
         this.motionEngine = motionEngine;
+        this.sensorDrivers = sensorDrivers;
+    }
+
+    @Override
+    public String getName() {
+        return robotName;
+    }
+
+    public void setSensors(List<Sensor> sensors) {
+        this.sensors = sensors.stream().collect(Collectors.toMap(Sensor::getName, sensor -> sensor));
     }
 
     @Override

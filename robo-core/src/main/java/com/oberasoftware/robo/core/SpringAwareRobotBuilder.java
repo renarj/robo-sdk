@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Renze de Vries
@@ -23,15 +24,18 @@ public class SpringAwareRobotBuilder {
 
     private final ApplicationContext context;
 
+    private final String robotName;
+    private final EventBus eventBus = new LocalEventBus();
+
     private MotionEngine motionEngine;
     private ServoDriver servoDriver;
-    private List<Sensor> sensors = new ArrayList<>();
-    private final EventBus eventBus = new LocalEventBus();
+    private List<SensorHolder> sensors = new ArrayList<>();
     private RemoteDriver remoteDriver = null;
     private List<SensorDriver> sensorDrivers = new ArrayList<>();
 
-    public SpringAwareRobotBuilder(ApplicationContext context) {
+    public SpringAwareRobotBuilder(String robotName, ApplicationContext context) {
         this.context = context;
+        this.robotName = robotName;
     }
 
     public SpringAwareRobotBuilder motionEngine(MotionEngine motionEngine, MotionResource resource) {
@@ -72,29 +76,58 @@ public class SpringAwareRobotBuilder {
     }
 
     public SpringAwareRobotBuilder sensor(Sensor sensor, Class<? extends SensorDriver> sensorDriverClass) {
+        SensorDriver driver = null;
         if(sensorDriverClass != null) {
-            SensorDriver sensorDriver = context.getBean(sensorDriverClass);
-            sensorDriver.initialize();
-            sensorDrivers.add(sensorDriver);
+            driver = context.getBean(sensorDriverClass);
+            sensorDrivers.add(driver);
+        }
 
-            LOG.info("Sensor requires a driver, activating and configuring driver");
-            sensor.activate(sensorDriver);
-        }
-        if(sensor instanceof ListenableSensor) {
-            LOG.info("Activating publishable sensor: {}", sensor);
-            ((ListenableSensor)sensor).listen(event -> eventBus.publish(event));
-        }
-        this.sensors.add(sensor);
+        this.sensors.add(new SensorHolder(sensor, driver));
         return this;
     }
 
     public Robot build() {
-        Robot robot = new GenericRobot(eventBus, motionEngine, servoDriver, sensorDrivers, sensors);
+        LOG.info("Initializing all sensor drivers");
+        initializeDrivers();
+
+        LOG.info("Creating robot base system");
+        GenericRobot robot = new GenericRobot(robotName, eventBus, motionEngine,
+                servoDriver, sensorDrivers);
+
+        LOG.info("Activating all sensors");
+        sensors.forEach(s -> s.initializeSensor(robot));
+        robot.setSensors(sensors.stream().map(h -> h.sensor).collect(Collectors.toList()));
+
         if(remoteDriver != null) {
             LOG.info("Remote robot control is enabled");
             return new RemoteEnabledRobot(remoteDriver, robot);
         } else {
+            LOG.info("Robot construction finished");
             return robot;
+        }
+    }
+
+    private void initializeDrivers() {
+        sensorDrivers.forEach(SensorDriver::initialize);
+    }
+
+    private class SensorHolder {
+        private final Sensor sensor;
+        private final SensorDriver driver;
+
+        public SensorHolder(Sensor sensor, SensorDriver driver) {
+            this.sensor = sensor;
+            this.driver = driver;
+        }
+
+        private void initializeSensor(Robot robot) {
+            LOG.info("Activating sensor: {}", sensor);
+            sensor.activate(robot, driver);
+
+            if(sensor instanceof ListenableSensor) {
+                LOG.info("Activating publishable sensor: {}", sensor);
+                ((ListenableSensor)sensor).listen(event -> eventBus.publish(event));
+            }
         }
     }
 }

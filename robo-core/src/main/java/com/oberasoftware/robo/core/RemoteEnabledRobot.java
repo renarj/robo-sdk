@@ -25,6 +25,11 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
     }
 
     @Override
+    public String getName() {
+        return localRobot.getName();
+    }
+
+    @Override
     public void listen(EventHandler robotEventHandler) {
         this.localRobot.listen(robotEventHandler);
     }

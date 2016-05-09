@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.core.sensors;
 
+import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.sensors.AnalogPort;
 import com.oberasoftware.robo.api.sensors.PercentageValue;
 import com.oberasoftware.robo.api.sensors.Sensor;
@@ -27,7 +28,10 @@ public class GyroSensor implements Sensor<PercentageValue> {
         return null;
     }
 
+    @Override
+    public void activate(Robot robot) {
 
+    }
 
     @Override
     public String getName() {
