@@ -100,6 +100,7 @@ public class SpringAwareRobotBuilder {
 
         if(remoteDriver != null) {
             LOG.info("Remote robot control is enabled");
+            remoteDriver.activate(robot);
             return new RemoteEnabledRobot(remoteDriver, robot);
         } else {
             LOG.info("Robot construction finished");

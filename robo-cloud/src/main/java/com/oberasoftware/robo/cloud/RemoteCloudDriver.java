@@ -5,6 +5,7 @@ import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.core.mqtt.MQTTTopicEventBus;
 import com.oberasoftware.robo.api.CommandListener;
 import com.oberasoftware.robo.api.RemoteDriver;
+import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.RobotCommand;
 import com.oberasoftware.robo.api.events.RobotEvent;
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -28,18 +28,17 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
 
     private List<CommandListener> commandListeners = new CopyOnWriteArrayList<>();
 
-    @PostConstruct
-    public void connect() {
+    public void activate(Robot robot) {
         LOG.info("Connecting to remote Robot Cloud");
         mqttTopicEventBus.connect();
 
-        mqttTopicEventBus.subscribe("/commands");
         mqttTopicEventBus.registerHandler(this);
+        mqttTopicEventBus.subscribe("/commands/" + robot.getName() + "/#");
     }
 
     @Override
     public void publish(RobotEvent robotEvent) {
-        LOG.info("Publishing robot event: {} to mqtt");
+        LOG.info("Publishing robot event: {} to mqtt", robotEvent);
         mqttTopicEventBus.publish(robotEvent);
     }
 
