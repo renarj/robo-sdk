@@ -15,9 +15,9 @@
  */
 package com.oberasoftware.robo.service;
 
-import com.oberasoftware.robo.api.MotionManager;
-import com.oberasoftware.robo.api.ServoDriver;
-import com.oberasoftware.robo.api.ServoProperty;
+import com.oberasoftware.robo.api.motion.MotionManager;
+import com.oberasoftware.robo.api.servo.ServoDriver;
+import com.oberasoftware.robo.api.servo.ServoProperty;
 import com.oberasoftware.robo.service.model.MotionModel;
 import com.oberasoftware.robo.service.model.ServoModel;
 import com.sdl.odata.api.ODataException;

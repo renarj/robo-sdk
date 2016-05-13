@@ -1,5 +1,6 @@
-package com.oberasoftware.robo.api;
+package com.oberasoftware.robo.api.servo;
 
+import com.oberasoftware.robo.api.ActivatableCapability;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
 
 import java.util.List;

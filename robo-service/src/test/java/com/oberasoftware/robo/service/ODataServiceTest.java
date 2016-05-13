@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.service;
 
-import com.oberasoftware.robo.api.MotionConverter;
-import com.oberasoftware.robo.api.MotionManager;
+import com.oberasoftware.robo.api.motion.MotionConverter;
+import com.oberasoftware.robo.api.motion.MotionManager;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.core.CoreConfiguration;
 import com.oberasoftware.robo.service.model.MotionModel;

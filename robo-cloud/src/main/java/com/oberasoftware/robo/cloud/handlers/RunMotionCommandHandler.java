@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.cloud.converters;
+package com.oberasoftware.robo.cloud.handlers;
 
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
@@ -15,14 +15,14 @@ import org.springframework.stereotype.Component;
  * @author Renze de Vries
  */
 @Component
-public class MovementCommandConverter implements EventHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(MovementCommandConverter.class);
+public class RunMotionCommandHandler implements EventHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(RunMotionCommandHandler.class);
 
     @Autowired
     private MotionEngine motionEngine;
 
     @EventSubscribe
-    @MQTTPath(group = MessageGroup.COMMANDS, device = "motion")
+    @MQTTPath(group = MessageGroup.COMMANDS, device = "motion", label = "run")
     public void convert(MQTTMessage mqttMessage) {
         LOG.info("Executing motion: {} from topic: {}", mqttMessage.getMessage(), mqttMessage.getTopic());
         String motionCommand = mqttMessage.getMessage();

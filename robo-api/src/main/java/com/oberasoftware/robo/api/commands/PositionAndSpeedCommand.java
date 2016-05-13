@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.api.commands;
 
 
-import com.oberasoftware.robo.api.ServoCommand;
+import com.oberasoftware.robo.api.servo.ServoCommand;
 
 /**
  * @author Renze de Vries

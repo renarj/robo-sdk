@@ -1,5 +1,8 @@
 package com.oberasoftware.robo.api;
 
+import com.oberasoftware.robo.api.motion.MotionResource;
+import com.oberasoftware.robo.api.motion.WalkDirection;
+
 import java.util.List;
 
 /**
@@ -13,7 +16,9 @@ public interface MotionEngine extends ActivatableCapability {
 
     void loadResource(MotionResource resource);
 
-    MotionTask walk();
+    MotionTask walkForward();
+
+    MotionTask walk(WalkDirection direction);
 
     MotionTask runMotion(String motionName);
 

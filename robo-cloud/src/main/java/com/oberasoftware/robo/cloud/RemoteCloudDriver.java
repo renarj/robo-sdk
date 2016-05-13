@@ -3,7 +3,7 @@ package com.oberasoftware.robo.cloud;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.core.mqtt.MQTTTopicEventBus;
-import com.oberasoftware.robo.api.CommandListener;
+import com.oberasoftware.robo.api.commands.CommandListener;
 import com.oberasoftware.robo.api.RemoteDriver;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.RobotCommand;

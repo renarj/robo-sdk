@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.api;
+package com.oberasoftware.robo.api.servo;
 
 import java.util.Map;
 import java.util.Set;

@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.core;
 
-import com.oberasoftware.robo.api.ServoData;
-import com.oberasoftware.robo.api.ServoUpdateEvent;
+import com.oberasoftware.robo.api.servo.ServoData;
+import com.oberasoftware.robo.api.servo.ServoUpdateEvent;
 
 /**
  * @author Renze de Vries

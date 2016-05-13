@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.api;
+package com.oberasoftware.robo.api.motion;
 
 /**
  * @author Renze de Vries

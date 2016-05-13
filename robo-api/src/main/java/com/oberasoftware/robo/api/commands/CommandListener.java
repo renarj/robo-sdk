@@ -1,6 +1,4 @@
-package com.oberasoftware.robo.api;
-
-import com.oberasoftware.robo.api.commands.RobotCommand;
+package com.oberasoftware.robo.api.commands;
 
 /**
  * @author Renze de Vries

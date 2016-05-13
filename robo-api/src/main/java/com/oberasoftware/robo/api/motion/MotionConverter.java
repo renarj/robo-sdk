@@ -1,6 +1,4 @@
-package com.oberasoftware.robo.api;
-
-import com.oberasoftware.robo.api.motion.Motion;
+package com.oberasoftware.robo.api.motion;
 
 import java.util.List;
 

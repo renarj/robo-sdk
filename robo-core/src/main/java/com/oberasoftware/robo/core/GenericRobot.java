@@ -4,7 +4,7 @@ import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.robo.api.MotionEngine;
 import com.oberasoftware.robo.api.Robot;
-import com.oberasoftware.robo.api.ServoDriver;
+import com.oberasoftware.robo.api.servo.ServoDriver;
 import com.oberasoftware.robo.api.sensors.Sensor;
 import com.oberasoftware.robo.api.sensors.SensorDriver;
 import org.slf4j.Logger;

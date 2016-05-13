@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.api;
+package com.oberasoftware.robo.api.motion;
 
 import com.oberasoftware.robo.api.motion.Motion;
 

@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.service;
 
 import com.oberasoftware.robo.api.MotionEngine;
-import com.oberasoftware.robo.api.MotionManager;
+import com.oberasoftware.robo.api.motion.MotionManager;
 import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.sdl.odata.api.ODataException;

@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.api;
 
+import com.oberasoftware.robo.api.commands.CommandListener;
 import com.oberasoftware.robo.api.events.RobotEvent;
 
 /**

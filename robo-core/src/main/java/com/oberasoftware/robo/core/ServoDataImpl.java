@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.core;
 
-import com.oberasoftware.robo.api.ServoData;
-import com.oberasoftware.robo.api.ServoProperty;
+import com.oberasoftware.robo.api.servo.ServoData;
+import com.oberasoftware.robo.api.servo.ServoProperty;
 
 import java.util.Map;
 import java.util.Set;
