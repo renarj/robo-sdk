@@ -34,6 +34,7 @@ public class SpringAwareRobotBuilder {
     private List<SensorHolder> sensors = new ArrayList<>();
     private RemoteDriver remoteDriver = null;
     private List<SensorDriver> sensorDrivers = new ArrayList<>();
+    private List<Capability> otherCapabilities = new ArrayList<>();
 
     public SpringAwareRobotBuilder(String robotName, ApplicationContext context) {
         this.context = context;
@@ -77,6 +78,20 @@ public class SpringAwareRobotBuilder {
         return this;
     }
 
+    public SpringAwareRobotBuilder capability(Class<? extends Capability> capabilityClass) {
+        return capability(capabilityClass, new HashMap<>());
+    }
+
+    public SpringAwareRobotBuilder capability(Class<? extends Capability> capabilityClass, Map<String, String> properties) {
+        Capability capability = context.getBean(capabilityClass);
+        otherCapabilities.add(capability);
+        if(capability instanceof ActivatableCapability) {
+            ((ActivatableCapability)capability).activate(properties);
+        }
+
+        return this;
+    }
+
     public SpringAwareRobotBuilder sensor(Sensor sensor, Class<? extends SensorDriver> sensorDriverClass) {
         SensorDriver driver = null;
         if(sensorDriverClass != null) {
@@ -94,7 +109,7 @@ public class SpringAwareRobotBuilder {
 
         LOG.info("Creating robot base system");
         GenericRobot robot = new GenericRobot(robotName, eventBus, motionEngine,
-                servoDriver, sensorDrivers);
+                servoDriver, sensorDrivers, otherCapabilities);
 
         LOG.info("Activating all sensors");
         sensors.forEach(s -> s.initializeSensor(robot));

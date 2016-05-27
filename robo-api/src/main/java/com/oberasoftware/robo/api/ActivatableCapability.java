@@ -7,4 +7,6 @@ import java.util.Map;
  */
 public interface ActivatableCapability extends Capability {
     void activate(Map<String, String> properties);
+
+    void shutdown();
 }

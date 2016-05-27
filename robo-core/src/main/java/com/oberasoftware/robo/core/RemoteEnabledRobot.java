@@ -10,6 +10,8 @@ import com.oberasoftware.robo.api.servo.ServoDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * @author Renze de Vries
  */
@@ -44,6 +46,11 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
     @Override
     public ServoDriver getServoDriver() {
         return localRobot.getServoDriver();
+    }
+
+    @Override
+    public List<Capability> getCapabilities() {
+        return localRobot.getCapabilities();
     }
 
     @Override
