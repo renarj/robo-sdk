@@ -54,6 +54,16 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
     }
 
     @Override
+    public <T extends Capability> T getCapability(Class<T> capabilityClass) {
+        return localRobot.getCapability(capabilityClass);
+    }
+
+    @Override
+    public RemoteDriver getRemoteDriver() {
+        return remoteDriver;
+    }
+
+    @Override
     public void shutdown() {
         this.localRobot.shutdown();
     }

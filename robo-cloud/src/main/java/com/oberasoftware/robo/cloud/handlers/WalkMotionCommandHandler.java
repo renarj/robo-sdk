@@ -8,7 +8,10 @@ import com.oberasoftware.home.core.mqtt.MQTTMessage;
 import com.oberasoftware.home.core.mqtt.MQTTPath;
 import com.oberasoftware.home.core.mqtt.MessageGroup;
 import com.oberasoftware.robo.api.MotionEngine;
+import com.oberasoftware.robo.api.Robot;
+import com.oberasoftware.robo.api.RobotRegistry;
 import com.oberasoftware.robo.api.motion.WalkDirection;
+import com.oberasoftware.robo.cloud.RemoteMotionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +27,7 @@ public class WalkMotionCommandHandler implements EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(WalkMotionCommandHandler.class);
 
     @Autowired
-    private MotionEngine motionEngine;
+    private RobotRegistry robotRegistry;
 
     @EventSubscribe
     @MQTTPath(group = MessageGroup.COMMANDS, device = "motion", label = "walk")
@@ -38,6 +41,9 @@ public class WalkMotionCommandHandler implements EventHandler {
             WalkDirection direction = WalkDirection.fromString(mqttMessage.getMessage());
             LOG.info("Walking in direction: {}", direction);
 
+            Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+            MotionEngine motionEngine = robot.getMotionEngine();
+
             if(direction != WalkDirection.STOP) {
                 motionEngine.walk(direction);
             } else {
@@ -47,4 +53,18 @@ public class WalkMotionCommandHandler implements EventHandler {
             LOG.warn("Received walk command, but direction not specified");
         }
     }
+
+    @EventSubscribe
+    @MQTTPath(group = MessageGroup.COMMANDS, device = "motion", label = "prepare")
+    public void convertPrepareWalk(MQTTMessage mqttMessage) {
+        LOG.debug("Executing Prepare Walk: {} from topic: {}", mqttMessage.getMessage(), mqttMessage.getTopic());
+        BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
+
+        Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+        MotionEngine motionEngine = robot.getMotionEngine();
+        if(!(motionEngine instanceof RemoteMotionEngine)) {
+            motionEngine.prepareWalk();
+        }
+    }
+
 }

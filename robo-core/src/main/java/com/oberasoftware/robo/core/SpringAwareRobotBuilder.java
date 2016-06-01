@@ -4,7 +4,6 @@ import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.*;
 import com.oberasoftware.robo.api.motion.MotionResource;
-import com.oberasoftware.robo.api.sensors.ListenableSensor;
 import com.oberasoftware.robo.api.sensors.Sensor;
 import com.oberasoftware.robo.api.sensors.SensorDriver;
 import com.oberasoftware.robo.api.servo.ServoDriver;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Renze de Vries
@@ -24,17 +22,13 @@ import java.util.stream.Collectors;
 public class SpringAwareRobotBuilder {
     private static final Logger LOG = LoggerFactory.getLogger(SpringAwareRobotBuilder.class);
 
-    private final ApplicationContext context;
-
     private final String robotName;
+
+    private final ApplicationContext context;
     private final EventBus eventBus = new LocalEventBus();
 
-    private MotionEngine motionEngine;
-    private ServoDriver servoDriver;
     private List<SensorHolder> sensors = new ArrayList<>();
-    private RemoteDriver remoteDriver = null;
-    private List<SensorDriver> sensorDrivers = new ArrayList<>();
-    private List<Capability> otherCapabilities = new ArrayList<>();
+    private List<CapabilityHolder> capabilities = new ArrayList<>();
 
     public SpringAwareRobotBuilder(String robotName, ApplicationContext context) {
         this.context = context;
@@ -42,13 +36,10 @@ public class SpringAwareRobotBuilder {
     }
 
     public SpringAwareRobotBuilder motionEngine(MotionEngine motionEngine, MotionResource resource) {
-        this.motionEngine = motionEngine;
         if(resource != null) {
-            this.motionEngine.loadResource(resource);
+            motionEngine.loadResource(resource);
         }
-        this.motionEngine.activate(new HashMap<>());
-
-        return this;
+        return addCapability(motionEngine, new HashMap<>());
     }
 
     public SpringAwareRobotBuilder motionEngine(Class<? extends MotionEngine> motionEngineClass, MotionResource resource) {
@@ -60,9 +51,7 @@ public class SpringAwareRobotBuilder {
     }
 
     public SpringAwareRobotBuilder servoDriver(ServoDriver servoDriver, Map<String, String> properties) {
-        this.servoDriver = servoDriver;
-        this.servoDriver.activate(properties);
-        return this;
+        return addCapability(servoDriver, properties);
     }
 
     public SpringAwareRobotBuilder servoDriver(Class<? extends ServoDriver> servoDriver) {
@@ -74,8 +63,8 @@ public class SpringAwareRobotBuilder {
     }
 
     public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector) {
-        this.remoteDriver = context.getBean(remoteConnector);
-        return this;
+        RemoteDriver remoteDriver = context.getBean(remoteConnector);
+        return addCapability(remoteDriver, new HashMap<>());
     }
 
     public SpringAwareRobotBuilder capability(Class<? extends Capability> capabilityClass) {
@@ -84,11 +73,11 @@ public class SpringAwareRobotBuilder {
 
     public SpringAwareRobotBuilder capability(Class<? extends Capability> capabilityClass, Map<String, String> properties) {
         Capability capability = context.getBean(capabilityClass);
-        otherCapabilities.add(capability);
-        if(capability instanceof ActivatableCapability) {
-            ((ActivatableCapability)capability).activate(properties);
-        }
+        return addCapability(capability, properties);
+    }
 
+    private SpringAwareRobotBuilder addCapability(Capability capability, Map<String, String> properties) {
+        capabilities.add(new CapabilityHolder(capability, properties));
         return this;
     }
 
@@ -96,28 +85,28 @@ public class SpringAwareRobotBuilder {
         SensorDriver driver = null;
         if(sensorDriverClass != null) {
             driver = context.getBean(sensorDriverClass);
-            sensorDrivers.add(driver);
+            addCapability(driver, new HashMap<>());
         }
 
-        this.sensors.add(new SensorHolder(sensor, driver));
+        this.sensors.add(new SensorHolder(sensor, driver, eventBus));
         return this;
     }
 
     public Robot build() {
-        LOG.info("Initializing all sensor drivers");
-        initializeDrivers();
+        Robot robot = buildRobot();
+        context.getBean(RobotRegistry.class).register(robot);
 
+        return robot;
+    }
+
+    private Robot buildRobot() {
         LOG.info("Creating robot base system");
-        GenericRobot robot = new GenericRobot(robotName, eventBus, motionEngine,
-                servoDriver, sensorDrivers, otherCapabilities);
+        GenericRobot robot = new GenericRobot(robotName, eventBus, capabilities, sensors);
+        robot.initialize();
 
-        LOG.info("Activating all sensors");
-        sensors.forEach(s -> s.initializeSensor(robot));
-        robot.setSensors(sensors.stream().map(h -> h.sensor).collect(Collectors.toList()));
-
+        RemoteDriver remoteDriver = robot.getRemoteDriver();
         if(remoteDriver != null) {
             LOG.info("Remote robot control is enabled");
-            remoteDriver.activate(robot);
             return new RemoteEnabledRobot(remoteDriver, robot);
         } else {
             LOG.info("Robot construction finished");
@@ -125,27 +114,4 @@ public class SpringAwareRobotBuilder {
         }
     }
 
-    private void initializeDrivers() {
-        sensorDrivers.forEach(SensorDriver::initialize);
-    }
-
-    private class SensorHolder {
-        private final Sensor sensor;
-        private final SensorDriver driver;
-
-        public SensorHolder(Sensor sensor, SensorDriver driver) {
-            this.sensor = sensor;
-            this.driver = driver;
-        }
-
-        private void initializeSensor(Robot robot) {
-            LOG.info("Activating sensor: {}", sensor);
-            sensor.activate(robot, driver);
-
-            if(sensor instanceof ListenableSensor) {
-                LOG.info("Activating publishable sensor: {}", sensor);
-                ((ListenableSensor)sensor).listen(event -> eventBus.publish(event));
-            }
-        }
-    }
 }

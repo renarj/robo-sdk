@@ -8,6 +8,8 @@ import com.oberasoftware.home.core.mqtt.MQTTMessage;
 import com.oberasoftware.home.core.mqtt.MQTTPath;
 import com.oberasoftware.home.core.mqtt.MessageGroup;
 import com.oberasoftware.robo.api.MotionEngine;
+import com.oberasoftware.robo.api.Robot;
+import com.oberasoftware.robo.api.RobotRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ public class RunMotionCommandHandler implements EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(RunMotionCommandHandler.class);
 
     @Autowired
-    private MotionEngine motionEngine;
+    private RobotRegistry robotRegistry;
 
     @EventSubscribe
     @MQTTPath(group = MessageGroup.COMMANDS, device = "motion", label = "run")
@@ -34,6 +36,9 @@ public class RunMotionCommandHandler implements EventHandler {
         String motionName = basicCommand.getProperties().get("motion");
         if(motionName != null) {
             LOG.info("Received motion execution: {}", motionName);
+
+            Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+            MotionEngine motionEngine = robot.getMotionEngine();
             motionEngine.runMotion(motionName);
         } else {
             LOG.warn("Received motion command, but motion not specified");

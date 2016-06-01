@@ -7,6 +7,8 @@ import com.oberasoftware.home.api.model.BasicCommandImpl;
 import com.oberasoftware.home.core.mqtt.MQTTMessage;
 import com.oberasoftware.home.core.mqtt.MQTTPath;
 import com.oberasoftware.home.core.mqtt.MessageGroup;
+import com.oberasoftware.robo.api.Robot;
+import com.oberasoftware.robo.api.RobotRegistry;
 import com.oberasoftware.robo.api.SpeechEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,17 +25,19 @@ import static com.oberasoftware.home.util.ConverterHelper.mapFromJson;
 public class SpeechCommandHandler implements EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(SpeechCommandHandler.class);
 
-    @Autowired(required = false)
-    private SpeechEngine speechEngine;
+    @Autowired
+    private RobotRegistry robotRegistry;
 
     @EventSubscribe
     @MQTTPath(group = MessageGroup.COMMANDS, device = "tts", label = "say")
     public void convert(MQTTMessage mqttMessage) {
         LOG.debug("Executing text to speech: {} from topic: {}", mqttMessage.getMessage(), mqttMessage.getTopic());
+        BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
+
+        Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+        SpeechEngine speechEngine = robot.getCapability(SpeechEngine.class);
 
         if(speechEngine != null) {
-            BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
-
             String textToSpeech = basicCommand.getProperties().get("text");
             String language = basicCommand.getProperties().get("language");
             if(StringUtils.hasText(textToSpeech) && StringUtils.hasText(language)) {

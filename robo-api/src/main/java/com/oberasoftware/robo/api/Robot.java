@@ -17,7 +17,11 @@ public interface Robot {
 
     ServoDriver getServoDriver();
 
+    RemoteDriver getRemoteDriver();
+
     List<Capability> getCapabilities();
+
+    <T extends Capability> T getCapability(Class<T> capabilityClass);
 
     void shutdown();
 }

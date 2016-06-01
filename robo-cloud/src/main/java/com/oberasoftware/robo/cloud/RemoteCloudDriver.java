@@ -1,19 +1,20 @@
 package com.oberasoftware.robo.cloud;
 
+import com.oberasoftware.base.event.Event;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.home.core.mqtt.MQTTTopicEventBus;
-import com.oberasoftware.robo.api.commands.CommandListener;
 import com.oberasoftware.robo.api.RemoteDriver;
 import com.oberasoftware.robo.api.Robot;
+import com.oberasoftware.robo.api.commands.CommandListener;
 import com.oberasoftware.robo.api.commands.RobotCommand;
-import com.oberasoftware.robo.api.events.RobotEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -28,7 +29,8 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
 
     private List<CommandListener> commandListeners = new CopyOnWriteArrayList<>();
 
-    public void activate(Robot robot) {
+    @Override
+    public void activate(Robot robot, Map<String, String> properties) {
         LOG.info("Connecting to remote Robot Cloud");
         mqttTopicEventBus.connect();
 
@@ -37,7 +39,13 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
     }
 
     @Override
-    public void publish(RobotEvent robotEvent) {
+    public void shutdown() {
+        LOG.info("Disconnecting from robot cloud");
+        mqttTopicEventBus.disconnect();
+    }
+
+    @Override
+    public void publish(Event robotEvent) {
         LOG.info("Publishing robot event: {} to mqtt", robotEvent);
         mqttTopicEventBus.publish(robotEvent);
     }

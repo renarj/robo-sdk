@@ -16,6 +16,8 @@ public interface MotionEngine extends ActivatableCapability {
 
     void loadResource(MotionResource resource);
 
+    List<String> getMotions();
+
     MotionTask walkForward();
 
     MotionTask walk(WalkDirection direction);
