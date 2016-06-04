@@ -96,7 +96,7 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
-                <artifactId>eventbus-mqtt</artifactId>
+                <artifactId>home-mqtt</artifactId>
                 <version>${home.core.version}</version>
             </dependency>
         </dependencies>
