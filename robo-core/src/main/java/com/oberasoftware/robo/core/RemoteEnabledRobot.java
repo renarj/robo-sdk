@@ -1,8 +1,10 @@
 package com.oberasoftware.robo.core;
 
 import com.oberasoftware.base.event.EventHandler;
-import com.oberasoftware.base.event.EventSubscribe;
-import com.oberasoftware.robo.api.*;
+import com.oberasoftware.robo.api.Capability;
+import com.oberasoftware.robo.api.MotionEngine;
+import com.oberasoftware.robo.api.RemoteDriver;
+import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.CommandListener;
 import com.oberasoftware.robo.api.commands.RobotCommand;
 import com.oberasoftware.robo.api.events.RobotEvent;
@@ -78,9 +80,9 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
         LOG.info("Received a remote robot command: {}", command);
     }
 
-    @EventSubscribe
-    public void receiveRobotEvent(RobotEvent robotEvent) {
-        LOG.info("Received a robot event: {}", robotEvent);
-        remoteDriver.publish(robotEvent);
-    }
+//    @EventSubscribe
+//    public void receiveRobotEvent(RobotEvent robotEvent) {
+//        LOG.info("Received a robot event: {}", robotEvent);
+//        remoteDriver.publish(robotEvent);
+//    }
 }

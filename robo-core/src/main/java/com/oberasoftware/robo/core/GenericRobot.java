@@ -90,8 +90,8 @@ public class GenericRobot implements Robot {
     public void shutdown() {
         LOG.info("Shutting down robot: {}", robotName);
         capabilities.forEach(c -> {
-            if(c instanceof ActivatableCapability) {
-                ((ActivatableCapability)c).shutdown();
+            if(c.getCapability() instanceof ActivatableCapability) {
+                ((ActivatableCapability)c.getCapability()).shutdown();
             }
         });
         LOG.info("Robot: {} shutdown complete", robotName);

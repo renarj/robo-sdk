@@ -108,6 +108,7 @@ public class RemoteMotionEngine implements MotionEngine {
 
     @Override
     public void shutdown() {
-
+        LOG.info("Doing shutdown of robot");
+        rest();
     }
 }

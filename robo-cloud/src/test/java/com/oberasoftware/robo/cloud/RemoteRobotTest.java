@@ -31,7 +31,7 @@ public class RemoteRobotTest {
 
         Robot max = new SpringAwareRobotBuilder("max", context)
                 .motionEngine(RemoteMotionEngine.class)
-                .remote(RemoteCloudDriver.class)
+                .remote(RemoteCloudDriver.class, false)
                 .build();
         MaxRobotEventHandler eventHandler = new MaxRobotEventHandler(max);
         max.listen(eventHandler);
@@ -45,7 +45,7 @@ public class RemoteRobotTest {
 
     }
 
-    private static class MaxRobotEventHandler implements EventHandler {
+    public static class MaxRobotEventHandler implements EventHandler {
 
         private Robot max;
 
@@ -55,9 +55,10 @@ public class RemoteRobotTest {
 
         @EventSubscribe
         public void receive(ValueEvent valueEvent) {
+            LOG.info("Received a distance: {}", valueEvent.getValue().asString());
             if(valueEvent.getControllerId().equals("max") && valueEvent.getLabel().equals("distance")) {
                 int distance = valueEvent.getValue().getValue();
-                if(distance < 20) {
+                if(distance < 30) {
                     LOG.info("Distance is too small: {}", distance);
                 }
             }
