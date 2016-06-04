@@ -62,9 +62,17 @@ public class SpringAwareRobotBuilder {
         return servoDriver(context.getBean(servoDriverClass), properties);
     }
 
-    public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector) {
+    public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector, boolean listen) {
         RemoteDriver remoteDriver = context.getBean(remoteConnector);
-        return addCapability(remoteDriver, new HashMap<>());
+        Map<String, String> properties = new HashMap<>();
+        if(listen) {
+            properties.put("listen", "true");
+        }
+        return addCapability(remoteDriver, properties);
+    }
+
+    public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector) {
+        return remote(remoteConnector, true);
     }
 
     public SpringAwareRobotBuilder capability(Class<? extends Capability> capabilityClass) {

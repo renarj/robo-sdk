@@ -16,5 +16,10 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>obera-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>

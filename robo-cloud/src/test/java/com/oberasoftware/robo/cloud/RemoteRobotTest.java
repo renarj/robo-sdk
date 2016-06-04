@@ -3,7 +3,7 @@ package com.oberasoftware.robo.cloud;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.Robot;
-import com.oberasoftware.robo.api.events.DistanceSensorEvent;
+import com.oberasoftware.robo.api.events.ValueEvent;
 import com.oberasoftware.robo.core.CoreConfiguration;
 import com.oberasoftware.robo.core.SpringAwareRobotBuilder;
 import org.slf4j.Logger;
@@ -47,13 +47,20 @@ public class RemoteRobotTest {
 
     private static class MaxRobotEventHandler implements EventHandler {
 
-        private MaxRobotEventHandler(Robot max) {
+        private Robot max;
 
+        private MaxRobotEventHandler(Robot max) {
+            this.max = max;
         }
 
         @EventSubscribe
-        public void receive(DistanceSensorEvent distanceSensorEvent) {
-
+        public void receive(ValueEvent valueEvent) {
+            if(valueEvent.getControllerId().equals("max") && valueEvent.getLabel().equals("distance")) {
+                int distance = valueEvent.getValue().getValue();
+                if(distance < 20) {
+                    LOG.info("Distance is too small: {}", distance);
+                }
+            }
         }
     }
 }

@@ -34,8 +34,14 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
         LOG.info("Connecting to remote Robot Cloud");
         mqttTopicEventBus.connect();
 
-        mqttTopicEventBus.registerHandler(this);
-        mqttTopicEventBus.subscribe("/commands/" + robot.getName() + "/#");
+        if(properties.containsKey("listen")) {
+            LOG.info("Listening to remote commands");
+            mqttTopicEventBus.registerHandler(this);
+            mqttTopicEventBus.subscribe("/commands/" + robot.getName() + "/#");
+        } else {
+            mqttTopicEventBus.registerHandler(this);
+            mqttTopicEventBus.subscribe("/states/" + robot.getName() + "/#");
+        }
     }
 
     @Override

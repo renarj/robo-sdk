@@ -26,9 +26,9 @@ public class DistanceEventConverter implements Converter {
         Value value = new ValueImpl(VALUE_TYPE.NUMBER, event.getDistance());
 
         MQTTMessage message = MQTTMessageBuilder.from(value)
-                .controller(event.getRobotName())
-                .channel(event.getCapability())
-                .label(event.getSourceName())
+                .controller(event.getControllerId())
+                .channel(event.getItemId())
+                .label(event.getLabel())
             .build();
 
         LOG.info("Sending value: {} MQTT message: {}", value, message);

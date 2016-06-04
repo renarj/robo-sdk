@@ -19,17 +19,17 @@ public class DistanceSensorEvent implements SensorEvent<DistanceValue> {
     }
 
     @Override
-    public String getRobotName() {
+    public String getControllerId() {
         return robotId;
     }
 
     @Override
-    public String getCapability() {
+    public String getItemId() {
         return capability;
     }
 
     @Override
-    public String getSourceName() {
+    public String getLabel() {
         return source;
     }
 

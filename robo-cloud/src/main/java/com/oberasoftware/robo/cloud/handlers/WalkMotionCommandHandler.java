@@ -11,7 +11,6 @@ import com.oberasoftware.robo.api.MotionEngine;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.RobotRegistry;
 import com.oberasoftware.robo.api.motion.WalkDirection;
-import com.oberasoftware.robo.cloud.RemoteMotionEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,9 +61,18 @@ public class WalkMotionCommandHandler implements EventHandler {
 
         Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
         MotionEngine motionEngine = robot.getMotionEngine();
-        if(!(motionEngine instanceof RemoteMotionEngine)) {
-            motionEngine.prepareWalk();
-        }
+        motionEngine.prepareWalk();
+    }
+
+    @EventSubscribe
+    @MQTTPath(group = MessageGroup.COMMANDS, device = "motion", label = "rest")
+    public void convertRest(MQTTMessage mqttMessage) {
+        LOG.debug("Executing Rest command: {} from topic: {}", mqttMessage.getMessage(), mqttMessage.getTopic());
+        BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
+
+        Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+        MotionEngine motionEngine = robot.getMotionEngine();
+        motionEngine.rest();
     }
 
 }

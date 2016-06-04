@@ -38,7 +38,14 @@ public class RemoteMotionEngine implements MotionEngine {
 
     @Override
     public boolean rest() {
-        return false;
+        BasicCommand command = create(robot.getName())
+                .item("motion")
+                .label("rest")
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
+        return true;
     }
 
     @Override
@@ -63,6 +70,13 @@ public class RemoteMotionEngine implements MotionEngine {
 
     @Override
     public MotionTask runMotion(String motionName) {
+        BasicCommand command = create(robot.getName())
+                .item("motion")
+                .label("run")
+                .property("motion", motionName)
+                .build();
+
+        robot.getRemoteDriver().publish(command);
         return null;
     }
 

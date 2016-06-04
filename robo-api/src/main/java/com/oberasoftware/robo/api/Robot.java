@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.api;
 
 import com.oberasoftware.base.event.EventHandler;
+import com.oberasoftware.robo.api.events.RobotEvent;
 import com.oberasoftware.robo.api.servo.ServoDriver;
 
 import java.util.List;
@@ -12,6 +13,8 @@ public interface Robot {
     String getName();
 
     void listen(EventHandler robotEventHandler);
+
+    void publish(RobotEvent robotEvent);
 
     MotionEngine getMotionEngine();
 
