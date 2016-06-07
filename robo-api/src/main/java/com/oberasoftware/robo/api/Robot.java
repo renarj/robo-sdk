@@ -12,6 +12,8 @@ import java.util.List;
 public interface Robot {
     String getName();
 
+    boolean isVirtual();
+
     void listen(EventHandler robotEventHandler);
 
     void publish(RobotEvent robotEvent);

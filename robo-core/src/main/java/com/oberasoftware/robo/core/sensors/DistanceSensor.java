@@ -2,18 +2,21 @@ package com.oberasoftware.robo.core.sensors;
 
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.events.DistanceSensorEvent;
-import com.oberasoftware.robo.api.sensors.*;
+import com.oberasoftware.robo.api.sensors.AnalogPort;
+import com.oberasoftware.robo.api.sensors.DirectPort;
+import com.oberasoftware.robo.api.sensors.DistanceValue;
+import com.oberasoftware.robo.api.sensors.Port;
+import com.oberasoftware.robo.api.sensors.SensorDriver;
+import com.oberasoftware.robo.api.sensors.SensorValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author Renze de Vries
  */
-public class DistanceSensor implements ListenableSensor<DistanceValue> {
+public class DistanceSensor extends AbstractSensor<DistanceValue> {
     private static final Logger LOG = LoggerFactory.getLogger(DistanceSensor.class);
 
     private static final AnalogToDistanceConverter CONVERTER = new AnalogToDistanceConverter();
@@ -23,8 +26,6 @@ public class DistanceSensor implements ListenableSensor<DistanceValue> {
 
     private Robot robot;
     private Port port;
-
-    private List<SensorListener<DistanceValue>> sensorListeners = new CopyOnWriteArrayList<>();
 
     private AtomicInteger lastDistance = new AtomicInteger(0);
 
@@ -37,7 +38,7 @@ public class DistanceSensor implements ListenableSensor<DistanceValue> {
         LOG.debug("Received a Distance: {} on port: {}", distance, port);
 
         DistanceSensorEvent event = new DistanceSensorEvent(robot.getName(), portName, name, distance);
-        sensorListeners.forEach(l -> l.receive(event));
+        notifyListeners(event);
     }
 
     @Override
@@ -48,11 +49,6 @@ public class DistanceSensor implements ListenableSensor<DistanceValue> {
     @Override
     public String getName() {
         return name;
-    }
-
-    @Override
-    public void listen(SensorListener<DistanceValue> listener) {
-        this.sensorListeners.add(listener);
     }
 
     @Override

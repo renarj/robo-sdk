@@ -29,6 +29,7 @@ public class SpringAwareRobotBuilder {
 
     private List<SensorHolder> sensors = new ArrayList<>();
     private List<CapabilityHolder> capabilities = new ArrayList<>();
+    private boolean virtualRobot = false;
 
     public SpringAwareRobotBuilder(String robotName, ApplicationContext context) {
         this.context = context;
@@ -62,17 +63,15 @@ public class SpringAwareRobotBuilder {
         return servoDriver(context.getBean(servoDriverClass), properties);
     }
 
-    public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector, boolean listen) {
+    public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector, boolean virtualRobot) {
         RemoteDriver remoteDriver = context.getBean(remoteConnector);
         Map<String, String> properties = new HashMap<>();
-        if(listen) {
-            properties.put("listen", "true");
-        }
+        this.virtualRobot = virtualRobot;
         return addCapability(remoteDriver, properties);
     }
 
     public SpringAwareRobotBuilder remote(Class<? extends RemoteDriver> remoteConnector) {
-        return remote(remoteConnector, true);
+        return remote(remoteConnector, false);
     }
 
     public SpringAwareRobotBuilder capability(Class<? extends Capability> capabilityClass) {
@@ -109,13 +108,13 @@ public class SpringAwareRobotBuilder {
 
     private Robot buildRobot() {
         LOG.info("Creating robot base system");
-        GenericRobot robot = new GenericRobot(robotName, eventBus, capabilities, sensors);
+        GenericRobot robot = new GenericRobot(robotName, virtualRobot, eventBus, capabilities, sensors);
         robot.initialize();
 
         RemoteDriver remoteDriver = robot.getRemoteDriver();
         if(remoteDriver != null) {
             LOG.info("Remote robot control is enabled");
-            return new RemoteEnabledRobot(remoteDriver, robot);
+            return new RemoteEnabledRobot(remoteDriver, robot, virtualRobot);
         } else {
             LOG.info("Robot construction finished");
             return robot;

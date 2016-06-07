@@ -21,13 +21,16 @@ public class GenericRobot implements Robot {
     private EventBus eventBus;
 
     private final String robotName;
+    private final boolean virtualRobot;
 
     private final List<CapabilityHolder> capabilities;
     private final List<SensorHolder> sensors;
 
-    public GenericRobot(String robotName, EventBus eventBus, List<CapabilityHolder> capabilities, List<SensorHolder> sensors) {
+    public GenericRobot(String robotName, boolean virtualRobot,
+                        EventBus eventBus, List<CapabilityHolder> capabilities, List<SensorHolder> sensors) {
         this.robotName = robotName;
         this.eventBus = eventBus;
+        this.virtualRobot = virtualRobot;
 
         this.capabilities = capabilities;
         this.sensors = sensors;
@@ -84,6 +87,11 @@ public class GenericRobot implements Robot {
     @Override
     public List<Capability> getCapabilities() {
         return capabilities.stream().map(CapabilityHolder::getCapability).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean isVirtual() {
+        return virtualRobot;
     }
 
     @Override

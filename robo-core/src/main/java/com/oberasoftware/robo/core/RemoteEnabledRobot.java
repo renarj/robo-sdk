@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.core;
 
 import com.oberasoftware.base.event.EventHandler;
+import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.Capability;
 import com.oberasoftware.robo.api.MotionEngine;
 import com.oberasoftware.robo.api.RemoteDriver;
@@ -22,12 +23,18 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
 
     private final Robot localRobot;
     private final RemoteDriver remoteDriver;
+    private final boolean virtualRobot;
 
-    public RemoteEnabledRobot(RemoteDriver remoteDriver, Robot localRobot) {
+    public RemoteEnabledRobot(RemoteDriver remoteDriver, Robot localRobot, boolean virtualRobot) {
         this.localRobot = localRobot;
         this.remoteDriver = remoteDriver;
+        this.virtualRobot = virtualRobot;
         remoteDriver.register(this);
-        this.localRobot.listen(this);
+
+        if(!virtualRobot) {
+            //to ensure we can send remote events to the cloud
+            this.localRobot.listen(this);
+        }
     }
 
     @Override
@@ -66,6 +73,11 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
     }
 
     @Override
+    public boolean isVirtual() {
+        return this.virtualRobot;
+    }
+
+    @Override
     public RemoteDriver getRemoteDriver() {
         return remoteDriver;
     }
@@ -80,9 +92,9 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
         LOG.info("Received a remote robot command: {}", command);
     }
 
-//    @EventSubscribe
-//    public void receiveRobotEvent(RobotEvent robotEvent) {
-//        LOG.info("Received a robot event: {}", robotEvent);
-//        remoteDriver.publish(robotEvent);
-//    }
+    @EventSubscribe
+    public void receiveRobotEvent(RobotEvent robotEvent) {
+        LOG.info("Received a robot event: {}", robotEvent);
+        remoteDriver.publish(robotEvent);
+    }
 }

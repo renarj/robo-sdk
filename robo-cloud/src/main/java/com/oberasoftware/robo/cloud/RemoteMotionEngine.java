@@ -8,6 +8,7 @@ import com.oberasoftware.robo.api.motion.MotionResource;
 import com.oberasoftware.robo.api.motion.WalkDirection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import static com.oberasoftware.home.api.model.BasicCommandBuilder.create;
  * @author Renze de Vries
  */
 @Component
+@Scope("prototype")
 public class RemoteMotionEngine implements MotionEngine {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteMotionEngine.class);
 

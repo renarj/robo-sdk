@@ -3,6 +3,7 @@ package com.oberasoftware.robo.cloud;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.Robot;
+import com.oberasoftware.robo.api.SpeechEngine;
 import com.oberasoftware.robo.api.events.ValueEvent;
 import com.oberasoftware.robo.core.CoreConfiguration;
 import com.oberasoftware.robo.core.SpringAwareRobotBuilder;
@@ -31,12 +32,24 @@ public class RemoteRobotTest {
 
         Robot max = new SpringAwareRobotBuilder("max", context)
                 .motionEngine(RemoteMotionEngine.class)
-                .remote(RemoteCloudDriver.class, false)
+                .remote(RemoteCloudDriver.class, true)
                 .build();
-        MaxRobotEventHandler eventHandler = new MaxRobotEventHandler(max);
+
+        Robot pep = new SpringAwareRobotBuilder("peppy", context)
+                .motionEngine(RemoteMotionEngine.class)
+                .capability(RemoteSpeechEngine.class)
+                .remote(RemoteCloudDriver.class, true)
+                .build();
+
+        MaxRobotEventHandler eventHandler = new MaxRobotEventHandler(pep, max);
         max.listen(eventHandler);
 
+
+        PepRobotEventHandler pepHandler = new PepRobotEventHandler(max, pep);
+        pep.listen(pepHandler);
+
         max.getMotionEngine().prepareWalk();
+        pep.getMotionEngine().prepareWalk();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             LOG.info("Killing the robot gracefully on shutdown");
@@ -48,8 +61,10 @@ public class RemoteRobotTest {
     public static class MaxRobotEventHandler implements EventHandler {
 
         private Robot max;
+        private Robot pep;
 
-        private MaxRobotEventHandler(Robot max) {
+        private MaxRobotEventHandler(Robot pep, Robot max) {
+            this.pep = pep;
             this.max = max;
         }
 
@@ -60,6 +75,30 @@ public class RemoteRobotTest {
                 int distance = valueEvent.getValue().getValue();
                 if(distance < 30) {
                     LOG.info("Distance is too small: {}", distance);
+                    pep.getCapability(SpeechEngine.class).say("Max, are you ok, did you hit something?", "english");
+//                    max.getMotionEngine().runMotion("Bravo");
+
+                }
+            }
+        }
+    }
+
+    public static class PepRobotEventHandler implements EventHandler {
+        private Robot max;
+        private Robot pep;
+
+        public PepRobotEventHandler(Robot max, Robot pep) {
+            this.max = max;
+            this.pep = pep;
+        }
+
+        @EventSubscribe
+        public void receive(ValueEvent valueEvent) {
+            LOG.info("Received an event for pep: {}", valueEvent);
+            if(valueEvent.getControllerId().equals("peppy") && valueEvent.getItemId().equals("head")) {
+                if(valueEvent.getValue().asString().equals("true")) {
+
+                    max.getMotionEngine().runMotion("Bravo");
                 }
             }
         }

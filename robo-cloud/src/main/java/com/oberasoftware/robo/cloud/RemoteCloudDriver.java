@@ -11,6 +11,7 @@ import com.oberasoftware.robo.api.commands.RobotCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * @author Renze de Vries
  */
 @Component
+@Scope("prototype")
 public class RemoteCloudDriver implements RemoteDriver, EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteCloudDriver.class);
 
@@ -34,12 +36,12 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
         LOG.info("Connecting to remote Robot Cloud");
         mqttTopicEventBus.connect();
 
-        if(properties.containsKey("listen")) {
+        if(!robot.isVirtual()) {
             LOG.info("Listening to remote commands");
             mqttTopicEventBus.registerHandler(this);
             mqttTopicEventBus.subscribe("/commands/" + robot.getName() + "/#");
         } else {
-            mqttTopicEventBus.registerHandler(this);
+//            mqttTopicEventBus.registerHandler(this);
             mqttTopicEventBus.subscribe("/states/" + robot.getName() + "/#");
         }
     }
