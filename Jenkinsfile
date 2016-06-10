@@ -1,6 +1,6 @@
 node {
     git url: 'git@github.com:renarj/robo-sdk.git'
-    def mvnHome : tool 'M3'
+    def mvnHome = tool 'M3'
 
     stage 'checkout'
     checkout scm
