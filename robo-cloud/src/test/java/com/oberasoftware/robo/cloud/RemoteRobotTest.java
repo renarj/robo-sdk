@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.cloud;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.Robot;
@@ -13,6 +14,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author Renze de Vries
@@ -44,7 +48,6 @@ public class RemoteRobotTest {
         MaxRobotEventHandler eventHandler = new MaxRobotEventHandler(pep, max);
         max.listen(eventHandler);
 
-
         PepRobotEventHandler pepHandler = new PepRobotEventHandler(max, pep);
         pep.listen(pepHandler);
 
@@ -55,13 +58,14 @@ public class RemoteRobotTest {
             LOG.info("Killing the robot gracefully on shutdown");
             max.shutdown();
         }));
-
     }
 
     public static class MaxRobotEventHandler implements EventHandler {
 
         private Robot max;
         private Robot pep;
+
+        private AtomicBoolean guard = new AtomicBoolean(true);
 
         private MaxRobotEventHandler(Robot pep, Robot max) {
             this.pep = pep;
@@ -74,10 +78,14 @@ public class RemoteRobotTest {
             if(valueEvent.getControllerId().equals("max") && valueEvent.getLabel().equals("distance")) {
                 int distance = valueEvent.getValue().getValue();
                 if(distance < 30) {
-                    LOG.info("Distance is too small: {}", distance);
-                    pep.getCapability(SpeechEngine.class).say("Max, are you ok, did you hit something?", "english");
-//                    max.getMotionEngine().runMotion("Bravo");
+                    if(guard.compareAndSet(true, false)) {
+                        LOG.info("Distance is too small: {}", distance);
+                        pep.getCapability(SpeechEngine.class).say("Max, are you ok, did you hit something?", "english");
 
+                        Uninterruptibles.sleepUninterruptibly(10, TimeUnit.SECONDS);
+                        guard.set(true);
+                        LOG.info("Allowing further distance events");
+                    }
                 }
             }
         }
