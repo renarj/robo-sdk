@@ -45,10 +45,10 @@ public class RemoteRobotTest {
                 .remote(RemoteCloudDriver.class, true)
                 .build();
 
-        MaxRobotEventHandler eventHandler = new MaxRobotEventHandler(pep, max);
-        max.listen(eventHandler);
+        MaxRobotEventHandler maxHandler = new MaxRobotEventHandler(pep);
+        max.listen(maxHandler);
 
-        PepRobotEventHandler pepHandler = new PepRobotEventHandler(max, pep);
+        PepRobotEventHandler pepHandler = new PepRobotEventHandler(max);
         pep.listen(pepHandler);
 
         max.getMotionEngine().prepareWalk();
@@ -61,15 +61,12 @@ public class RemoteRobotTest {
     }
 
     public static class MaxRobotEventHandler implements EventHandler {
-
-        private Robot max;
         private Robot pep;
 
         private AtomicBoolean guard = new AtomicBoolean(true);
 
-        private MaxRobotEventHandler(Robot pep, Robot max) {
+        private MaxRobotEventHandler(Robot pep) {
             this.pep = pep;
-            this.max = max;
         }
 
         @EventSubscribe
@@ -93,11 +90,9 @@ public class RemoteRobotTest {
 
     public static class PepRobotEventHandler implements EventHandler {
         private Robot max;
-        private Robot pep;
 
-        public PepRobotEventHandler(Robot max, Robot pep) {
+        public PepRobotEventHandler(Robot max) {
             this.max = max;
-            this.pep = pep;
         }
 
         @EventSubscribe
