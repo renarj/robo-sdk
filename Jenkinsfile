@@ -11,6 +11,6 @@ node {
     stage 'release'
     sh "${mvnHome}/bin/mvn -B clean deploy -Dmaven.test.skip=true"
 
-    state 'archive'
+    stage 'archive'
     step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar', fingerprint: true])
 }
