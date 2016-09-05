@@ -71,6 +71,11 @@ public class RemoteMotionEngine implements MotionEngine {
     }
 
     @Override
+    public MotionTask walk(WalkDirection direction, int meters) {
+        return null;
+    }
+
+    @Override
     public MotionTask runMotion(String motionName) {
         BasicCommand command = create(robot.getName())
                 .item("motion")
@@ -79,6 +84,19 @@ public class RemoteMotionEngine implements MotionEngine {
                 .build();
 
         robot.getRemoteDriver().publish(command);
+        return null;
+    }
+
+    @Override
+    public MotionTask goToPosture(String posture) {
+        BasicCommand command = create(robot.getName())
+                .item("motion")
+                .label("set")
+                .property("posture", posture)
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
         return null;
     }
 
