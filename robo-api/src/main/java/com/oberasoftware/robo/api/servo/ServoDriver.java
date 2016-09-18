@@ -18,5 +18,9 @@ public interface ServoDriver extends ActivatableCapability {
 
     boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands);
 
+    boolean setTorgue(String servoId, int limit);
+
     List<Servo> getServos();
+
+    Servo getServo(String servoId);
 }

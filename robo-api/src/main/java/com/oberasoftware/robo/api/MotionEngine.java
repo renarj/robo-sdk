@@ -22,7 +22,7 @@ public interface MotionEngine extends ActivatableCapability {
 
     MotionTask walk(WalkDirection direction);
 
-    MotionTask walk(WalkDirection direction, int meters);
+    MotionTask walk(WalkDirection direction, float meters);
 
     MotionTask runMotion(String motionName);
 

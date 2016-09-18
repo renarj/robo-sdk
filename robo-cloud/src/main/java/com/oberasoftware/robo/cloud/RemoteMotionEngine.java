@@ -71,7 +71,7 @@ public class RemoteMotionEngine implements MotionEngine {
     }
 
     @Override
-    public MotionTask walk(WalkDirection direction, int meters) {
+    public MotionTask walk(WalkDirection direction, float meters) {
         return null;
     }
 
