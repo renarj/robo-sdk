@@ -1,17 +1,15 @@
-package com.oberasoftware.robo.core;
+package com.oberasoftware.robo.api.servo.events;
 
 import com.oberasoftware.robo.api.servo.ServoData;
-import com.oberasoftware.robo.api.servo.ServoUpdateEvent;
 
 /**
  * @author Renze de Vries
  */
-public class ServoUpdateEventImpl implements ServoUpdateEvent {
-
+public class ServoUpdateEvent implements ServoDataEvent {
     private final String servoId;
     private final ServoData updateData;
 
-    public ServoUpdateEventImpl(String servoId, ServoData updateData) {
+    public ServoUpdateEvent(String servoId, ServoData updateData) {
         this.servoId = servoId;
         this.updateData = updateData;
     }
@@ -28,9 +26,10 @@ public class ServoUpdateEventImpl implements ServoUpdateEvent {
 
     @Override
     public String toString() {
-        return "ServoUpdateEventImpl{" +
+        return "ServoUpdateEvent{" +
                 "servoId='" + servoId + '\'' +
                 ", updateData=" + updateData +
                 '}';
     }
+
 }

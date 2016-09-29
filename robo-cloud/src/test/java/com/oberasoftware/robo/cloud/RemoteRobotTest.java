@@ -6,6 +6,7 @@ import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.SpeechEngine;
 import com.oberasoftware.robo.api.events.ValueEvent;
+import com.oberasoftware.robo.cloud.motion.RemoteMotionEngine;
 import com.oberasoftware.robo.core.CoreConfiguration;
 import com.oberasoftware.robo.core.SpringAwareRobotBuilder;
 import org.slf4j.Logger;

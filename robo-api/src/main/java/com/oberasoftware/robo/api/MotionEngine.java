@@ -1,9 +1,12 @@
 package com.oberasoftware.robo.api;
 
+import com.oberasoftware.robo.api.motion.KeyFrame;
 import com.oberasoftware.robo.api.motion.MotionResource;
 import com.oberasoftware.robo.api.motion.WalkDirection;
+import com.oberasoftware.robo.api.motion.controller.MotionController;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Renze de Vries
@@ -15,6 +18,8 @@ public interface MotionEngine extends ActivatableCapability {
     boolean rest();
 
     void loadResource(MotionResource resource);
+
+    <T extends MotionController> Optional<T> getMotionController(String controllerName);
 
     List<String> getMotions();
 
@@ -29,6 +34,8 @@ public interface MotionEngine extends ActivatableCapability {
     MotionTask goToPosture(String posture);
 
     List<MotionTask> getActiveTasks();
+
+    KeyFrame getCurrentPositionAsKeyFrame();
 
     boolean stopTask(MotionTask task);
 

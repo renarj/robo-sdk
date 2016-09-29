@@ -1,20 +1,27 @@
-package com.oberasoftware.robo.cloud;
+package com.oberasoftware.robo.cloud.motion;
 
 import com.oberasoftware.home.api.commands.BasicCommand;
 import com.oberasoftware.robo.api.MotionEngine;
 import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.Robot;
+import com.oberasoftware.robo.api.motion.KeyFrame;
 import com.oberasoftware.robo.api.motion.MotionResource;
 import com.oberasoftware.robo.api.motion.WalkDirection;
+import com.oberasoftware.robo.api.motion.controller.MotionController;
+import com.oberasoftware.robo.cloud.motion.controllers.RemoteController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.oberasoftware.home.api.model.BasicCommandBuilder.create;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 /**
  * @author Renze de Vries
@@ -25,6 +32,9 @@ public class RemoteMotionEngine implements MotionEngine {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteMotionEngine.class);
 
     private Robot robot;
+
+    @Autowired
+    private List<RemoteController> remoteControllers;
 
     @Override
     public boolean prepareWalk() {
@@ -51,6 +61,17 @@ public class RemoteMotionEngine implements MotionEngine {
     }
 
     @Override
+    public <T extends MotionController> Optional<T> getMotionController(String controllerName) {
+        Optional<RemoteController> remoteController = remoteControllers.stream()
+                .filter(r -> r.getName().equalsIgnoreCase(controllerName)).findFirst();
+        if(remoteController.isPresent()) {
+            return of((T)remoteController.get());
+        } else {
+            return empty();
+        }
+    }
+
+    @Override
     public List<String> getMotions() {
         return null;
     }
@@ -58,6 +79,11 @@ public class RemoteMotionEngine implements MotionEngine {
     @Override
     public void loadResource(MotionResource resource) {
 
+    }
+
+    @Override
+    public KeyFrame getCurrentPositionAsKeyFrame() {
+        return null;
     }
 
     @Override
@@ -124,6 +150,8 @@ public class RemoteMotionEngine implements MotionEngine {
     public void activate(Robot robot, Map<String, String> properties) {
         LOG.info("Activating remote motion engine for robot: {}", robot.getName());
         this.robot = robot;
+
+        remoteControllers.forEach(rc -> rc.activate(robot));
     }
 
     @Override

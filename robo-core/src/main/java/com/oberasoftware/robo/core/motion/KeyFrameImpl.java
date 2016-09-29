@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.core.motion;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.oberasoftware.robo.api.motion.ServoStep;
 import com.oberasoftware.robo.api.motion.KeyFrame;
 
@@ -10,18 +11,33 @@ import java.util.*;
  */
 public class KeyFrameImpl implements KeyFrame {
 
-    private final Map<String, ServoStep> servoSteps = new LinkedHashMap<>();
-    private final long timeInMs;
-    private final String keyFrameId;
+    @JsonDeserialize(contentAs = ServoStepImpl.class)
+    private List<ServoStep> servoSteps = new ArrayList<>();
+
+    private Set<String> servoIds = new HashSet<>();
+
+    private long timeInMs;
+    private String keyFrameId;
 
     public KeyFrameImpl(String keyFrameId, long timeInMs) {
         this.keyFrameId = keyFrameId;
         this.timeInMs = timeInMs;
     }
 
+    public KeyFrameImpl() {
+    }
+
+    public void setKeyFrameId(String keyFrameId) {
+        this.keyFrameId = keyFrameId;
+    }
+
     @Override
     public String getKeyFrameId() {
         return this.keyFrameId;
+    }
+
+    public void setTimeInMs(long timeInMs) {
+        this.timeInMs = timeInMs;
     }
 
     @Override
@@ -31,16 +47,25 @@ public class KeyFrameImpl implements KeyFrame {
 
     @Override
     public Set<String> getServoIds() {
-        return servoSteps.keySet();
+        return servoIds;
+    }
+
+    public void setServoIds(Set<String> servoIds) {
+        this.servoIds = servoIds;
     }
 
     @Override
     public List<ServoStep> getServoSteps() {
-        return new ArrayList<>(servoSteps.values());
+        return servoSteps;
+    }
+
+    public void setServoSteps(List<ServoStep> servoSteps) {
+        this.servoSteps = servoSteps;
     }
 
     public void addServoStep(ServoStep servoStep) {
-        this.servoSteps.put(servoStep.getServoId(), servoStep);
+        this.servoSteps.add(servoStep);
+        this.servoIds.add(servoStep.getServoId());
     }
 
     @Override

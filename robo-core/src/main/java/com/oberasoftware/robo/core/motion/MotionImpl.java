@@ -1,7 +1,9 @@
 package com.oberasoftware.robo.core.motion;
 
-import com.oberasoftware.robo.api.motion.Motion;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.Lists;
 import com.oberasoftware.robo.api.motion.KeyFrame;
+import com.oberasoftware.robo.api.motion.Motion;
 
 import java.util.List;
 
@@ -9,13 +11,14 @@ import java.util.List;
  * @author Renze de Vries
  */
 public class MotionImpl implements Motion {
-    private final String name;
-    private final String id;
+    private String name;
+    private String id;
 
-    private final List<KeyFrame> keyFrames;
+    @JsonDeserialize(contentAs=KeyFrameImpl.class)
+    private List<KeyFrame> keyFrames;
 
-    private final String nextMotion;
-    private final String exitMotion;
+    private String nextMotion;
+    private String exitMotion;
 
     public MotionImpl(String id, String name, String nextMotion, String exitMotion, List<KeyFrame> keyFrames) {
         this.id = id;
@@ -25,9 +28,20 @@ public class MotionImpl implements Motion {
         this.exitMotion = exitMotion;
     }
 
+    public MotionImpl() {
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     @Override
     public String getId() {
         return id;
+    }
+
+    public void setNextMotion(String nextMotion) {
+        this.nextMotion = nextMotion;
     }
 
     @Override
@@ -35,9 +49,17 @@ public class MotionImpl implements Motion {
         return nextMotion;
     }
 
+    public void setExitMotion(String exitMotion) {
+        this.exitMotion = exitMotion;
+    }
+
     @Override
     public String getExitMotion() {
         return exitMotion;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -45,8 +67,12 @@ public class MotionImpl implements Motion {
         return name;
     }
 
+    public void setKeyFrames(List<KeyFrame> keyFrames) {
+        this.keyFrames = keyFrames;
+    }
+
     public List<KeyFrame> getKeyFrames() {
-        return keyFrames;
+        return Lists.newArrayList(keyFrames);
     }
 
     @Override

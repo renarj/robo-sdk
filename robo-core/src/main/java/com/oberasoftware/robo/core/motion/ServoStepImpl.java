@@ -7,8 +7,8 @@ import com.oberasoftware.robo.api.motion.ServoStep;
  */
 public class ServoStepImpl implements ServoStep {
 
-    private final String servoId;
-    private final int targetPosition;
+    private String servoId;
+    private int targetPosition;
     private int speed;
 
     public ServoStepImpl(String servoId, int targetPosition, int speed) {
@@ -17,14 +17,25 @@ public class ServoStepImpl implements ServoStep {
         this.speed = speed;
     }
 
+    public ServoStepImpl() {
+    }
+
     @Override
     public String getServoId() {
         return servoId;
     }
 
+    public void setServoId(String servoId) {
+        this.servoId = servoId;
+    }
+
     @Override
     public int getTargetPosition() {
         return targetPosition;
+    }
+
+    public void setTargetPosition(int targetPosition) {
+        this.targetPosition = targetPosition;
     }
 
     @Override
