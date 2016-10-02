@@ -20,7 +20,32 @@ public class RemoteHandsController implements HandsController, RemoteController 
         BasicCommand command = create(robot.getName())
                 .item("motion")
                 .label("hands")
-                .property("hand", "open")
+                .property("position", "open")
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+    }
+
+    @Override
+    public void openHand(HAND_ID hand) {
+        BasicCommand command = create(robot.getName())
+                .item("motion")
+                .label("hands")
+                .property("position", "open")
+                .property("hand", hand.name())
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
+    }
+
+    @Override
+    public void closeHand(HAND_ID hand) {
+        BasicCommand command = create(robot.getName())
+                .item("motion")
+                .label("hands")
+                .property("position", "closed")
+                .property("hand", hand.name())
                 .build();
 
         robot.getRemoteDriver().publish(command);
@@ -31,7 +56,7 @@ public class RemoteHandsController implements HandsController, RemoteController 
         BasicCommand command = create(robot.getName())
                 .item("motion")
                 .label("hands")
-                .property("hand", "closed")
+                .property("position", "closed")
                 .build();
 
         robot.getRemoteDriver().publish(command);
