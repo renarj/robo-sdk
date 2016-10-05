@@ -84,7 +84,10 @@ public class SpringAwareRobotBuilder {
     }
 
     private SpringAwareRobotBuilder addCapability(Capability capability, Map<String, String> properties) {
-        capabilities.add(new CapabilityHolder(capability, properties));
+        if(!capabilities.stream().filter(c -> c.getCapability().equals(capability)).findFirst().isPresent()) {
+            capabilities.add(new CapabilityHolder(capability, properties));
+        }
+
         return this;
     }
 

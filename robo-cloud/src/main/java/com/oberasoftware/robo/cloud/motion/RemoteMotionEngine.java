@@ -88,17 +88,25 @@ public class RemoteMotionEngine implements MotionEngine {
 
     @Override
     public MotionTask walkForward() {
-        return null;
+        return walk(WalkDirection.FORWARD);
     }
 
     @Override
     public MotionTask walk(WalkDirection direction) {
+        BasicCommand command = create(robot.getName())
+                .item("motion")
+                .label("walk")
+                .property("direction", direction.name())
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
         return null;
     }
 
     @Override
     public MotionTask walk(WalkDirection direction, float meters) {
-        return null;
+        return walk(WalkDirection.FORWARD);
     }
 
     @Override
@@ -143,6 +151,8 @@ public class RemoteMotionEngine implements MotionEngine {
 
     @Override
     public boolean stopWalking() {
+        walk(WalkDirection.STOP);
+
         return false;
     }
 

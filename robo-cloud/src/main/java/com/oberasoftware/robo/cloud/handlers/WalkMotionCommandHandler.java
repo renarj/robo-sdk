@@ -36,20 +36,21 @@ public class WalkMotionCommandHandler implements EventHandler {
         BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
 
         String walkDirection = basicCommand.getProperties().get("direction");
+        WalkDirection direction = WalkDirection.FORWARD;
         if(walkDirection != null) {
-            WalkDirection direction = WalkDirection.fromString(mqttMessage.getMessage());
-            LOG.info("Walking in direction: {}", direction);
-
-            Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
-            MotionEngine motionEngine = robot.getMotionEngine();
-
-            if(direction != WalkDirection.STOP) {
-                motionEngine.walk(direction);
-            } else {
-                motionEngine.stopWalking();
-            }
+            direction = WalkDirection.fromString(walkDirection);
         } else {
-            LOG.warn("Received walk command, but direction not specified");
+            LOG.warn("Received walk command, but direction not specified, assuming forward");
+        }
+
+        LOG.info("Walking in direction: {}", direction);
+        Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+        MotionEngine motionEngine = robot.getMotionEngine();
+
+        if(direction != WalkDirection.STOP) {
+            motionEngine.walk(direction);
+        } else {
+            motionEngine.stopWalking();
         }
     }
 
