@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.service.mock;
 
 import com.oberasoftware.robo.api.MotionTask;
+import com.oberasoftware.robo.api.motion.KeyFrame;
 import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionExecutor;
 import org.slf4j.Logger;
@@ -17,6 +18,12 @@ public class MockMotionExecutor implements MotionExecutor {
     @Override
     public MotionTask execute(Motion motion) {
         LOG.debug("Received a motion request: {}", motion);
+        return null;
+    }
+
+    @Override
+    public MotionTask execute(KeyFrame keyFrame) {
+        LOG.debug("Received a keyframe request: {}", keyFrame);
         return null;
     }
 }

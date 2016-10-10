@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.api;
 
 import com.oberasoftware.robo.api.motion.KeyFrame;
+import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionResource;
 import com.oberasoftware.robo.api.motion.WalkDirection;
 import com.oberasoftware.robo.api.motion.controller.MotionController;
@@ -30,6 +31,10 @@ public interface MotionEngine extends ActivatableCapability {
     MotionTask walk(WalkDirection direction, float meters);
 
     MotionTask runMotion(String motionName);
+
+    MotionTask runMotion(Motion motion);
+
+    MotionTask runMotion(KeyFrame keyFrame);
 
     MotionTask goToPosture(String posture);
 

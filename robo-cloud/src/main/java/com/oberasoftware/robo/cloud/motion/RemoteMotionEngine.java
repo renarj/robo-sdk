@@ -5,6 +5,7 @@ import com.oberasoftware.robo.api.MotionEngine;
 import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.motion.KeyFrame;
+import com.oberasoftware.robo.api.motion.Motion;
 import com.oberasoftware.robo.api.motion.MotionResource;
 import com.oberasoftware.robo.api.motion.WalkDirection;
 import com.oberasoftware.robo.api.motion.controller.MotionController;
@@ -118,6 +119,16 @@ public class RemoteMotionEngine implements MotionEngine {
                 .build();
 
         robot.getRemoteDriver().publish(command);
+        return null;
+    }
+
+    @Override
+    public MotionTask runMotion(Motion motion) {
+        return null;
+    }
+
+    @Override
+    public MotionTask runMotion(KeyFrame keyFrame) {
         return null;
     }
 

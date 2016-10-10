@@ -7,4 +7,6 @@ import com.oberasoftware.robo.api.MotionTask;
  */
 public interface MotionExecutor {
     MotionTask execute(Motion motion);
+
+    MotionTask execute(KeyFrame keyFrame);
 }
