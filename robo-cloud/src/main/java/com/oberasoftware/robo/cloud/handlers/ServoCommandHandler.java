@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.Optional;
+
 import static com.oberasoftware.home.util.ConverterHelper.mapFromJson;
 
 /**
@@ -46,6 +48,25 @@ public class ServoCommandHandler implements EventHandler {
             servoDriver.setTargetPosition(servoId, IntUtils.toSafeInt(servoPosition));
         } else {
             LOG.warn("Received servo command, but no servoId or Position specified");
+        }
+    }
+
+    @EventSubscribe
+    @MQTTPath(group = MessageGroup.COMMANDS, device = "servos", label = "torgue")
+    public void torgue(MQTTMessage mqttMessage) {
+        LOG.debug("Executing Servo command from topic: {}", mqttMessage.getMessage(), mqttMessage.getTopic());
+        BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
+
+        Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+        ServoDriver servoDriver = robot.getServoDriver();
+
+        String servoId = basicCommand.getProperty("servoId");
+        boolean torgueEnabled = Boolean.parseBoolean(basicCommand.getProperty("torgue"));
+        Optional<Integer> tl = IntUtils.toInt(basicCommand.getProperty("torgueLimit"));
+        if(tl.isPresent()) {
+            servoDriver.setTorgue(servoId, tl.get());
+        } else {
+            servoDriver.setTorgue(servoId, torgueEnabled);
         }
     }
 }

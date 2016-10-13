@@ -3,11 +3,15 @@ package com.oberasoftware.robo.cloud;
 import com.oberasoftware.base.event.Event;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.home.api.client.CommandServiceClient;
+import com.oberasoftware.home.api.client.StateServiceClient;
+import com.oberasoftware.home.api.commands.BasicCommand;
 import com.oberasoftware.home.core.mqtt.MQTTTopicEventBus;
 import com.oberasoftware.robo.api.RemoteDriver;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.CommandListener;
 import com.oberasoftware.robo.api.commands.RobotCommand;
+import com.oberasoftware.robo.cloud.handlers.RobotStateServiceListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,20 +33,30 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
     @Autowired
     private MQTTTopicEventBus mqttTopicEventBus;
 
+    @Autowired
+    private StateServiceClient stateServiceClient;
+
+    @Autowired
+    private CommandServiceClient commandServiceClient;
+
+    @Autowired
+    private RobotStateServiceListener stateServiceListener;
+
     private List<CommandListener> commandListeners = new CopyOnWriteArrayList<>();
 
     @Override
     public void activate(Robot robot, Map<String, String> properties) {
         LOG.info("Connecting to remote Robot Cloud");
-        mqttTopicEventBus.connect();
 
-        if(!robot.isVirtual()) {
+        if (robot.isRemote()) {
+            stateServiceClient.listen(stateServiceListener);
+            stateServiceClient.connect();
+        } else {
             LOG.info("Listening to remote commands");
+            mqttTopicEventBus.connect();
+
             mqttTopicEventBus.registerHandler(this);
             mqttTopicEventBus.subscribe("/commands/" + robot.getName() + "/#");
-        } else {
-//            mqttTopicEventBus.registerHandler(this);
-            mqttTopicEventBus.subscribe("/states/" + robot.getName() + "/#");
         }
     }
 
@@ -54,8 +68,13 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
 
     @Override
     public void publish(Event robotEvent) {
-        LOG.info("Publishing robot event: {} to mqtt", robotEvent);
-        mqttTopicEventBus.publish(robotEvent);
+        if(robotEvent instanceof BasicCommand) {
+            LOG.info("Publishing robot command: {} to command service", robotEvent);
+            commandServiceClient.sendCommand((BasicCommand)robotEvent);
+        } else {
+            LOG.info("Publishing robot event: {} to mqtt", robotEvent);
+            mqttTopicEventBus.publish(robotEvent);
+        }
     }
 
     @Override

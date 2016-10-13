@@ -34,4 +34,11 @@ public class MQTTValueMessageHandler implements EventHandler {
         Robot robot = robotRegistry.getRobot(message.getControllerId());
         robot.publish(new ValueEvent(message.getControllerId(), message.getChannelId(), message.getLabel(), message.getValue()));
     }
+
+    public static void main(String[] args) {
+        String j = "{\"value\":{\"value\":520,\"type\":\"NUMBER\"},\"controllerId\":\"max\",\"channelId\":\"Hand\",\"label\":\"5\"}";
+        ValueTransportMessage t = ConverterHelper.mapFromJson(j, ValueTransportMessage.class);
+        t.getValue();
+
+    }
 }

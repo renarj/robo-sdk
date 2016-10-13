@@ -63,12 +63,29 @@ public class RemoteServoDriver implements ServoDriver {
 
     @Override
     public boolean setTorgue(String servoId, int limit) {
-        return false;
+        BasicCommand command = BasicCommandBuilder.create(robot.getName())
+                .item("servos").label("torgue")
+                .property("servoId", servoId)
+                .property("torgue", Boolean.toString(true))
+                .property("torgueLimit", Integer.toString(limit))
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
+        return true;
     }
 
     @Override
     public boolean setTorgue(String servoId, boolean state) {
-        return false;
+        BasicCommand command = BasicCommandBuilder.create(robot.getName())
+                .item("servos").label("torgue")
+                .property("servoId", servoId)
+                .property("torgue", Boolean.toString(state))
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
+        return true;
     }
 
     @Override

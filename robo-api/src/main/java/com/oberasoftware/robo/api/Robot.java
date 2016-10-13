@@ -12,7 +12,7 @@ import java.util.List;
 public interface Robot {
     String getName();
 
-    boolean isVirtual();
+    boolean isRemote();
 
     void listen(EventHandler robotEventHandler);
 

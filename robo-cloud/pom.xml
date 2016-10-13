@@ -21,5 +21,9 @@
             <groupId>com.oberasoftware</groupId>
             <artifactId>home-mqtt</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.oberasoftware</groupId>
+            <artifactId>home-client</artifactId>
+        </dependency>
     </dependencies>
 </project>

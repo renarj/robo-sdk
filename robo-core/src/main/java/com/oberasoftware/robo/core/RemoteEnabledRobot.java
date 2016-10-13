@@ -23,15 +23,15 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
 
     private final Robot localRobot;
     private final RemoteDriver remoteDriver;
-    private final boolean virtualRobot;
+    private final boolean isRemote;
 
-    public RemoteEnabledRobot(RemoteDriver remoteDriver, Robot localRobot, boolean virtualRobot) {
+    public RemoteEnabledRobot(RemoteDriver remoteDriver, Robot localRobot, boolean isRemote) {
         this.localRobot = localRobot;
         this.remoteDriver = remoteDriver;
-        this.virtualRobot = virtualRobot;
+        this.isRemote = isRemote;
         remoteDriver.register(this);
 
-        if(!virtualRobot) {
+        if(!isRemote) {
             //to ensure we can send remote events to the cloud
             this.localRobot.listen(this);
         }
@@ -73,8 +73,8 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
     }
 
     @Override
-    public boolean isVirtual() {
-        return this.virtualRobot;
+    public boolean isRemote() {
+        return this.isRemote;
     }
 
     @Override

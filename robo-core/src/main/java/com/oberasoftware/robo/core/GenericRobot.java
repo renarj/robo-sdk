@@ -21,16 +21,16 @@ public class GenericRobot implements Robot {
     private EventBus eventBus;
 
     private final String robotName;
-    private final boolean virtualRobot;
+    private final boolean isRemote;
 
     private final List<CapabilityHolder> capabilities;
     private final List<SensorHolder> sensors;
 
-    public GenericRobot(String robotName, boolean virtualRobot,
+    public GenericRobot(String robotName, boolean isRemote,
                         EventBus eventBus, List<CapabilityHolder> capabilities, List<SensorHolder> sensors) {
         this.robotName = robotName;
         this.eventBus = eventBus;
-        this.virtualRobot = virtualRobot;
+        this.isRemote = isRemote;
 
         this.capabilities = capabilities;
         this.sensors = sensors;
@@ -90,8 +90,8 @@ public class GenericRobot implements Robot {
     }
 
     @Override
-    public boolean isVirtual() {
-        return virtualRobot;
+    public boolean isRemote() {
+        return isRemote;
     }
 
     @Override

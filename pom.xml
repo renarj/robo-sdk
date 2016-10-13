@@ -99,6 +99,11 @@
                 <artifactId>home-mqtt</artifactId>
                 <version>${home.core.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
+                <artifactId>home-client</artifactId>
+                <version>${home.core.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
