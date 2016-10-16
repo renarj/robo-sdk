@@ -69,10 +69,10 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
     @Override
     public void publish(Event robotEvent) {
         if(robotEvent instanceof BasicCommand) {
-            LOG.info("Publishing robot command: {} to command service", robotEvent);
+            LOG.debug("Publishing robot command: {} to command service", robotEvent);
             commandServiceClient.sendCommand((BasicCommand)robotEvent);
         } else {
-            LOG.info("Publishing robot event: {} to mqtt", robotEvent);
+            LOG.debug("Publishing robot event: {} to mqtt", robotEvent);
             mqttTopicEventBus.publish(robotEvent);
         }
     }
@@ -86,7 +86,7 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
 
     @EventSubscribe
     public void receiveCommand(RobotCommand command) {
-        LOG.info("Received robot command: {} from cloud", command);
+        LOG.debug("Received robot command: {} from cloud", command);
         commandListeners.forEach(l -> l.receive(command));
     }
 }

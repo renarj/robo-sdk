@@ -94,7 +94,7 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
 
     @EventSubscribe
     public void receiveRobotEvent(RobotEvent robotEvent) {
-        LOG.info("Received a robot event: {}", robotEvent);
+        LOG.debug("Received a robot event: {}", robotEvent);
         remoteDriver.publish(robotEvent);
     }
 }
