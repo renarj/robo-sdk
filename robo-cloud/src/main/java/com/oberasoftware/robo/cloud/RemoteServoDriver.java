@@ -8,6 +8,7 @@ import com.oberasoftware.robo.api.servo.Servo;
 import com.oberasoftware.robo.api.servo.ServoDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -17,6 +18,7 @@ import java.util.Map;
  * @author Renze de Vries
  */
 @Component
+@Scope("prototype")
 public class RemoteServoDriver implements ServoDriver {
     private static final Logger LOG = LoggerFactory.getLogger(RemoteServoDriver.class);
 
