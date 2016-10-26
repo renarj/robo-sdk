@@ -44,4 +44,15 @@ public class RunMotionCommandHandler implements EventHandler {
             LOG.warn("Received motion command, but motion not specified");
         }
     }
+
+    @EventSubscribe
+    @MQTTPath(group = MessageGroup.COMMANDS, device = "motion", label = "stop")
+    public void receiveStopCommand(MQTTMessage mqttMessage) {
+        BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
+        LOG.info("Stopping all motion tasks for controller: {}", basicCommand.getControllerId());
+
+        Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
+        MotionEngine motionEngine = robot.getMotionEngine();
+        motionEngine.stopAllTasks();
+    }
 }

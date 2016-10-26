@@ -157,7 +157,13 @@ public class RemoteMotionEngine implements MotionEngine {
 
     @Override
     public boolean stopAllTasks() {
-        return false;
+        BasicCommand command = create(robot.getName())
+                .item("motion")
+                .label("stop")
+                .build();
+        robot.getRemoteDriver().publish(command);
+
+        return true;
     }
 
     @Override
