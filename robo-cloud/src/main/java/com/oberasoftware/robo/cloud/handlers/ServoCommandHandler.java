@@ -27,6 +27,7 @@ import static com.oberasoftware.home.util.ConverterHelper.mapFromJson;
 @Component
 public class ServoCommandHandler implements EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ServoCommandHandler.class);
+    private static final int DEFAULT_SPEED = 20;
 
     @Autowired
     private RobotRegistry robotRegistry;
@@ -42,10 +43,16 @@ public class ServoCommandHandler implements EventHandler {
 
         String servoPosition = basicCommand.getProperty("position");
         String servoId = basicCommand.getProperty("servoId");
+        String speed = basicCommand.getProperty("speed");
         if(StringUtils.hasText(servoPosition) && StringUtils.hasText(servoId)) {
             LOG.info("Setting servo: {} to position: {}", servoId, servoPosition);
 
-            servoDriver.setTargetPosition(servoId, IntUtils.toSafeInt(servoPosition));
+            if(StringUtils.hasText(speed)) {
+                servoDriver.setPositionAndSpeed(servoId, IntUtils.toInt(speed, DEFAULT_SPEED),
+                        IntUtils.toSafeInt(servoPosition));
+            } else {
+                servoDriver.setTargetPosition(servoId, IntUtils.toSafeInt(servoPosition));
+            }
         } else {
             LOG.warn("Received servo command, but no servoId or Position specified");
         }
