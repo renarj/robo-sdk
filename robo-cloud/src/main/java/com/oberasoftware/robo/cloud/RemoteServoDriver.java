@@ -66,7 +66,16 @@ public class RemoteServoDriver implements ServoDriver {
 
     @Override
     public boolean setPositionAndSpeed(String servoId, int speed, int targetPosition) {
-        return false;
+        BasicCommand command = BasicCommandBuilder.create(robot.getName())
+                .item("servos").label("position")
+                .property("servoId", servoId)
+                .property("position", Integer.toString(targetPosition))
+                .property("speed", Integer.toString(speed))
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
+        return true;
     }
 
     @Override
