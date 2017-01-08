@@ -5,6 +5,7 @@ import com.oberasoftware.home.api.model.BasicCommandBuilder;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
 import com.oberasoftware.robo.api.servo.Servo;
+import com.oberasoftware.robo.api.servo.ServoCommand;
 import com.oberasoftware.robo.api.servo.ServoDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,16 @@ public class RemoteServoDriver implements ServoDriver {
         robot.getRemoteDriver().publish(command);
 
         return true;
+    }
+
+    @Override
+    public boolean supportsCommand(ServoCommand servoCommand) {
+        return false;
+    }
+
+    @Override
+    public boolean sendCommand(ServoCommand servoCommand) {
+        return false;
     }
 
     @Override

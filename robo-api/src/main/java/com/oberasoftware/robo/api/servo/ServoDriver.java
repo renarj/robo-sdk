@@ -18,6 +18,10 @@ public interface ServoDriver extends ActivatableCapability {
 
     boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands);
 
+    boolean supportsCommand(ServoCommand servoCommand);
+
+    boolean sendCommand(ServoCommand servoCommand);
+
     boolean setTorgue(String servoId, int limit);
 
     boolean setTorgue(String servoId, boolean state);
