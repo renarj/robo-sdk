@@ -9,5 +9,7 @@ public enum ServoProperty {
     SPEED,
     ALARM,
     VOLTAGE,
-    TEMPERATURE
+    TEMPERATURE,
+    MIN_ANGLE_LIMIT,
+    MAX_ANGLE_LIMIT
 }
