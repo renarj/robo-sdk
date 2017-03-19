@@ -51,22 +51,12 @@
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>18.0</version>
+                <version>21.0</version>
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
                 <artifactId>obera-base</artifactId>
-                <version>1.2-SNAPSHOT</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sdl</groupId>
-                <artifactId>odata_service</artifactId>
-                <version>${odata.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sdl</groupId>
-                <artifactId>odata_common</artifactId>
-                <version>${odata.version}</version>
+                <version>1.2</version>
             </dependency>
 
             <!-- project deps -->
