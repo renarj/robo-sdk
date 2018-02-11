@@ -11,18 +11,23 @@
         <version>1.0.3</version>
     </parent>
 
-    <artifactId>robo-framework</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>robo-kit</artifactId>
+    <version>2.0-SNAPSHOT</version>
 
     <properties>
-        <odata.version>2.0.4</odata.version>
-        <home.core.version>1.0-SNAPSHOT</home.core.version>
+        <jssc.version>2.8.0</jssc.version>
     </properties>
 
     <modules>
+        <module>dynamixel-core</module>
+        <module>dynamixel-web</module>
         <module>robo-api</module>
         <module>robo-core</module>
         <module>robo-cloud</module>
+        <module>robo-alexa-bridge</module>
+        <module>robo-client</module>
+        <module>robo-util</module>
+        <module>robo-mqtt</module>
     </modules>
 
     <licenses>
@@ -59,6 +64,24 @@
                 <version>1.2</version>
             </dependency>
 
+            <dependency>
+                <groupId>io.moquette</groupId>
+                <artifactId>moquette-broker</artifactId>
+                <version>0.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+                <version>1.1.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.scream3r</groupId>
+                <artifactId>jssc</artifactId>
+                <version>${jssc.version}</version>
+            </dependency>
+
+
+
             <!-- project deps -->
             <dependency>
                 <groupId>com.oberasoftware</groupId>
@@ -67,13 +90,23 @@
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
-                <artifactId>home-mqtt</artifactId>
-                <version>${home.core.version}</version>
+                <artifactId>robo-core</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.oberasoftware</groupId>
-                <artifactId>home-client</artifactId>
-                <version>${home.core.version}</version>
+                <artifactId>robo-util</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
+                <artifactId>robo-mqtt</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.oberasoftware</groupId>
+                <artifactId>robo-client</artifactId>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -82,6 +115,10 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
         </dependency>
     </dependencies>
 </project>

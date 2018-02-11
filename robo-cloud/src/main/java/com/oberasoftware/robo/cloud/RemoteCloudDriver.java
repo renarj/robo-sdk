@@ -3,9 +3,9 @@ package com.oberasoftware.robo.cloud;
 import com.oberasoftware.base.event.Event;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
-import com.oberasoftware.home.api.client.CommandServiceClient;
-import com.oberasoftware.home.api.client.StateServiceClient;
-import com.oberasoftware.home.api.commands.BasicCommand;
+import com.oberasoftware.home.client.api.CommandServiceClient;
+import com.oberasoftware.home.client.api.StateServiceClient;
+import com.oberasoftware.robo.api.commands.BasicCommand;
 import com.oberasoftware.home.core.mqtt.MQTTTopicEventBus;
 import com.oberasoftware.robo.api.RemoteDriver;
 import com.oberasoftware.robo.api.Robot;
@@ -42,6 +42,9 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
     @Autowired
     private RobotStateServiceListener stateServiceListener;
 
+    @Autowired
+    private KeepAliveHandler keepAliveHandler;
+
     private List<CommandListener> commandListeners = new CopyOnWriteArrayList<>();
 
     @Override
@@ -57,6 +60,7 @@ public class RemoteCloudDriver implements RemoteDriver, EventHandler {
 
             mqttTopicEventBus.registerHandler(this);
             mqttTopicEventBus.subscribe("/commands/" + robot.getName() + "/#");
+            keepAliveHandler.start(robot);
         }
     }
 

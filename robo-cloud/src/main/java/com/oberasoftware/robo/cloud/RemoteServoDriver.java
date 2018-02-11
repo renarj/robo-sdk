@@ -1,7 +1,7 @@
 package com.oberasoftware.robo.cloud;
 
-import com.oberasoftware.home.api.commands.BasicCommand;
-import com.oberasoftware.home.api.model.BasicCommandBuilder;
+import com.oberasoftware.robo.api.commands.BasicCommand;
+import com.oberasoftware.robo.core.model.BasicCommandBuilder;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
 import com.oberasoftware.robo.api.servo.Servo;

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:width="http://www.w3.org/1999/xhtml">
+<head th:replace="includes/header :: header">
+</head>
+<body>
+<script id="servoTemplate" type="x-tmpl-mustache">
+
+</script>
+
+<script th:src="@{/js/servo.js}" src="/static/javascript/widget.js"></script>
+
+<div class="container-fluid">
+
+    <div th:replace="includes/header :: navigation (selectTab='dashboard')"></div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="row" th:each="servo: ${servos}">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title" th:text="'Servo: ' + ${servo.servoId}"></h3>
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">Position:</label>
+                                            <div class="col-sm-8">
+                                                <input style="width: 100%;" type="text" th:id="'textposition' + ${servo.servoId}" th:value="${servo.position}"/>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-primary setPosition" th:attr="servoId=${servo.servoId}">Set</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row voffset1">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">Speed:</label>
+                                            <div class="col-sm-8">
+                                                <input style="width: 100%;" type="text" th:id="'textspeed' + ${servo.servoId}" th:value="${servo.speed}"/>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-primary setSpeed" th:attr="servoId=${servo.servoId}">Set</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row voffset1">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">Torque:</label>
+                                            <div class="col-sm-8">
+                                                <input style="width: 100%;" type="text" th:id="'texttorgue' + ${servo.servoId}" th:value="${servo.torgue}"/>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-primary setTorgue" th:attr="servoId=${servo.servoId}">Set</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row voffset1">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">Temperature:</label>
+                                            <div class="col-sm-8">
+                                                <input style="width: 100%;" type="text" th:id="'temp' + ${servo.servoId}" th:value="${servo.temperature}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row voffset1">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">Voltage:</label>
+                                            <div class="col-sm-8">
+                                                <input style="width: 100%;" type="text" th:id="'volt' + ${servo.servoId}" th:value="${servo.voltage}"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">CW Limit:</label>
+                                            <div class="col-sm-8">
+                                                <input style="width: 100%;" type="text" th:id="'cw' + ${servo.servoId}" th:value="${servo.minPosition}"/>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-primary setMinPosition" th:attr="servoId=${servo.servoId}">Set</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row voffset1">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">CCW Limit:</label>
+                                            <div class="col-sm-8">
+                                                <input style="width: 100%;" type="text" th:id="'ccw' + ${servo.servoId}" th:value="${servo.maxPosition}"/>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-primary setMaxPosition" th:attr="servoId=${servo.servoId}">Set</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row voffset1">
+                                <div class="form-group">
+                                    <label class="col-sm-2 control-label">Set Servo Position:</label>
+                                    <div class="col-sm-10">
+                                        <input style="width: 100%;" type="text" th:id="'position' + ${servo.servoId}"
+                                               th:attr="servoId=${servo.servoId},slider='position',data-slider-value=${servo.position}"
+                                               data-slider-min="1" data-slider-max="1023" data-slider-step="10" data-slider-value="0"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-offset-2 col-md-8">
+                                    <button type="button" class="btn btn-primary torgueEnable" th:attr="servoId=${servo.servoId}">Enable Torgue</button>
+                                    <button type="button" class="btn btn-primary torgueDisable" th:attr="servoId=${servo.servoId}">Disable Torgue</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">General Controls</h3>
+                </div>
+
+                <div class="panel-body">
+                        <button type="button" class="btn btn-primary enableAllTorgue">Enable Torgue</button>
+
+                        <button type="button" class="btn btn-primary disableAllTorgue">Disable Torgue</button>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Motions</h3>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label class="col-md-2" for="motions">Motions:</label>
+                        <div class="col-md-10">
+                            <select class="form-control" id="motions" size="10">
+                                <option value="none" th:each="motion: ${motions}" th:text="${motion}" th:value="${motion}">MotionId</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary loadMotion">Edit Motion</button>
+                    <button type="button" class="btn btn-primary executeMotion">Run Motion</button>
+                    <button type="button" class="btn btn-primary stopMotion">Stop Motion</button>
+                </div>
+            </div>
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Edit Motion Keyframes: <p id="kfMotionName"></p></h3>
+                </div>
+                <div class="panel-body">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <select class="form-control" id="keyframes" size="10">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="frameName">Name</label>
+                        <input style="width: 100%;" type="text" name="frameName" id="frameName"/>
+
+                        <label for="frameTime">Time</label>
+                        <input style="width: 100%;" type="text" name="frameTime" id="frameTime"/>
+
+                        <button type="button" class="btn btn-primary voffset1 frameSave">Save</button>
+                        <button type="button" class="btn btn-primary voffset1 frameDelete">Remove</button>
+                        <button type="button" class="btn btn-primary voffset1 takeKeyFrame">Capture</button>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button type="button" class="btn btn-primary setKeyFrame">Run Frame</button>
+                    <button type="button" class="btn btn-primary runKeyFrames">Run All</button>
+                    <button type="button" class="btn btn-primary saveKeyFrames">Save</button>
+                    <button type="button" class="btn btn-primary getJson">Get JSON</button>
+                    <button type="button" class="btn btn-primary clearEditor">Clear</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade" id="saveMotionModal" tabindex="-1" role="dialog" aria-labelledby="saveMotion"
+         aria-hidden="true" xmlns:th="http://www.w3.org/1999/xhtml">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="saveMotion">Save Motion</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="motionName">Name</label>
+                        <input class="form-control" id="motionName" type="text"/>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary" id="saveMotionBtn">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="motionJson" tabindex="-1" role="dialog" aria-labelledby="motionJson"
+         aria-hidden="true" xmlns:th="http://www.w3.org/1999/xhtml">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Motion json</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <textarea id="motionData" rows="15" cols="75"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div th:replace="includes/header :: footer"></div>
+</div>
+
+</body>
+</html>
