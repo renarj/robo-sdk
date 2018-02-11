@@ -5,7 +5,7 @@ import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.SpeechEngine;
-import com.oberasoftware.robo.api.events.ValueEvent;
+import com.oberasoftware.robo.api.events.ValueEventImpl;
 import com.oberasoftware.robo.cloud.motion.RemoteMotionEngine;
 import com.oberasoftware.robo.core.CoreConfiguration;
 import com.oberasoftware.robo.core.SpringAwareRobotBuilder;
@@ -71,7 +71,7 @@ public class RemoteRobotTest {
         }
 
         @EventSubscribe
-        public void receive(ValueEvent valueEvent) {
+        public void receive(ValueEventImpl valueEvent) {
             LOG.info("Received a distance: {}", valueEvent.getValue().asString());
             if(valueEvent.getControllerId().equals("max") && valueEvent.getLabel().equals("distance")) {
                 int distance = valueEvent.getValue().getValue();
@@ -97,7 +97,7 @@ public class RemoteRobotTest {
         }
 
         @EventSubscribe
-        public void receive(ValueEvent valueEvent) {
+        public void receive(ValueEventImpl valueEvent) {
             LOG.info("Received an event for pep: {}", valueEvent);
             if(valueEvent.getControllerId().equals("peppy") && valueEvent.getItemId().equals("head")) {
                 if(valueEvent.getValue().asString().equals("true")) {

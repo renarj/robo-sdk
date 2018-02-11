@@ -1,6 +1,6 @@
 package com.oberasoftware.robo.cloud;
 
-import com.oberasoftware.home.api.commands.BasicCommand;
+import com.oberasoftware.robo.api.commands.BasicCommand;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.SpeechEngine;
 import org.slf4j.Logger;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static com.oberasoftware.home.api.model.BasicCommandBuilder.create;
+import static com.oberasoftware.robo.core.model.BasicCommandBuilder.create;
 
 @Component
 @Scope("prototype")

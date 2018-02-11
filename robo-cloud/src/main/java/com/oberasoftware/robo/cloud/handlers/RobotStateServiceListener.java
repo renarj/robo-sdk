@@ -1,10 +1,10 @@
 package com.oberasoftware.robo.cloud.handlers;
 
-import com.oberasoftware.home.api.client.StateServiceListener;
-import com.oberasoftware.home.api.model.ValueTransportMessage;
+import com.oberasoftware.home.client.api.StateServiceListener;
+import com.oberasoftware.robo.core.model.ValueTransportMessage;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.RobotRegistry;
-import com.oberasoftware.robo.api.events.ValueEvent;
+import com.oberasoftware.robo.api.events.ValueEventImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,6 @@ public class RobotStateServiceListener implements StateServiceListener {
     public void receive(ValueTransportMessage message) {
         LOG.debug("Received state message: {}", message);
         Robot robot = robotRegistry.getRobot(message.getControllerId());
-        robot.publish(new ValueEvent(message.getControllerId(), message.getChannelId(), message.getLabel(), message.getValue()));
+        robot.publish(new ValueEventImpl(message.getControllerId(), message.getChannelId(), message.getLabel(), message.getValue()));
     }
 }
