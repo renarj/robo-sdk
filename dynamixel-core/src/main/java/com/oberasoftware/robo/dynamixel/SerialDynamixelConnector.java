@@ -7,15 +7,16 @@ import jssc.SerialPortEventListener;
 import jssc.SerialPortException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PreDestroy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
-import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
+import static com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket.bb2hex;
+
 
 /**
  * @author Renze de Vries
@@ -30,6 +31,9 @@ public class SerialDynamixelConnector implements DynamixelConnector {
 
     private List<Byte> buffer = new CopyOnWriteArrayList<>();
 
+    @Value("${dynamixel.baudrate:57600}")
+    private int baudRate;
+
     @Override
     public void connect(String portName) {
         this.portName = portName;
@@ -41,7 +45,7 @@ public class SerialDynamixelConnector implements DynamixelConnector {
             LOG.debug("Port: {} opened: {}", portName, opened);
 
             serialPort.setFlowControlMode(SerialPort.FLOWCONTROL_NONE);
-            serialPort.setParams(1000000, 8, 1, 0);
+            serialPort.setParams(baudRate, 8, 1, 0);
             serialPort.purgePort(SerialPort.PURGE_TXCLEAR);
 
             if(opened) {
@@ -98,7 +102,7 @@ public class SerialDynamixelConnector implements DynamixelConnector {
     private class DynamixelSerialEventListener implements SerialPortEventListener {
         @Override
         public void serialEvent(SerialPortEvent serialPortEvent) {
-//            LOG.debug("Bytes in buffer: {}", serialPortEvent.getEventValue());
+            LOG.debug("Bytes in buffer: {}", serialPortEvent.getEventValue());
             try {
                 byte[] readBytes = serialPort.readBytes();
                 for(byte b : readBytes) {

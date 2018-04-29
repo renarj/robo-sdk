@@ -32,10 +32,7 @@ import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterrup
 public class ServoSensorDriver implements SensorDriver<DirectPort<PositionValue>>, EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ServoSensorDriver.class);
 
-    private ServoDriver servoDriver;
-
-    @Autowired
-    private LocalEventBus localEventBus;
+    private final LocalEventBus localEventBus;
 
     private Map<String, ServoPort> ports = new HashMap<>();
 
@@ -44,6 +41,11 @@ public class ServoSensorDriver implements SensorDriver<DirectPort<PositionValue>
     private static final int TEMP_CHECK_INTERVAL = 5000;
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(2);
+
+    @Autowired
+    public ServoSensorDriver(LocalEventBus localEventBus) {
+        this.localEventBus = localEventBus;
+    }
 
     @Override
     public List<DirectPort<PositionValue>> getPorts() {

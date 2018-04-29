@@ -8,13 +8,20 @@ import com.oberasoftware.robo.api.exceptions.RoboException;
 import com.oberasoftware.robo.api.servo.Servo;
 import com.oberasoftware.robo.api.servo.ServoCommand;
 import com.oberasoftware.robo.api.servo.ServoDriver;
-import com.oberasoftware.robo.dynamixel.handlers.DynamixelServoMovementHandler;
-import com.oberasoftware.robo.dynamixel.handlers.DynamixelSyncWriteMovementHandler;
-import com.oberasoftware.robo.dynamixel.handlers.DynamixelTorgueHandler;
+import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
+import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
+import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelSyncWriteMovementHandler;
+import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelV1TorgueHandler;
+import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
+import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2ReturnPacket;
+import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelServoMovementHandler;
+import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelTorgueHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,14 +31,17 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
+import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket.bb2hex;
+
 /**
  * @author Renze de Vries
  */
 @Component
+@Primary
 public class DynamixelServoDriver implements ServoDriver {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelServoDriver.class);
 
-    private static final int MAX_ID = 250;
+    private static final int MAX_ID = 249;
     public static final String PORT = "port";
 
     @Autowired
@@ -48,6 +58,9 @@ public class DynamixelServoDriver implements ServoDriver {
 
     @Autowired
     private DynamixelTorgueHandler torgueHandler;
+
+    @Value("${protocol.v2.enabled:false}")
+    private boolean v2Enabled;
 
     @Autowired
     private LocalEventBus eventBus;
@@ -77,10 +90,22 @@ public class DynamixelServoDriver implements ServoDriver {
 
         IntStream motorRange = IntStream.range(1, MAX_ID);
         motorRange.forEach((m) -> {
-            byte[] received = connector.sendAndReceive(new DynamixelCommandPacket(DynamixelInstruction.PING, m).build());
+            byte[] data = new DynamixelV1CommandPacket(DynamixelInstruction.PING, m).build();
+            if(v2Enabled) {
+                data = new DynamixelV2CommandPacket(DynamixelInstruction.PING, m).build();
+            }
+            byte[] received = connector.sendAndReceive(data);
+
+            //new byte[] {(byte)0xff, (byte)0xff, (byte)0xfd, (byte)0x00, (byte)1, (byte)0x03, (byte)0x00, (byte)0x01, (byte)0x19, (byte)0x4e})
             if(received != null && received.length > 0) {
                 try {
-                    DynamixelReturnPacket packet = new DynamixelReturnPacket(received);
+                    LOG.debug("Recveived: {}", bb2hex(received));
+                    DynamixelReturnPacket packet;
+                    if(v2Enabled) {
+                        packet = new DynamixelV2ReturnPacket(received);
+                    } else {
+                        packet = new DynamixelV1ReturnPacket(received);
+                    }
                     if (packet.getErrorCode() == 0) {
                         LOG.debug("Ping received from Servo: {}", m);
 

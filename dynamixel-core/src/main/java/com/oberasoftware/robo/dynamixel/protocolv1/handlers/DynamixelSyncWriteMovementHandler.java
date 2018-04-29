@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.dynamixel.handlers;
+package com.oberasoftware.robo.dynamixel.protocolv1.handlers;
 
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
@@ -8,6 +8,7 @@ import com.oberasoftware.robo.dynamixel.DynamixelAddress;
 import com.oberasoftware.robo.dynamixel.DynamixelCommandPacket;
 import com.oberasoftware.robo.dynamixel.DynamixelConnector;
 import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
+import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +36,8 @@ public class DynamixelSyncWriteMovementHandler implements EventHandler {
         LOG.debug("Received a bulk command: {}", command);
 
         Map<String, PositionAndSpeedCommand> commands = command.getCommands();
-        DynamixelCommandPacket packet = new DynamixelCommandPacket(DynamixelInstruction.SYNC_WRITE,
-                DynamixelCommandPacket.BROADCAST_ID);
+        DynamixelCommandPacket packet = new DynamixelV1CommandPacket(DynamixelInstruction.SYNC_WRITE,
+                DynamixelV1CommandPacket.BROADCAST_ID);
 
         List<Byte> servoBytes = new ArrayList<>();
         //we pass the list by reference to write results in to prevent losing time on slower hardware (raspberry, etc.)

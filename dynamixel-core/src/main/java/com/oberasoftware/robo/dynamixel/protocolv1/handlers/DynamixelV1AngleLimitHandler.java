@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.dynamixel.handlers;
+package com.oberasoftware.robo.dynamixel.protocolv1.handlers;
 
 import com.google.common.collect.ImmutableMap;
 import com.oberasoftware.base.event.EventHandler;
@@ -8,15 +8,19 @@ import com.oberasoftware.robo.api.servo.events.ServoDataReceivedEvent;
 import com.oberasoftware.robo.core.ServoDataImpl;
 import com.oberasoftware.robo.dynamixel.*;
 import com.oberasoftware.robo.dynamixel.commands.DynamixelAngleLimitCommand;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelReadServoMode;
+import com.oberasoftware.robo.dynamixel.commands.DynamixelReadAngleLimit;
+import com.oberasoftware.robo.dynamixel.DynamixelCommandPacket;
+import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
+import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
 import static com.oberasoftware.robo.core.ConverterUtil.*;
-import static com.oberasoftware.robo.dynamixel.DynamixelCommandPacket.bb2hex;
+import static com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket.bb2hex;
 import static java.lang.String.valueOf;
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -24,8 +28,9 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-public class DynamixelServoModeHandler implements EventHandler {
-    private static final Logger LOG = getLogger(DynamixelServoModeHandler.class);
+@ConditionalOnProperty(value = "protocol.v2.enabled", havingValue = "false", matchIfMissing = true)
+public class DynamixelV1AngleLimitHandler implements EventHandler {
+    private static final Logger LOG = getLogger(DynamixelV1AngleLimitHandler.class);
 
     @Autowired
     private DynamixelConnector connector;
@@ -35,14 +40,14 @@ public class DynamixelServoModeHandler implements EventHandler {
         int servoId = toSafeInt(command.getServoId());
         LOG.debug("Received a servo mode: {}", command.getServoId(), command);
 
-        DynamixelCommandPacket packet = new DynamixelCommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
+        DynamixelCommandPacket packet = new DynamixelV1CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
         packet.addParam(DynamixelAddress.CW_ANGLE_LIMIT_L, intTo16BitByte(command.getMinLimit(), command.getMaxLimit()));
 
         byte[] data = packet.build();
         byte[] received = connector.sendAndReceive(data);
         LOG.info("Package has been delivered");
 
-        DynamixelReturnPacket returnPacket = new DynamixelReturnPacket(received);
+        DynamixelV1ReturnPacket returnPacket = new DynamixelV1ReturnPacket(received);
         if (!returnPacket.hasErrors()) {
             LOG.debug("Mode for servo: {} set to: {}", servoId, command);
         } else {
@@ -51,15 +56,15 @@ public class DynamixelServoModeHandler implements EventHandler {
     }
 
     @EventSubscribe
-    public ServoDataReceivedEvent receive(DynamixelReadServoMode command) {
+    public ServoDataReceivedEvent receive(DynamixelReadAngleLimit command) {
         int servoId = toSafeInt(command.getServoId());
         LOG.debug("Received a read operation for the servo mode: {}", command.getServoId());
 
-        DynamixelCommandPacket packet = new DynamixelCommandPacket(DynamixelInstruction.READ_DATA, servoId);
+        DynamixelCommandPacket packet = new DynamixelV1CommandPacket(DynamixelInstruction.READ_DATA, servoId);
         byte[] data = packet.addParam(DynamixelAddress.CW_ANGLE_LIMIT_L, 0x04).build();
         byte[] received = connector.sendAndReceive(data);
 
-        DynamixelReturnPacket returnPacket = new DynamixelReturnPacket(received);
+        DynamixelV1ReturnPacket returnPacket = new DynamixelV1ReturnPacket(received);
         if(!returnPacket.hasErrors()) {
             LOG.trace("Received a mode readout: {} for servo: {}", bb2hex(received), servoId);
 

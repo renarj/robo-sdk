@@ -12,7 +12,7 @@ import com.oberasoftware.robo.api.servo.events.ServoUpdateEvent;
 import com.oberasoftware.robo.core.ServoDataImpl;
 import com.oberasoftware.robo.core.commands.ReadPositionAndSpeedCommand;
 import com.oberasoftware.robo.core.commands.ReadTemperatureCommand;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelReadServoMode;
+import com.oberasoftware.robo.dynamixel.commands.DynamixelReadAngleLimit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,23 +57,23 @@ public class DynamixelServoDataManager implements ServoDataManager, EventHandler
         ServoDataHolder holder = servoDataMap.get(servoId);
 
         if(holder.isUpdatedInTimeFrame(property, 200, TimeUnit.MILLISECONDS)) {
-            LOG.info("Servo: {} has has a value update for property: {} in last 50 ms. sending current data", servoId, property);
+            LOG.debug("Servo: {} has has a value update for property: {} in last 50 ms. sending current data", servoId, property);
             return holder.getValue(property);
         } else {
             LOG.debug("Retrieving property: {} from servo: {}", property, servoId);
             if (property == ServoProperty.POSITION || property == ServoProperty.SPEED) {
                 eventBus.publish(new ReadPositionAndSpeedCommand(servoId));
-            } else if (property == ServoProperty.TEMPERATURE) {
+            } else if (property == ServoProperty.TEMPERATURE || property == ServoProperty.VOLTAGE) {
                 eventBus.publish(new ReadTemperatureCommand(servoId));
             } else if (property == ServoProperty.MIN_ANGLE_LIMIT || property == ServoProperty.MAX_ANGLE_LIMIT) {
-                eventBus.publish(new DynamixelReadServoMode(servoId));
+                eventBus.publish(new DynamixelReadAngleLimit(servoId));
             }
 
-            LOG.debug("Waiting for servo data update");
+            LOG.debug("Waiting for servo: {} data update on property: {}", servoId, property);
 
             holder.waitForUpdate();
 
-            LOG.debug("Got a signal of data update");
+            LOG.debug("Got a signal of data update for servo: {} on property: {}", servoId, property);
 
             return holder.getValue(property);
         }
@@ -182,7 +182,7 @@ public class DynamixelServoDataManager implements ServoDataManager, EventHandler
                     throw new RoboException("Could not read servo data for servo: " + servoId);
                 }
             } catch (InterruptedException e) {
-                LOG.error("", e);
+                LOG.info("Condition was interrupted: {}", e.getMessage());
             } finally {
                 lock.unlock();
             }

@@ -48,7 +48,7 @@ public class DynamixelServo implements Servo {
 
     @Override
     public void moveTo(int position) {
-        if(position < 0 || position > 1023) {
+        if(position < 0 || position > 4096) {
             throw new ServoException("Invalid range specific for goal position, only -180 to 180 supported was: " + position);
         } else {
             LOG.debug("Setting goal position to: {} for servo: {}", position, id);

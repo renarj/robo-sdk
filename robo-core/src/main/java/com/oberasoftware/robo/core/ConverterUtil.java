@@ -3,6 +3,8 @@ package com.oberasoftware.robo.core;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
+
 /**
  * @author Renze de Vries
  */
@@ -39,7 +41,40 @@ public class ConverterUtil {
         return data;
     }
 
+    public static int byteToInt32(byte lowerLowByte, byte lowerHighByte, byte higherLowByte, byte higherHighByte) {
+        return ByteBuffer.wrap(new byte[] {higherHighByte, higherLowByte, lowerHighByte, lowerLowByte}).getInt();
+    }
+
+    public static byte[] intTo32BitByte(int... numbers) {
+        byte[] data = new byte[numbers.length * 4];
+        for(int i=0; i<numbers.length; i++) {
+            byte[] n = ByteBuffer.allocate(4).putInt(numbers[i]).array();
+
+            int baseIndex = i*4;
+            data[baseIndex] = n[3];
+            data[baseIndex + 1] = n[2];
+            data[baseIndex + 2] = n[1];
+            data[baseIndex + 3] = n[0];
+        }
+        return data;
+    }
+
+    public static byte[] intTo32BitByte(int number) {
+        byte[] data = ByteBuffer.allocate(4).putInt(number).array();
+
+        byte[] littleEndian = new byte[] {
+                data[3],
+                data[2],
+                data[1],
+                data[0]
+        };
+
+        return littleEndian;
+    }
+
     public static int byteToInt(byte lowByte, byte highByte) {
         return ((highByte << 8) + (lowByte & 0xff));
     }
+
+
 }

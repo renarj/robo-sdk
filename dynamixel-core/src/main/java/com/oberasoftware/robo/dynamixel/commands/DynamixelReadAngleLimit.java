@@ -5,11 +5,11 @@ import com.oberasoftware.robo.api.servo.ServoCommand;
 /**
  * @author renarj
  */
-public class DynamixelReadServoMode implements ServoCommand {
+public class DynamixelReadAngleLimit implements ServoCommand {
 
     private final String servoId;
 
-    public DynamixelReadServoMode(String servoId) {
+    public DynamixelReadAngleLimit(String servoId) {
         this.servoId = servoId;
     }
 
@@ -20,7 +20,7 @@ public class DynamixelReadServoMode implements ServoCommand {
 
     @Override
     public String toString() {
-        return "DynamixelReadServoMode{" +
+        return "DynamixelReadAngleLimit{" +
                 "servoId='" + servoId + '\'' +
                 '}';
     }
