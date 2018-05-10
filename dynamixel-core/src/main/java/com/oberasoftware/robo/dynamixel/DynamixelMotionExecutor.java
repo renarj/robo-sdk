@@ -7,6 +7,7 @@ import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.MotionTask;
 import com.oberasoftware.robo.api.commands.BulkPositionSpeedCommand;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.api.motion.*;
 import com.oberasoftware.robo.api.servo.ServoDataManager;
 import com.oberasoftware.robo.api.servo.ServoProperty;
@@ -162,8 +163,8 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         String cacheKey = motionId + "_" + previousFrameId + "_" + keyFrame.getKeyFrameId();
         if(!cachedCommands.containsKey(cacheKey)) {
             Map<String, PositionAndSpeedCommand> commands = keyFrame.getServoSteps().stream()
-                    .map(s -> new PositionAndSpeedCommand(s.getServoId(), s.getTargetPosition(),
-                            calculateSpeed(previousKeyFrame, s.getServoId(), s.getTargetPosition(), timeInMs)))
+                    .map(s -> new PositionAndSpeedCommand(s.getServoId(), s.getTargetPosition(), new Scale(0, 1023),
+                            calculateSpeed(previousKeyFrame, s.getServoId(), s.getTargetPosition(), timeInMs), new Scale(0, 1023)))
                     .collect(Collectors.toMap(PositionAndSpeedCommand::getServoId, Function.identity()));
             cachedCommands.put(cacheKey, new BulkPositionSpeedCommand(commands));
         }

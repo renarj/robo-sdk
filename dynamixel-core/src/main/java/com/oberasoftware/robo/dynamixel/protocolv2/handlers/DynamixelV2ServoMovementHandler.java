@@ -4,6 +4,7 @@ import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
 import com.oberasoftware.robo.api.commands.PositionCommand;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.api.commands.SpeedCommand;
 import com.oberasoftware.robo.api.servo.ServoCommand;
 import com.oberasoftware.robo.dynamixel.DynamixelConnector;
@@ -35,6 +36,9 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
 
     private static final int NOT_SPECIFIED = -1;
 
+    private static final Scale TARGET_SCALE_SPEED = new Scale(-400, 400);
+    private static final Scale TARGET_SCALE_POSITION = new Scale(0, 4095);
+
     @Autowired
     private DynamixelConnector connector;
 
@@ -43,7 +47,7 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
     public void receive(PositionCommand positionCommand) {
         LOG.debug("Received servo position command: {}", positionCommand);
 
-        setGoal(positionCommand, positionCommand.getPosition());
+        setGoal(positionCommand, positionCommand.getPosition(), positionCommand.getScale());
     }
 
     @Override
@@ -51,7 +55,7 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
     public void receive(SpeedCommand speedCommand) {
         LOG.debug("Received a speed command: {}", speedCommand);
 
-        setSpeed(speedCommand, speedCommand.getSpeed());
+        setSpeed(speedCommand, speedCommand.getSpeed(), speedCommand.getScale());
     }
 
     @Override
@@ -59,18 +63,20 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
     public void receive(PositionAndSpeedCommand command) {
         LOG.debug("Received a position and speed command: {}", command);
 
-        setGoal(command, command.getPosition());
-        setSpeed(command, command.getSpeed());
+        setGoal(command, command.getPosition(), command.getPositionScale());
+        setSpeed(command, command.getSpeed(), command.getSpeedScale());
     }
 
 
-    private void setGoal(ServoCommand command, int goal) {
+    private void setGoal(ServoCommand command, int goal, Scale scale) {
         int servoId = toSafeInt(command.getServoId());
         DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
-        if(goal > NOT_SPECIFIED) {
-            LOG.debug("Setting Servo: {} goal to: {}", servoId, goal);
+
+        if(scale.isValid(goal)) {
+            int convertedGoal = scale.convertToScale(goal, TARGET_SCALE_POSITION);
+            LOG.debug("Setting Servo: {} goal to: {}", servoId, convertedGoal);
             ByteBuffer buffer = ByteBuffer.allocate(4);
-            buffer.put(intTo32BitByte(goal));
+            buffer.put(intTo32BitByte(convertedGoal));
 
             packet.addParam(DynamixelV2Address.GOAL_POSITION_L, buffer.array());
 
@@ -81,21 +87,24 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
             DynamixelV2ReturnPacket returnPacket = new DynamixelV2ReturnPacket(received);
             LOG.debug("Received return package: {} errors detected: {} reason: {}",
                     returnPacket, returnPacket.hasErrors(), returnPacket.getErrorReason());
+        } else {
+            LOG.warn("Goal: {} specified for servo: {} is invalid for scale: {}", goal, servoId, scale);
         }
     }
 
-    private void setSpeed(ServoCommand command, int speed) {
+    private void setSpeed(ServoCommand command, int speed, Scale scale) {
         int servoId = toSafeInt(command.getServoId());
         DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
-        if(speed > NOT_SPECIFIED) {
-            LOG.debug("Setting Servo: {} speed: {}", servoId, speed);
+        if(scale.isValid(speed)) {
+            int convertedSpeed = scale.convertToScale(speed, TARGET_SCALE_SPEED);
+            LOG.debug("Setting Servo: {} speed: {}", servoId, convertedSpeed);
             ByteBuffer buffer = ByteBuffer.allocate(4);
-            buffer.put(intTo32BitByte(speed));
+            buffer.put(intTo32BitByte(convertedSpeed));
 
             packet.addParam(DynamixelV2Address.GOAL_VELOCITY, buffer.array());
 
             byte[] dataToSend = packet.build();
-            LOG.info("Sending movement command: {}", bb2hex(dataToSend));
+            LOG.info("Sending speed command: {}", bb2hex(dataToSend));
 
             LOG.debug("Sending package: {}", packet);
             byte[] received = connector.sendAndReceive(dataToSend);

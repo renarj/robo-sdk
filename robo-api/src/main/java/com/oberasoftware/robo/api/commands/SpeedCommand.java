@@ -8,10 +8,16 @@ import com.oberasoftware.robo.api.servo.ServoCommand;
 public class SpeedCommand implements ServoCommand {
     private final String servoId;
     private final int speed;
+    private final Scale scale;
 
-    public SpeedCommand(String servoId, int speed) {
+    public SpeedCommand(String servoId, int speed, Scale scale) {
         this.servoId = servoId;
         this.speed = speed;
+        this.scale = scale;
+    }
+
+    public Scale getScale() {
+        return scale;
     }
 
     @Override

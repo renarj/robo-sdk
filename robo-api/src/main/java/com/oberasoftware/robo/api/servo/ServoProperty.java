@@ -5,8 +5,10 @@ package com.oberasoftware.robo.api.servo;
  */
 public enum ServoProperty {
     POSITION,
+    POSITION_SCALE,
     TORGUE,
     SPEED,
+    SPEED_SCALE,
     ALARM,
     VOLTAGE,
     TEMPERATURE,

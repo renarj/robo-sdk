@@ -6,9 +6,9 @@ import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.servo.ServoProperty;
 import com.oberasoftware.robo.api.servo.events.ServoDataReceivedEvent;
 import com.oberasoftware.robo.core.ServoDataImpl;
+import com.oberasoftware.robo.core.commands.AngleLimitCommand;
+import com.oberasoftware.robo.core.commands.ReadAngleLimit;
 import com.oberasoftware.robo.dynamixel.*;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelAngleLimitCommand;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelReadAngleLimit;
 import com.oberasoftware.robo.dynamixel.DynamixelCommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
@@ -36,7 +36,7 @@ public class DynamixelV1AngleLimitHandler implements EventHandler {
     private DynamixelConnector connector;
 
     @EventSubscribe
-    public void receive(DynamixelAngleLimitCommand command) {
+    public void receive(AngleLimitCommand command) {
         int servoId = toSafeInt(command.getServoId());
         LOG.debug("Received a servo mode: {}", command.getServoId(), command);
 
@@ -56,7 +56,7 @@ public class DynamixelV1AngleLimitHandler implements EventHandler {
     }
 
     @EventSubscribe
-    public ServoDataReceivedEvent receive(DynamixelReadAngleLimit command) {
+    public ServoDataReceivedEvent receive(ReadAngleLimit command) {
         int servoId = toSafeInt(command.getServoId());
         LOG.debug("Received a read operation for the servo mode: {}", command.getServoId());
 

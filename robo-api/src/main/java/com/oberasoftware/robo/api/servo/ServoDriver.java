@@ -2,6 +2,7 @@ package com.oberasoftware.robo.api.servo;
 
 import com.oberasoftware.robo.api.ActivatableCapability;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
+import com.oberasoftware.robo.api.commands.Scale;
 
 import java.util.List;
 import java.util.Map;
@@ -10,11 +11,11 @@ import java.util.Map;
  * @author Renze de Vries
  */
 public interface ServoDriver extends ActivatableCapability {
-    boolean setServoSpeed(String servoId, int speed);
+    boolean setServoSpeed(String servoId, int speed, Scale scale);
 
-    boolean setTargetPosition(String servoId, int targetPosition);
+    boolean setTargetPosition(String servoId, int targetPosition, Scale scale);
 
-    boolean setPositionAndSpeed(String servoId, int speed, int targetPosition);
+    boolean setPositionAndSpeed(String servoId, int speed, Scale speedScale, int targetPosition, Scale positionScale);
 
     boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands);
 

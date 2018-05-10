@@ -6,14 +6,10 @@ import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.servo.ServoProperty;
 import com.oberasoftware.robo.api.servo.events.ServoDataReceivedEvent;
 import com.oberasoftware.robo.core.ServoDataImpl;
-import com.oberasoftware.robo.dynamixel.DynamixelAddress;
-import com.oberasoftware.robo.dynamixel.DynamixelCommandPacket;
+import com.oberasoftware.robo.core.commands.ReadAngleLimit;
 import com.oberasoftware.robo.dynamixel.DynamixelConnector;
 import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelAngleLimitCommand;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelReadAngleLimit;
-import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
-import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
+import com.oberasoftware.robo.core.commands.AngleLimitCommand;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2Address;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2ReturnPacket;
@@ -41,7 +37,7 @@ public class DynamixelV2AngleLimitHandler implements EventHandler {
     private DynamixelConnector connector;
 
     @EventSubscribe
-    public void receive(DynamixelAngleLimitCommand command) {
+    public void receive(AngleLimitCommand command) {
         int servoId = toSafeInt(command.getServoId());
         LOG.debug("Received a servo mode: {}", command.getServoId(), command);
 
@@ -61,9 +57,9 @@ public class DynamixelV2AngleLimitHandler implements EventHandler {
     }
 
     @EventSubscribe
-    public ServoDataReceivedEvent receive(DynamixelReadAngleLimit command) {
+    public ServoDataReceivedEvent receive(ReadAngleLimit command) {
         int servoId = toSafeInt(command.getServoId());
-        LOG.debug("Received a read operation for the servo mode: {}", command.getServoId());
+        LOG.info("Received a read operation for the servo mode: {}", command.getServoId());
 
         DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.READ_DATA, servoId);
         byte[] data = packet.addInt16Bit(DynamixelV2Address.MAX_POSITION, (byte)0x08).build();
@@ -71,14 +67,14 @@ public class DynamixelV2AngleLimitHandler implements EventHandler {
 
         DynamixelV2ReturnPacket returnPacket = new DynamixelV2ReturnPacket(received);
         if(!returnPacket.hasErrors()) {
-            LOG.trace("Received an angle limit readout: {} for servo: {}", bb2hex(received), servoId);
+            LOG.info("Received an angle limit readout: {} for servo: {}", bb2hex(received), servoId);
 
             byte[] params = returnPacket.getParameters();
             if(params.length == 8) {
                 int maxLimit = byteToInt32(params[0], params[1], params[2], params[3]);
                 int minLimit = byteToInt32(params[4], params[5], params[6], params[7]);
 
-                LOG.debug("Servo: {} has minimum angle limit: {} and maximum: {}", servoId, minLimit, maxLimit);
+                LOG.info("Servo: {} has minimum angle limit: {} and maximum: {}", servoId, minLimit, maxLimit);
 
                 Map<ServoProperty, Object> map = new ImmutableMap.Builder<ServoProperty, Object>()
                         .put(ServoProperty.MIN_ANGLE_LIMIT, minLimit)

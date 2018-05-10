@@ -2,6 +2,7 @@ package com.oberasoftware.robo.dynamixel;
 
 import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.commands.PositionCommand;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.api.commands.SpeedCommand;
 import com.oberasoftware.robo.api.commands.TorgueCommand;
 import com.oberasoftware.robo.api.exceptions.ServoException;
@@ -47,22 +48,22 @@ public class DynamixelServo implements Servo {
     }
 
     @Override
-    public void moveTo(int position) {
-        if(position < 0 || position > 4096) {
+    public void moveTo(int position, Scale scale) {
+        if(!scale.isValid(position)) {
             throw new ServoException("Invalid range specific for goal position, only -180 to 180 supported was: " + position);
         } else {
             LOG.debug("Setting goal position to: {} for servo: {}", position, id);
-            eventBus.publish(new PositionCommand(valueOf(id), position));
+            eventBus.publish(new PositionCommand(valueOf(id), position, scale));
         }
     }
 
     @Override
-    public void setSpeed(int speed) {
-        if(speed<0 || speed > 1023) {
+    public void setSpeed(int speed, Scale scale) {
+        if(!scale.isValid(speed)) {
             throw new ServoException("Invalid speed, range needs to be between 0 and 1024, currently: " + speed);
         } else {
             LOG.debug("Setting target speed: {} for servo: {}", speed, id);
-            eventBus.publish(new SpeedCommand(valueOf(id), speed));
+            eventBus.publish(new SpeedCommand(valueOf(id), speed, scale));
         }
     }
 

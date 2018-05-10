@@ -2,18 +2,23 @@ package com.oberasoftware.robo.dynamixel.web;
 
 import com.oberasoftware.robo.api.servo.Servo;
 import com.oberasoftware.robo.api.servo.ServoProperty;
+import org.slf4j.Logger;
+
+import static org.slf4j.LoggerFactory.getLogger;
 
 /**
  * @author Renze de Vries
  */
 public class SimpleServo {
+    private static final Logger LOG = getLogger(SimpleServo.class);
+
     private final String servoId;
     private final int speed;
     private final int position;
     private final int torgue;
     private final int temperature;
     private final double voltage;
-    private final int minPosition;
+    private int minPosition;
     private final int maxPosition;
 
     public SimpleServo(String servoId, Integer speed, Integer position, Integer torgue, Integer temperature, Double voltage) {

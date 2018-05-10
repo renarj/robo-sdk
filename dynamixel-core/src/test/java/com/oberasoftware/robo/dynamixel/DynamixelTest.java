@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.robo.api.servo.ServoDriver;
 import com.oberasoftware.robo.api.servo.ServoProperty;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelAngleLimitCommand;
+import com.oberasoftware.robo.core.commands.AngleLimitCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -29,17 +29,17 @@ public class DynamixelTest {
         servoDriver.getServos().forEach(s -> {
             LOG.info("Servo found: {} on position: {}", s.getId(), s.getData().getValue(ServoProperty.POSITION));
         });
-        servoDriver.sendCommand(new DynamixelAngleLimitCommand("6", DynamixelAngleLimitCommand.MODE.WHEEL_MODE));
-//        servoDriver.sendCommand(new DynamixelAngleLimitCommand("14", DynamixelAngleLimitCommand.MODE.WHEEL_MODE));
-//        servoDriver.sendCommand(new DynamixelAngleLimitCommand("16", DynamixelAngleLimitCommand.MODE.WHEEL_MODE));
-//        servoDriver.sendCommand(new DynamixelAngleLimitCommand("6", DynamixelAngleLimitCommand.MODE.WHEEL_MODE));
+//        servoDriver.sendCommand(new AngleLimitCommand("6", AngleLimitCommand.MODE.WHEEL_MODE));
+//        servoDriver.sendCommand(new AngleLimitCommand("14", AngleLimitCommand.MODE.WHEEL_MODE));
+//        servoDriver.sendCommand(new AngleLimitCommand("16", AngleLimitCommand.MODE.WHEEL_MODE));
+//        servoDriver.sendCommand(new AngleLimitCommand("6", AngleLimitCommand.MODE.WHEEL_MODE));
 
-        servoDriver.setServoSpeed("6", 300);
+//        servoDriver.setServoSpeed("6", 300);
 //        servoDriver.setServoSpeed("14", 300);
 //        servoDriver.setServoSpeed("16", 300);
 //        servoDriver.setServoSpeed("6", 300);
         Uninterruptibles.sleepUninterruptibly(30, TimeUnit.SECONDS);
-        servoDriver.setServoSpeed("6", 0);
+//        servoDriver.setServoSpeed("6", 0);
 //        servoDriver.setServoSpeed("14", 0);
 //        servoDriver.setServoSpeed("16", 0);
 //        servoDriver.setServoSpeed("6", 0);

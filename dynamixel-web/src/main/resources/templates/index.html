@@ -97,6 +97,21 @@
                                             </div>
                                         </div>
                                     </div>
+                                    <div class="row voffset1">
+                                        <div class="form-group">
+                                            <label class="col-sm-2 control-label">Operating Mode:</label>
+                                            <div class="col-sm-8">
+                                                <select class="form-control" th:id="'opMode' + ${servo.servoId}">
+                                                    <option value="POSITION_CONTROL">Position Control</option>
+                                                    <option value="VELOCITY_MODE">Velocity Control</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-sm-2">
+                                                <button type="button" class="btn btn-primary setOperatingMode" th:attr="servoId=${servo.servoId}">Set</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -106,7 +121,7 @@
                                     <div class="col-sm-10">
                                         <input style="width: 100%;" type="text" th:id="'position' + ${servo.servoId}"
                                                th:attr="servoId=${servo.servoId},slider='position',data-slider-value=${servo.position}"
-                                               data-slider-min="1" data-slider-max="4096" data-slider-step="10" data-slider-value="0"/>
+                                               data-slider-min="1" data-slider-max="2000" data-slider-step="10" data-slider-value="0"/>
                                     </div>
                                 </div>
                             </div>

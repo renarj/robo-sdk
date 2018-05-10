@@ -33,6 +33,11 @@ public class AsyncServoData implements ServoData {
     }
 
     @Override
+    public boolean containsValue(ServoProperty key) {
+        return true;
+    }
+
+    @Override
     public Map<ServoProperty, Object> getValues() {
         return dataManager.getCurrentValues(servoId);
     }

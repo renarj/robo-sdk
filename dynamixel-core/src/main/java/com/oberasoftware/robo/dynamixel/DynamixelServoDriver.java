@@ -41,7 +41,7 @@ import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPack
 public class DynamixelServoDriver implements ServoDriver {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelServoDriver.class);
 
-    private static final int MAX_ID = 249;
+    private static final int MAX_ID = 27;
     public static final String PORT = "port";
 
     @Autowired
@@ -88,7 +88,7 @@ public class DynamixelServoDriver implements ServoDriver {
         LOG.info("Starting servo scan");
         Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
-        IntStream motorRange = IntStream.range(1, MAX_ID);
+        IntStream motorRange = IntStream.range(17, MAX_ID);
         motorRange.forEach((m) -> {
             byte[] data = new DynamixelV1CommandPacket(DynamixelInstruction.PING, m).build();
             if(v2Enabled) {
@@ -137,22 +137,22 @@ public class DynamixelServoDriver implements ServoDriver {
     }
 
     @Override
-    public boolean setServoSpeed(String servoId, int speed) {
-        servoMovementHandler.receive(new SpeedCommand(servoId, speed));
+    public boolean setServoSpeed(String servoId, int speed, Scale scale) {
+        servoMovementHandler.receive(new SpeedCommand(servoId, speed, scale));
 
         return false;
     }
 
     @Override
-    public boolean setTargetPosition(String servoId, int targetPosition) {
-        servoMovementHandler.receive(new PositionCommand(servoId, targetPosition));
+    public boolean setTargetPosition(String servoId, int targetPosition, Scale scale) {
+        servoMovementHandler.receive(new PositionCommand(servoId, targetPosition, scale));
 
         return true;
     }
 
     @Override
-    public boolean setPositionAndSpeed(String servoId, int speed, int targetPosition) {
-        servoMovementHandler.receive(new PositionAndSpeedCommand(servoId, targetPosition, speed));
+    public boolean setPositionAndSpeed(String servoId, int speed, Scale speedScale, int targetPosition, Scale positionScale) {
+        servoMovementHandler.receive(new PositionAndSpeedCommand(servoId, targetPosition, positionScale, speed, speedScale));
 
         return true;
     }

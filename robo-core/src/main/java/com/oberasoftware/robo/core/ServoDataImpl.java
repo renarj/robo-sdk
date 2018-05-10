@@ -33,6 +33,11 @@ public class ServoDataImpl implements ServoData {
     }
 
     @Override
+    public boolean containsValue(ServoProperty key) {
+        return data.containsKey(key);
+    }
+
+    @Override
     public String toString() {
         return "ServoDataImpl{" +
                 "data=" + data +

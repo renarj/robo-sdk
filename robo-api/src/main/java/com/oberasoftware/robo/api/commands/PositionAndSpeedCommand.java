@@ -10,11 +10,23 @@ public class PositionAndSpeedCommand implements ServoCommand {
     private final String servoId;
     private final int position;
     private final int speed;
+    private final Scale speedScale;
+    private final Scale positionScale;
 
-    public PositionAndSpeedCommand(String servoId, int position, int speed) {
+    public PositionAndSpeedCommand(String servoId, int position, Scale positionScale, int speed, Scale speedScale) {
         this.servoId = servoId;
         this.position = position;
         this.speed = speed;
+        this.speedScale = speedScale;
+        this.positionScale = positionScale;
+    }
+
+    public Scale getSpeedScale() {
+        return speedScale;
+    }
+
+    public Scale getPositionScale() {
+        return positionScale;
     }
 
     @Override

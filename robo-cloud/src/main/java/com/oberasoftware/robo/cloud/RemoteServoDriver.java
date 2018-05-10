@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.cloud;
 
 import com.oberasoftware.robo.api.commands.BasicCommand;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.core.model.BasicCommandBuilder;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
@@ -37,12 +38,12 @@ public class RemoteServoDriver implements ServoDriver {
     }
 
     @Override
-    public boolean setServoSpeed(String servoId, int speed) {
+    public boolean setServoSpeed(String servoId, int speed, Scale scale) {
         return false;
     }
 
     @Override
-    public boolean setTargetPosition(String servoId, int targetPosition) {
+    public boolean setTargetPosition(String servoId, int targetPosition, Scale scale) {
         BasicCommand command = BasicCommandBuilder.create(robot.getName())
                 .item("servos").label("position")
                 .property("servoId", servoId)
@@ -65,7 +66,7 @@ public class RemoteServoDriver implements ServoDriver {
     }
 
     @Override
-    public boolean setPositionAndSpeed(String servoId, int speed, int targetPosition) {
+    public boolean setPositionAndSpeed(String servoId, int speed, Scale speedScale, int targetPosition, Scale positionScale) {
         BasicCommand command = BasicCommandBuilder.create(robot.getName())
                 .item("servos").label("position")
                 .property("servoId", servoId)

@@ -3,6 +3,7 @@ package com.oberasoftware.robo.cloud.handlers;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.commands.BasicCommand;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.core.model.BasicCommandImpl;
 import com.oberasoftware.home.core.mqtt.MQTTMessage;
 import com.oberasoftware.home.core.mqtt.MQTTPath;
@@ -29,6 +30,9 @@ public class ServoCommandHandler implements EventHandler {
     private static final Logger LOG = LoggerFactory.getLogger(ServoCommandHandler.class);
     private static final int DEFAULT_SPEED = 20;
 
+    private static final Scale REMOTE_SCALE_SPEED = new Scale(-100, 100);
+    private static final Scale REMOTE_SCALE_POSITION = new Scale(0, 4095);
+
     @Autowired
     private RobotRegistry robotRegistry;
 
@@ -48,10 +52,10 @@ public class ServoCommandHandler implements EventHandler {
             LOG.info("Setting servo: {} to position: {}", servoId, servoPosition);
 
             if(StringUtils.hasText(speed)) {
-                servoDriver.setPositionAndSpeed(servoId, IntUtils.toInt(speed, DEFAULT_SPEED),
-                        IntUtils.toSafeInt(servoPosition));
+                servoDriver.setPositionAndSpeed(servoId, IntUtils.toInt(speed, DEFAULT_SPEED), REMOTE_SCALE_SPEED,
+                        IntUtils.toSafeInt(servoPosition), REMOTE_SCALE_POSITION);
             } else {
-                servoDriver.setTargetPosition(servoId, IntUtils.toSafeInt(servoPosition));
+                servoDriver.setTargetPosition(servoId, IntUtils.toSafeInt(servoPosition), REMOTE_SCALE_POSITION);
             }
         } else {
             LOG.warn("Received servo command, but no servoId or Position specified");

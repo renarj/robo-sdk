@@ -3,6 +3,7 @@ package com.oberasoftware.robo.dynamixel.protocolv2.handlers;
 import com.google.common.collect.ImmutableMap;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.api.servo.ServoProperty;
 import com.oberasoftware.robo.api.servo.events.ServoDataReceivedEvent;
 import com.oberasoftware.robo.core.ServoDataImpl;
@@ -60,7 +61,9 @@ public class DynamixelV2ReadPositionHandler implements EventHandler {
                 LOG.debug("Servo: {} has position: {} and speed: {}", servoId, position, speed);
 
                 Map<ServoProperty, Object> map = new ImmutableMap.Builder<ServoProperty, Object>()
+                        .put(ServoProperty.POSITION_SCALE, new Scale(0, 4095))
                         .put(ServoProperty.POSITION, position)
+                        .put(ServoProperty.SPEED_SCALE, new Scale(-400, 400))
                         .put(ServoProperty.SPEED, speed)
                         .build();
 

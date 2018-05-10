@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +35,7 @@ public class ServoSensorDriver implements SensorDriver<DirectPort<PositionValue>
 
     private final LocalEventBus localEventBus;
 
-    private Map<String, ServoPort> ports = new HashMap<>();
+    private Map<String, ServoPort> ports = new ConcurrentHashMap<>();
 
     private static final int SERVO_CHECK_INTERVAL = 100;
 

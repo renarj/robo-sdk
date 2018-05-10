@@ -2,6 +2,7 @@ package com.oberasoftware.robo.dynamixel.web;
 
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.api.servo.ServoData;
 import com.oberasoftware.robo.api.servo.ServoProperty;
 import com.oberasoftware.robo.api.servo.events.ServoUpdateEvent;
@@ -28,12 +29,18 @@ public class ServoStateController implements EventHandler {
         Integer tValue = data.getValue(ServoProperty.TEMPERATURE);
         Double cValue = data.getValue(ServoProperty.VOLTAGE);
 
+        Integer speed = data.getValue(ServoProperty.SPEED);
+        Scale speedScale = data.getValue(ServoProperty.SPEED_SCALE);
+        Integer position = data.getValue(ServoProperty.POSITION);
+        Scale positionScale = data.getValue(ServoProperty.POSITION_SCALE);
+
         int temp = tValue != null ? tValue : 0;
         double voltage = cValue != null ? cValue : 0.0;
 
         SimpleServo servo = new SimpleServo(stateUpdateEvent.getServoId(),
-                data.getValue(ServoProperty.SPEED),
-                data.getValue(ServoProperty.POSITION), 0,
+                speed != null ? speedScale.convertToScale(speed, new Scale(-100, 100)) : 0,
+                position != null ? positionScale.convertToScale(position, new Scale(0, 2000)) : 0
+                , 0,
                 temp,
                 voltage);
         messagingTemplate.convertAndSend("/topic/state", servo);

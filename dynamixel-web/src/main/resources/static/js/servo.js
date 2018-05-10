@@ -111,6 +111,19 @@ function loadHandlers() {
         }});
     }
 
+    $("button.setOperatingMode").click(function (e) {
+        e.preventDefault();
+
+        var servoId = this.getAttribute('servoId');
+        var mode = $("#opMode" + servoId).val();
+
+        console.log("Setting operating mode for servo %s to %s", servoId, mode)
+
+        $.ajax({url: "/servos/set/" + servoId + "/mode/" + mode, type: "POST", contentType: "application/json; charset=utf-8", success: function(data) {
+                console.log("Set servo: " + servoId + " Operating mode to: " + mode + " successfully");
+            }});
+    });
+
     $("button.setSpeed").click(function (e) {
         e.preventDefault();
 

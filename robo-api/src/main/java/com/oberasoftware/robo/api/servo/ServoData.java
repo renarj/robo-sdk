@@ -11,5 +11,7 @@ public interface ServoData {
 
     <T> T getValue(ServoProperty key);
 
+    boolean containsValue(ServoProperty key);
+
     Map<ServoProperty, Object> getValues();
 }

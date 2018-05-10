@@ -8,6 +8,7 @@ public enum DynamixelV2Address {
     MODEL_NUMBER_H(0x01),
     VERSION_FIRMWARE(0x02),
     ID(0x03),
+    OPERATING_MODE(0x0B),
     LED(0x41),
     BAUD_RATE(0x04),
     RETURN_DELAY_TIME(0x05),

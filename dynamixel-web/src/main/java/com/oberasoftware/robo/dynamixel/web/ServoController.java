@@ -2,8 +2,10 @@ package com.oberasoftware.robo.dynamixel.web;
 
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.RobotRegistry;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.api.servo.ServoDriver;
-import com.oberasoftware.robo.dynamixel.commands.DynamixelAngleLimitCommand;
+import com.oberasoftware.robo.core.commands.AngleLimitCommand;
+import com.oberasoftware.robo.core.commands.OperationModeCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,16 @@ import java.util.stream.Collectors;
 public class ServoController {
     private static final Logger LOG = LoggerFactory.getLogger(ServoController.class);
 
+    private static final int MIN_SPEED = -100;
+    private static final int MAX_SPEED = 100;
+
+    private static final int MIN_POSITION = 1;
+    private static final int MAX_POSITION = 2000;
+
+    private static final Scale POSITION_SCALE = new Scale(MIN_POSITION, MAX_POSITION);
+
+    private static final Scale SPEED_SCALE = new Scale(MIN_SPEED, MAX_SPEED);
+
     @Autowired
     private RobotRegistry robotRegistry;
 
@@ -42,7 +54,7 @@ public class ServoController {
             consumes = "application/json", produces = "application/json")
     public SimpleServo setServoPosition(@PathVariable  String servoId, @PathVariable int position) {
         LOG.info("Setting servo: {} to position: {}", servoId, position);
-        getServoDriver().setTargetPosition(servoId, position);
+        getServoDriver().setTargetPosition(servoId, position, POSITION_SCALE);
 
         return new SimpleServo(getServoDriver().getServo(servoId));
     }
@@ -51,7 +63,7 @@ public class ServoController {
             consumes = "application/json", produces = "application/json")
     public SimpleServo setServoSpeed(@PathVariable  String servoId, @PathVariable int speed) {
         LOG.info("Setting servo: {} speed: {}", servoId, speed);
-        getServoDriver().setServoSpeed(servoId, speed);
+        getServoDriver().setServoSpeed(servoId, speed, SPEED_SCALE);
 
         return new SimpleServo(getServoDriver().getServo(servoId));
     }
@@ -69,11 +81,21 @@ public class ServoController {
             consumes = "application/json", produces = "application/json")
     public SimpleServo setAngleLimits(@PathVariable  String servoId, @PathVariable int min, @PathVariable int max) {
         LOG.info("Setting servo: {} angle Limits min: {} max: {}", servoId, min, max);
-        getServoDriver().sendCommand(new DynamixelAngleLimitCommand(servoId, min, max));
+        getServoDriver().sendCommand(new AngleLimitCommand(servoId, min, max));
 
         return new SimpleServo(getServoDriver().getServo(servoId));
     }
 
+    @RequestMapping(value = "/set/{servoId}/mode/{mode}", method = RequestMethod.POST,
+            consumes = "application/json", produces = "application/json")
+    public SimpleServo setOperatingMode(@PathVariable  String servoId, @PathVariable String mode) {
+        LOG.info("Setting servo: {} operating mode: {}", servoId, mode);
+        OperationModeCommand.MODE m = OperationModeCommand.MODE.valueOf(mode);
+
+        getServoDriver().sendCommand(new OperationModeCommand(servoId, m));
+
+        return new SimpleServo(getServoDriver().getServo(servoId));
+    }
 
     @RequestMapping(value = "/enable/{servoId}/torgue", method = RequestMethod.POST,
             consumes = "application/json", produces = "application/json")

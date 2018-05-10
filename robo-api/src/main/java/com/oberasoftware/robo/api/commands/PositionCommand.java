@@ -8,10 +8,16 @@ import com.oberasoftware.robo.api.servo.ServoCommand;
 public class PositionCommand implements ServoCommand {
     private final String servoId;
     private final int position;
+    private final Scale scale;
 
-    public PositionCommand(String servoId, int position) {
+    public PositionCommand(String servoId, int position, Scale scale) {
         this.servoId = servoId;
         this.position = position;
+        this.scale = scale;
+    }
+
+    public Scale getScale() {
+        return scale;
     }
 
     @Override

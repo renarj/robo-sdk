@@ -25,11 +25,12 @@ public class ServoPort implements DirectPort<PositionValue> {
 
     protected void notify(ServoUpdateEvent servoUpdateEvent) {
         LOG.debug("Servo port event: {}", servoUpdateEvent);
-        int position = servoUpdateEvent.getServoData().getValue(ServoProperty.POSITION);
-
-        listeners.forEach(l -> {
-            LOG.debug("Notifying listener: {}", l);
-            l.receive(new PositionValue(servoUpdateEvent.getServoId(), position));
-        });
+        if(servoUpdateEvent.getServoData().containsValue(ServoProperty.POSITION)) {
+            int position = servoUpdateEvent.getServoData().getValue(ServoProperty.POSITION);
+            listeners.forEach(l -> {
+                LOG.debug("Notifying listener: {}", l);
+                l.receive(new PositionValue(servoUpdateEvent.getServoId(), position));
+            });
+        }
     }
 }
