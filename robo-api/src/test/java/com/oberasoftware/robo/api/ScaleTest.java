@@ -36,6 +36,5 @@ public class ScaleTest {
         assertThat(webScale.convertToScale(0, dynamixelScale), is(0));
         assertThat(webScale.convertToScale(1000, dynamixelScale), is(2047));
         assertThat(webScale.convertToScale(2000, dynamixelScale), is(4094));
-
     }
 }

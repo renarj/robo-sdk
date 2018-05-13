@@ -12,7 +12,6 @@ import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2Address;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2ReturnPacket;
-import org.apache.tomcat.util.buf.ByteBufferUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,6 @@ import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
 
-import static com.oberasoftware.robo.core.ConverterUtil.intTo16BitByte;
 import static com.oberasoftware.robo.core.ConverterUtil.intTo32BitByte;
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
 import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket.bb2hex;
@@ -74,7 +72,7 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
 
         if(scale.isValid(goal)) {
             int convertedGoal = scale.convertToScale(goal, TARGET_SCALE_POSITION);
-            LOG.debug("Setting Servo: {} goal to: {}", servoId, convertedGoal);
+            LOG.info("Setting Servo: {} goal to: {}", servoId, convertedGoal);
             ByteBuffer buffer = ByteBuffer.allocate(4);
             buffer.put(intTo32BitByte(convertedGoal));
 
@@ -97,14 +95,14 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
         DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
         if(scale.isValid(speed)) {
             int convertedSpeed = scale.convertToScale(speed, TARGET_SCALE_SPEED);
-            LOG.debug("Setting Servo: {} speed: {}", servoId, convertedSpeed);
+            LOG.info("Setting Servo: {} speed: {}", servoId, convertedSpeed);
             ByteBuffer buffer = ByteBuffer.allocate(4);
             buffer.put(intTo32BitByte(convertedSpeed));
 
             packet.addParam(DynamixelV2Address.GOAL_VELOCITY, buffer.array());
 
             byte[] dataToSend = packet.build();
-            LOG.info("Sending speed command: {}", bb2hex(dataToSend));
+            LOG.debug("Sending speed command: {}", bb2hex(dataToSend));
 
             LOG.debug("Sending package: {}", packet);
             byte[] received = connector.sendAndReceive(dataToSend);
