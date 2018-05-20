@@ -13,9 +13,9 @@ public interface ServoBehaviour extends Behaviour {
 
     void goToPosition(int percentage);
 
-    void goToMinimum();
+    void goToMinimum(int speed, Scale scale);
 
-    void goToMaximum();
+    void goToMaximum(int speed, Scale scale);
 
-    void goToDefault();
+    void goToDefault(int speed, Scale scale);
 }
