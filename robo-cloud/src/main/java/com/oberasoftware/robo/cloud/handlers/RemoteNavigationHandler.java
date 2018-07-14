@@ -51,14 +51,11 @@ public class RemoteNavigationHandler implements EventHandler {
         });
 
         Optional<BehaviouralRobot> behaviouralRobot = robotRegistry.getRobot(basicCommand.getControllerId());
-        behaviouralRobot.ifPresentOrElse((b) -> {
+        behaviouralRobot.ifPresent((b) -> {
             RobotNavigationController navigationController = b.getBehaviour(RobotNavigationController.class);
             LOG.info("Sending directional input: {} to robot: {}", directionInput, basicCommand.getControllerId());
             navigationController.move(new DirectionalInput(directionInput));
-        }, () -> {
-            throw new RuntimeHomeAutomationException("Could not find robot with id: " + basicCommand.getControllerId());
         });
-
-
+        behaviouralRobot.orElseThrow(() -> new RuntimeHomeAutomationException("Could not find robot with id: " + basicCommand.getControllerId()));
     }
 }

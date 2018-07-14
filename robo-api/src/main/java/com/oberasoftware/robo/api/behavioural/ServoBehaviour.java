@@ -11,11 +11,11 @@ public interface ServoBehaviour extends Behaviour {
 
     Scale DEFAULT_POSITION_SCALE = new Scale(0, 2000);
 
-    void goToPosition(int percentage);
+    void goToPosition(int speed, Scale scale, int percentage);
 
-    void goToMinimum();
+    void goToMinimum(int speed, Scale scale);
 
-    void goToMaximum();
+    void goToMaximum(int speed, Scale scale);
 
-    void goToDefault();
+    void goToDefault(int speed, Scale scale);
 }
