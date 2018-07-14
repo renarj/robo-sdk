@@ -41,7 +41,7 @@ import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPack
 public class DynamixelServoDriver implements ServoDriver {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelServoDriver.class);
 
-    private static final int MAX_ID = 27;
+    private static final int MAX_ID = 240;
     public static final String PORT = "port";
 
     @Autowired
@@ -88,7 +88,7 @@ public class DynamixelServoDriver implements ServoDriver {
         LOG.info("Starting servo scan");
         Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
 
-        IntStream motorRange = IntStream.range(17, MAX_ID);
+        IntStream motorRange = IntStream.range(1, MAX_ID);
         motorRange.forEach((m) -> {
             byte[] data = new DynamixelV1CommandPacket(DynamixelInstruction.PING, m).build();
             if(v2Enabled) {
