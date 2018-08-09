@@ -38,8 +38,8 @@ public class SimpleServo {
         this.position = servo.getData().getValue(ServoProperty.POSITION);
         Integer t = servo.getData().getValue(ServoProperty.TEMPERATURE);
         Double c = servo.getData().getValue(ServoProperty.VOLTAGE);
-        this.minPosition = servo.getData().getValue(ServoProperty.MIN_ANGLE_LIMIT);
-        this.maxPosition = servo.getData().getValue(ServoProperty.MAX_ANGLE_LIMIT);
+        this.minPosition = servo.getData().containsValue(ServoProperty.MIN_ANGLE_LIMIT) ? servo.getData().getValue(ServoProperty.MIN_ANGLE_LIMIT) : -1;
+        this.maxPosition = servo.getData().containsValue(ServoProperty.MAX_ANGLE_LIMIT) ? servo.getData().getValue(ServoProperty.MAX_ANGLE_LIMIT) : -1;
         this.temperature = t != null ? t : 0;
         this.voltage = c != null ? c : 0.0;
         this.torgue = 0;

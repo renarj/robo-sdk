@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
-import static com.oberasoftware.robo.core.ConverterUtil.byteToInt;
 import static com.oberasoftware.robo.core.ConverterUtil.byteToInt32;
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
 import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket.bb2hex;
@@ -72,7 +71,7 @@ public class DynamixelV2ReadPositionHandler implements EventHandler {
                 LOG.warn("Incorrect number of parameters in return package was: {}", bb2hex(params));
             }
         } else {
-            LOG.error("Received an error: {} for speed and position for servo: {}", returnPacket.getErrorReason(), servoId);
+            LOG.error("Received an error: {} for speed and position for servo: {}", returnPacket.getErrorReason(), servoId, bb2hex(received));
         }
 
         return null;

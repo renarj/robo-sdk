@@ -34,7 +34,7 @@ public class AsyncServoData implements ServoData {
 
     @Override
     public boolean containsValue(ServoProperty key) {
-        return true;
+        return false;
     }
 
     @Override

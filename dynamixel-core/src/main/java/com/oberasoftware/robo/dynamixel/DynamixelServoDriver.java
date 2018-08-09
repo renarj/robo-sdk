@@ -99,7 +99,7 @@ public class DynamixelServoDriver implements ServoDriver {
             //new byte[] {(byte)0xff, (byte)0xff, (byte)0xfd, (byte)0x00, (byte)1, (byte)0x03, (byte)0x00, (byte)0x01, (byte)0x19, (byte)0x4e})
             if(received != null && received.length > 0) {
                 try {
-                    LOG.debug("Recveived: {}", bb2hex(received));
+                    LOG.debug("Received: {}", bb2hex(received));
                     DynamixelReturnPacket packet;
                     if(v2Enabled) {
                         packet = new DynamixelV2ReturnPacket(received);
@@ -107,7 +107,7 @@ public class DynamixelServoDriver implements ServoDriver {
                         packet = new DynamixelV1ReturnPacket(received);
                     }
                     if (packet.getErrorCode() == 0) {
-                        LOG.debug("Ping received from Servo: {}", m);
+                        LOG.info("Ping received from Servo: {}", m);
 
                         DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m);
                         servos.put(Integer.toString(m), servo);
