@@ -1,15 +1,19 @@
 node {
-    git url: 'git@github.com:renarj/robo-sdk.git'
-    def mvnHome = tool 'M3'
+    stage ('checkout') {
+        git url: 'git@github.com:renarj/robo-sdk.git'
+    }
 
-    stage 'checkout'
-    checkout scm
+    stage ('build') {
+        withMaven(maven: 'M3', jdk: 'JDK10') {
+            sh "mvn clean install"
+        }
+    }
 
-    stage 'build'
-    sh "${mvnHome}/bin/mvn -B clean install"
-
-    stage 'release'
-    sh "${mvnHome}/bin/mvn -B clean deploy -Dmaven.test.skip=true"
+    stage ('release') {
+        withMaven(maven: 'M3', jdk: 'JDK10') {
+            sh "mvn clean deploy -Dmaven.test.skip=true"
+        }
+    }
 
     stage 'archive'
     step([$class: 'ArtifactArchiver', artifacts: '**/target/*.jar', fingerprint: true])
