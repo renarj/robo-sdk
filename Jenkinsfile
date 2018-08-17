@@ -1,6 +1,6 @@
 node {
     stage ('checkout') {
-        git url: 'git@github.com:renarj/robo-sdk.git'
+        git credentialsId: 'github-ssh', url: 'git@github.com:renarj/robo-sdk.git'
     }
 
     stage ('build') {
