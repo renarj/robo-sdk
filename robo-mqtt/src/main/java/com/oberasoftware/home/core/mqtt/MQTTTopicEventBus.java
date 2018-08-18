@@ -30,10 +30,10 @@ public class MQTTTopicEventBus implements DistributedTopicEventBus {
 
     private static final String CONNECTION_STRING = "tcp://%s:%d";
 
-    @Value("${mqtt.host:}")
+    @Value("${mqtthost:}")
     private String mqttHost;
 
-    @Value("${mqtt.port:1883}")
+    @Value("${mqttport:1883}")
     private int mqttPort;
 
     @Value("${mqtt.username:}")
