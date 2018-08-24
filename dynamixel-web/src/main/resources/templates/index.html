@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" xmlns:width="http://www.w3.org/1999/xhtml">
-<head th:replace="includes/header :: header">
+<head th:replace="/includes/header :: header">
 </head>
 <body>
 <script id="servoTemplate" type="x-tmpl-mustache">
@@ -10,8 +10,6 @@
 <script th:src="@{/js/servo.js}" src="/static/javascript/widget.js"></script>
 
 <div class="container-fluid">
-
-    <div th:replace="includes/header :: navigation (selectTab='dashboard')"></div>
 
     <div class="row">
         <div class="col-md-8">
