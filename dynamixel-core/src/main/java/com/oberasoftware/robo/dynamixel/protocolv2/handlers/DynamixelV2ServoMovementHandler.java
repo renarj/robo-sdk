@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.dynamixel.protocolv2.handlers;
 
+import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
@@ -19,6 +20,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
+import java.util.concurrent.TimeUnit;
 
 import static com.oberasoftware.robo.core.ConverterUtil.intTo32BitByte;
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
@@ -61,8 +63,8 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
     public void receive(PositionAndSpeedCommand command) {
         LOG.debug("Received a position and speed command: {}", command);
 
-        setGoal(command, command.getPosition(), command.getPositionScale());
         setSpeed(command, command.getSpeed(), command.getSpeedScale());
+        setGoal(command, command.getPosition(), command.getPositionScale());
     }
 
 
@@ -70,8 +72,8 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
         int servoId = toSafeInt(command.getServoId());
         DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
 
-        if(scale.isValid(goal)) {
-            int convertedGoal = scale.convertToScale(goal, TARGET_SCALE_POSITION);
+        if(scale.isValid(goal) || scale.isAbsolute()) {
+            int convertedGoal = scale.isAbsolute() ? goal : scale.convertToScale(goal, TARGET_SCALE_POSITION);
             LOG.info("Setting Servo: {} goal to: {}", servoId, convertedGoal);
             ByteBuffer buffer = ByteBuffer.allocate(4);
             buffer.put(intTo32BitByte(convertedGoal));
@@ -93,8 +95,8 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
     private void setSpeed(ServoCommand command, int speed, Scale scale) {
         int servoId = toSafeInt(command.getServoId());
         DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
-        if(scale.isValid(speed)) {
-            int convertedSpeed = scale.convertToScale(speed, TARGET_SCALE_SPEED);
+        if(scale.isValid(speed) || scale.isAbsolute()) {
+            int convertedSpeed = scale.isAbsolute() ? speed : scale.convertToScale(speed, TARGET_SCALE_SPEED);
             LOG.info("Setting Servo: {} speed: {}", servoId, convertedSpeed);
             ByteBuffer buffer = ByteBuffer.allocate(4);
             buffer.put(intTo32BitByte(convertedSpeed));
@@ -107,9 +109,12 @@ public class DynamixelV2ServoMovementHandler implements EventHandler, DynamixelS
             LOG.debug("Sending package: {}", packet);
             byte[] received = connector.sendAndReceive(dataToSend);
             DynamixelV2ReturnPacket returnPacket = new DynamixelV2ReturnPacket(received);
-            LOG.debug("Received return package: {} errors detected: {} reason: {}",
-                    returnPacket, returnPacket.hasErrors(), returnPacket.getErrorReason());
+            if(returnPacket.hasErrors()) {
+                LOG.error("Received return package: {} errors detected: {} reason: {}",
+                        returnPacket, returnPacket.hasErrors(), returnPacket.getErrorReason());
+            }
 
+            Uninterruptibles.sleepUninterruptibly(100, TimeUnit.MILLISECONDS);
         }
 
     }

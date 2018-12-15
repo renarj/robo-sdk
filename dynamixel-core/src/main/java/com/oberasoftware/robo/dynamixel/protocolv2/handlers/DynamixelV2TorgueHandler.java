@@ -50,6 +50,9 @@ public class DynamixelV2TorgueHandler implements EventHandler, DynamixelTorgueHa
                 .build());
 
         DynamixelV2ReturnPacket packet = new DynamixelV2ReturnPacket(response);
+        if(packet.hasErrors()) {
+            LOG.error("Could not set torgue response: {} for servo: {}", bb2hex(response), servoId);
+        }
         LOG.debug("Received torgue response: {} for servo: {} errors: {} reason: {}", bb2hex(response), servoId, packet.hasErrors(), packet.getErrorReason());
     }
 

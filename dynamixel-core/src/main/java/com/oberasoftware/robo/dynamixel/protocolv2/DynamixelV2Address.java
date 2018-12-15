@@ -11,7 +11,7 @@ public enum DynamixelV2Address {
     OPERATING_MODE(0x0B),
     LED(0x41),
     BAUD_RATE(0x04),
-    RETURN_DELAY_TIME(0x05),
+    RETURN_DELAY_TIME(0x09),
     MAX_POSITION(0x30),
     MIN_POSITION(0x34),
     CCW_ANGLE_LIMIT_L(0x08),
@@ -23,13 +23,16 @@ public enum DynamixelV2Address {
     MOVING_SPEED_H(0x21),
     TORGUE_LIMIT_L(0x22),
     TORGUE_LIMIT_H(0x23),
+    PROFILE_VELOCITY(0x70),
     GOAL_VELOCITY(0x68),
     GOAL_POSITION_L(0x74),
 //    GOAL_POSITION_H(0x1F),
     PRESENT_SPEED_L(0x80),
     PRESENT_POSITION_L(0x84),
     CURRENT_VOLTAGE(0x90),
-    PRESENT_TEMPERATURE(0x92);
+    PRESENT_TEMPERATURE(0x92),
+    POWER(0x18),
+    LIDAR(0x33);
 
 
     private int address;

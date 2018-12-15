@@ -1,6 +1,5 @@
 package com.oberasoftware.robo.dynamixel;
 
-import com.google.common.util.concurrent.Uninterruptibles;
 import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.*;
@@ -11,7 +10,6 @@ import com.oberasoftware.robo.api.servo.ServoDriver;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelSyncWriteMovementHandler;
-import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelV1TorgueHandler;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelServoMovementHandler;
@@ -85,8 +83,17 @@ public class DynamixelServoDriver implements ServoDriver {
     }
 
     private boolean initialize() {
+        return !scan(true).isEmpty();
+    }
+
+    public List<Servo> scan() {
+        return scan(false);
+    }
+
+    public List<Servo> scan(boolean register) {
         LOG.info("Starting servo scan");
-        Uninterruptibles.sleepUninterruptibly(1, TimeUnit.SECONDS);
+
+        List<Servo> foundServos = new ArrayList<>();
 
         IntStream motorRange = IntStream.range(1, MAX_ID);
         motorRange.forEach((m) -> {
@@ -96,7 +103,6 @@ public class DynamixelServoDriver implements ServoDriver {
             }
             byte[] received = connector.sendAndReceive(data);
 
-            //new byte[] {(byte)0xff, (byte)0xff, (byte)0xfd, (byte)0x00, (byte)1, (byte)0x03, (byte)0x00, (byte)0x01, (byte)0x19, (byte)0x4e})
             if(received != null && received.length > 0) {
                 try {
                     LOG.debug("Received: {}", bb2hex(received));
@@ -109,8 +115,14 @@ public class DynamixelServoDriver implements ServoDriver {
                     if (packet.getErrorCode() == 0) {
                         LOG.info("Ping received from Servo: {}", m);
 
-                        DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m);
-                        servos.put(Integer.toString(m), servo);
+                        if(m != 200) {
+                            DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m);
+                            foundServos.add(servo);
+
+                            if(register) {
+                                servos.put(Integer.toString(m), servo);
+                            }
+                        }
                     }
                 } catch(IllegalArgumentException e) {
                     LOG.error("Could not read servo response on ping");
@@ -121,7 +133,8 @@ public class DynamixelServoDriver implements ServoDriver {
         });
 
         LOG.info("Servos found: {}", servos.keySet());
-        return !servos.isEmpty();
+        return foundServos;
+
     }
 
     @Override

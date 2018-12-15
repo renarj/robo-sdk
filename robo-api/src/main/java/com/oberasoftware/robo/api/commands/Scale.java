@@ -15,6 +15,10 @@ public class Scale {
         this.max = max;
     }
 
+    public boolean isAbsolute() {
+        return min == max;
+    }
+
     public int getMin() {
         return min;
     }

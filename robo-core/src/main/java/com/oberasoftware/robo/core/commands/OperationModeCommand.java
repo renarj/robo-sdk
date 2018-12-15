@@ -5,7 +5,8 @@ import com.oberasoftware.robo.api.servo.ServoCommand;
 public class OperationModeCommand implements ServoCommand {
     public enum MODE {
         VELOCITY_MODE,
-        POSITION_CONTROL
+        POSITION_CONTROL,
+        EXTENDED_POSITION_CONTROL;
     }
 
     private final String servoId;

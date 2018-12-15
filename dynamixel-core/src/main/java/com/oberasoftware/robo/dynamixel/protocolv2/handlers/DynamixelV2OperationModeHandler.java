@@ -32,7 +32,19 @@ public class DynamixelV2OperationModeHandler implements EventHandler {
         int servoId = toSafeInt(command.getServoId());
         LOG.debug("Received a servo operation mode command: {}", command.getServoId(), command);
 
-        int dynamixelMode = command.getOperationMode() == OperationModeCommand.MODE.POSITION_CONTROL ? 3 : 1;
+        int dynamixelMode;
+        switch(command.getOperationMode()) {
+            case VELOCITY_MODE:
+                dynamixelMode = 1;
+                break;
+            case EXTENDED_POSITION_CONTROL:
+                dynamixelMode = 4;
+                break;
+            default:
+            case POSITION_CONTROL:
+                dynamixelMode = 3;
+                break;
+        }
 
         DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
         packet.addParam(DynamixelV2Address.OPERATING_MODE, intTo16BitByte(dynamixelMode));
