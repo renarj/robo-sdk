@@ -5,8 +5,7 @@ import com.oberasoftware.robo.api.commands.Scale;
 /**
  * @author Renze de Vries
  */
-public interface Servo {
-    String getId();
+public interface Servo extends DynamixelDevice {
 
     ServoData getData();
 

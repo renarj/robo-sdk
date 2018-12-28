@@ -20,12 +20,14 @@ import static java.lang.String.valueOf;
 /**
  * @author Renze de Vries
  */
+@SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
 @Component
 @Scope("prototype")
 public class DynamixelServo implements Servo {
     private static final Logger LOG = LoggerFactory.getLogger(DynamixelServo.class);
 
     private final int id;
+    private final int deviceTypeId;
 
     @Autowired
     private LocalEventBus eventBus;
@@ -33,13 +35,19 @@ public class DynamixelServo implements Servo {
     @Autowired
     private ServoDataManager servoDataManager;
 
-    public DynamixelServo(int id) {
+    public DynamixelServo(int id, int deviceTypeId) {
         this.id = id;
+        this.deviceTypeId = deviceTypeId;
     }
 
     @Override
     public String getId() {
         return valueOf(id);
+    }
+
+    @Override
+    public int getDeviceTypeId() {
+        return deviceTypeId;
     }
 
     @Override

@@ -7,9 +7,11 @@ import com.oberasoftware.robo.api.exceptions.RoboException;
 import com.oberasoftware.robo.api.servo.Servo;
 import com.oberasoftware.robo.api.servo.ServoCommand;
 import com.oberasoftware.robo.api.servo.ServoDriver;
+import com.oberasoftware.robo.core.ConverterUtil;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelSyncWriteMovementHandler;
+import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2Address;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelServoMovementHandler;
@@ -41,6 +43,7 @@ public class DynamixelServoDriver implements ServoDriver {
 
     private static final int MAX_ID = 240;
     public static final String PORT = "port";
+    public static final int OPENCR_MODEL = 116;
 
     @Autowired
     private SerialDynamixelConnector connector;
@@ -73,7 +76,7 @@ public class DynamixelServoDriver implements ServoDriver {
         connector.connect(portName);
 
         if(!initialize()) {
-            throw new RoboException("Could not load servos");
+            LOG.error("Could not find any servos");
         }
     }
 
@@ -113,15 +116,23 @@ public class DynamixelServoDriver implements ServoDriver {
                         packet = new DynamixelV1ReturnPacket(received);
                     }
                     if (packet.getErrorCode() == 0) {
-                        LOG.info("Ping received from Servo: {}", m);
+                        LOG.info("Ping received from Servo: {} with data: {}", m, bb2hex(received));
 
-                        if(m != 200) {
-                            DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m);
+                        byte[] params = packet.getParameters();
+
+
+                        int modelNr = ConverterUtil.byteToInt(params[0], params[1]);
+                        LOG.info("We have model number: {}", modelNr);
+
+                        if(modelNr != OPENCR_MODEL) {
+                            DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m, modelNr);
                             foundServos.add(servo);
 
                             if(register) {
                                 servos.put(Integer.toString(m), servo);
                             }
+                        } else {
+                            LOG.info("Found an Open CR board on ID: {}", m);
                         }
                     }
                 } catch(IllegalArgumentException e) {
@@ -136,6 +147,21 @@ public class DynamixelServoDriver implements ServoDriver {
         return foundServos;
 
     }
+
+//    private int getModelInformation(int motorId) {
+//        byte[] modelInfoData = new DynamixelV2CommandPacket(DynamixelInstruction.READ_DATA, motorId)
+//                .addInt16Bit(DynamixelV2Address.MODEL_INFORMATION, 0x02).build();
+//        byte[] received = connector.sendAndReceive(modelInfoData);
+//        DynamixelReturnPacket packet;
+//
+//        if(v2Enabled) {
+//            packet = new DynamixelV2ReturnPacket(received);
+//        } else {
+//            packet = new DynamixelV1ReturnPacket(received);
+//        }
+//
+//
+//    }
 
     @Override
     public boolean supportsCommand(ServoCommand servoCommand) {

@@ -26,21 +26,27 @@ function handleStateUpdate(state) {
         volt.val(state.voltage);
     }
 
-    if(positionSlider.length) {
+    if(state.position > 0 && positionSlider.length) {
+        // console.log("Received state update: " + state.position + " for servo " + state.servoId);
+
         if(positionSlider[0].getAttribute("changing") !== "true") {
             var position = positionSlider.slider('getValue');
             if(position !== state.position) {
                 positionSlider.slider('setValue', state.position);
+
+
             }
-        } else {
+
             var targetPosition = positionSlider[0].getAttribute("targetPosition");
             if(Math.abs(targetPosition - state.position) < 10) {
                 positionSlider.slider('setValue', state.position);
-                this.setAttribute("changing", "false");
+                // this.setAttribute("changing", "false");
+
+                if(positionText.attr("changing") !== "true") {
+                    positionText.val(state.position);
+                }
             }
         }
-
-        positionText.val(state.position);
     }
 }
 
@@ -57,6 +63,18 @@ function loadHandlers() {
     positionSliders.each(function (index) {
         $(this).slider();
         $(this).on("slideStop", handleSlideStop);
+    });
+
+    var inputPositions = $(".positionInput");
+    inputPositions.each(function(index) {
+        $(this).blur(function (e) {
+            this.setAttribute('changing', "false");
+        });
+    });
+    inputPositions.each(function(index) {
+        $(this).focus(function (e) {
+            this.setAttribute('changing', "true");
+        });
     });
 
     $("button.torgueEnable").click(function (e) {
@@ -395,6 +413,7 @@ function handleSlideStop(slideEvt) {
     var val = slideEvt.value;
     var servoId = this.getAttribute('servoId');
     this.setAttribute('targetPosition', val);
+    this.setAttribute("changing", "false");
 
     var speed = $("#textspeed" + servoId).val();
 

@@ -1,6 +1,11 @@
 package com.oberasoftware.robo.dynamixel.web;
 
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
+import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
+import com.oberasoftware.robo.dynamixel.DynamixelServoDriver;
+import com.oberasoftware.robo.dynamixel.SerialDynamixelConnector;
+import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2Address;
+import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -21,7 +26,26 @@ public class DynamixelConsole {
         LOG.info("Starting Dynamixel Web Console");
         ConfigurableApplicationContext c = SpringApplication.run(DynamixelConsole.class, args);
 
-//        DynamixelServoDriver servoDriver = c.getBean(DynamixelServoDriver.class);
-//        SerialDynamixelConnector connector = c.getBean(SerialDynamixelConnector.class);
+        DynamixelServoDriver servoDriver = c.getBean(DynamixelServoDriver.class);
+        SerialDynamixelConnector connector = c.getBean(SerialDynamixelConnector.class);
+
+
+
+        connector.sendAndReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, 200)
+                .add8BitParam(DynamixelV2Address.POWER, 0x01)
+                .build());
+//
+//
+//        servoDriver.getServos().forEach(s -> servoDriver.sendCommand(new OperationModeCommand(s.getId(), OperationModeCommand.MODE.POSITION_CONTROL)));
+//        servoDriver.getServos().forEach(Servo::enableTorgue);
+//        servoDriver.getServos().forEach(s -> s.moveTo(50, new Scale(-100, 100)));
+//
+//
+//        servoDriver.sendCommand(new VelocityModeCommand("24", 200, 50));
+//        servoDriver.sendCommand(new VelocityModeCommand("50", 0, 0));
+//
+//        servoDriver.getServos().forEach(s -> s.moveTo(0, new Scale(-100, 100)));
+//
+//        servoDriver.getServos().forEach(Servo::disableTorgue);
     }
 }
