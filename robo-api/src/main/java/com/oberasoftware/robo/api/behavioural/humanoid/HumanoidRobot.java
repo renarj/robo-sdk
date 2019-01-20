@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface HumanoidRobot extends BehaviouralRobot {
-    List<BodyPart> getBodyParts();
+    List<JointChain> getChainSets();
 
-    Optional<BodyPart> getBodyPart(String name);
+    Optional<ChainSet> getChainSet(String name);
 
     List<Joint> getJoints();
 

@@ -4,10 +4,8 @@ import com.oberasoftware.robo.api.behavioural.Behaviour;
 
 import java.util.List;
 
-public interface BodyPart extends Behaviour {
-    String getName();
-
+public interface JointChain extends Behaviour {
     List<Joint> getJoints();
 
-    Joint getJoint(String name);
+    String getName();
 }

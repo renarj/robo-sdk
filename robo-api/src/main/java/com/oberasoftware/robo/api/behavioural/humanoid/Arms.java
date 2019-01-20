@@ -1,4 +1,4 @@
 package com.oberasoftware.robo.api.behavioural.humanoid;
 
-public interface Arms {
+public interface Arms extends ChainSet {
 }
