@@ -7,5 +7,7 @@ import com.oberasoftware.robo.api.Robot;
  * @author renarj
  */
 public interface Behaviour {
-    void initialize(BehaviouralRobot behaviouralRobot, Robot robotCore);
+    default void initialize(BehaviouralRobot behaviouralRobot, Robot robotCore) {
+
+    }
 }

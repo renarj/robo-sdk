@@ -1,6 +1,6 @@
 package com.oberasoftware.robo.api.behavioural.humanoid;
 
-public interface Hip extends JointChain {
+public interface Shoulder extends JointChain {
     Joint getXJoint();
 
     Joint getYJoint();
