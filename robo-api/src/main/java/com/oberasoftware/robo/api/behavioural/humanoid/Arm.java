@@ -5,5 +5,5 @@ public interface Arm extends JointChain {
 
     Joint getElbow();
 
-    Hand getHand();
+    Joint getHand();
 }
