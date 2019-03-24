@@ -1,11 +1,8 @@
 package com.oberasoftware.robo.dynamixel.web;
 
 import com.oberasoftware.robo.dynamixel.DynamixelConfiguration;
-import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
 import com.oberasoftware.robo.dynamixel.DynamixelServoDriver;
 import com.oberasoftware.robo.dynamixel.SerialDynamixelConnector;
-import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2Address;
-import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import org.slf4j.Logger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,11 +26,15 @@ public class DynamixelConsole {
         DynamixelServoDriver servoDriver = c.getBean(DynamixelServoDriver.class);
         SerialDynamixelConnector connector = c.getBean(SerialDynamixelConnector.class);
 
+//        servoDriver.sendCommand(new WriteIDCommand("1", "141"));
 
 
-        connector.sendAndReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, 200)
-                .add8BitParam(DynamixelV2Address.POWER, 0x01)
-                .build());
+//        connector.sendAndReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA,  0x01).add8BitParam(DynamixelV2Address.ID))
+
+
+//        connector.sendAndReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, 200)
+//                .add8BitParam(DynamixelV2Address.POWER, 0x01)
+//                .build());
 //
 //
 //        servoDriver.getServos().forEach(s -> servoDriver.sendCommand(new OperationModeCommand(s.getId(), OperationModeCommand.MODE.POSITION_CONTROL)));
