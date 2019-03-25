@@ -9,12 +9,16 @@ import java.util.Optional;
 public interface HumanoidRobot extends BehaviouralRobot, ChainSet {
     Optional<ChainSet> getChainSet(String name);
 
-    @JsonIgnore
     List<ChainSet> getChainSets();
 
+    List<ChainSet> getChainSets(boolean includeChildren);
+
+    @JsonIgnore
     Head getHead();
 
+    @JsonIgnore
     Torso getTorso();
 
+    @JsonIgnore
     Legs getLegs();
 }
