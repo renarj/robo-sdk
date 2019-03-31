@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.api.behavioural.humanoid;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.behavioural.BehaviouralRobot;
 
 import java.util.List;
@@ -12,6 +13,10 @@ public interface HumanoidRobot extends BehaviouralRobot, ChainSet {
     List<ChainSet> getChainSets();
 
     List<ChainSet> getChainSets(boolean includeChildren);
+
+    Robot getRobotCore();
+
+    MotionControl getMotionControl();
 
     @JsonIgnore
     Head getHead();
