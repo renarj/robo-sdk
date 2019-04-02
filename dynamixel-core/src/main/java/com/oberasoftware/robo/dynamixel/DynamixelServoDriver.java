@@ -3,7 +3,6 @@ package com.oberasoftware.robo.dynamixel;
 import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.*;
-import com.oberasoftware.robo.api.exceptions.RoboException;
 import com.oberasoftware.robo.api.servo.Servo;
 import com.oberasoftware.robo.api.servo.ServoCommand;
 import com.oberasoftware.robo.api.servo.ServoDriver;
@@ -11,7 +10,6 @@ import com.oberasoftware.robo.core.ConverterUtil;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelSyncWriteMovementHandler;
-import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2Address;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelServoMovementHandler;
@@ -116,7 +114,7 @@ public class DynamixelServoDriver implements ServoDriver {
                         packet = new DynamixelV1ReturnPacket(received);
                     }
                     if (packet.getErrorCode() == 0) {
-                        LOG.info("Ping received from Servo: {} with data: {}", m, bb2hex(received));
+                        LOG.debug("Ping received from Servo: {} with data: {}", m, bb2hex(received));
 
                         byte[] params = packet.getParameters();
 

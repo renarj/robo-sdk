@@ -14,117 +14,98 @@
     <div class="row">
         <div class="col-md-8">
             <div class="row" th:each="servo: ${servos}">
-                <div class="col-md-12">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title" th:text="'Servo: ' + ${servo.servoId}"></h3>
+                <div class="col-sm-12">
+                    <div class="card mb-2">
+                        <div class="card-header text-white bg-primary">
+                            <b th:text="'Servo: ' + ${servo.servoId}"></b>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="row">
                                 <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Position:</label>
-                                            <div class="col-sm-8">
-                                                <input style="width: 100%;" type="text" class="positionInput" changing="false" th:id="'textposition' + ${servo.servoId}" th:value="${servo.position}"/>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-primary setPosition" th:attr="servoId=${servo.servoId}">Set</button>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-4 control-label">Position:</label>
+                                        <div class="col-sm-6">
+                                            <input style="width: 100%;" type="text" class="positionInput" changing="false" th:id="'textposition' + ${servo.servoId}" th:value="${servo.position}"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary setPosition" th:attr="servoId=${servo.servoId}">Set</button>
                                         </div>
                                     </div>
-                                    <div class="row voffset1">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Speed:</label>
-                                            <div class="col-sm-8">
-                                                <input style="width: 100%;" type="text" th:id="'textspeed' + ${servo.servoId}" th:value="${servo.speed}"/>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-primary setSpeed" th:attr="servoId=${servo.servoId}">Set</button>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-4 control-label">Speed:</label>
+                                        <div class="col-sm-6">
+                                            <input style="width: 100%;" type="text" th:id="'textspeed' + ${servo.servoId}" th:value="${servo.speed}"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary setSpeed" th:attr="servoId=${servo.servoId}">Set</button>
                                         </div>
                                     </div>
-                                    <div class="row voffset1">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Torque:</label>
-                                            <div class="col-sm-8">
-                                                <input style="width: 100%;" type="text" th:id="'texttorgue' + ${servo.servoId}" th:value="${servo.torgue}"/>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-primary setTorgue" th:attr="servoId=${servo.servoId}">Set</button>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-4 control-label">Torque:</label>
+                                        <div class="col-sm-6">
+                                            <input style="width: 100%;" type="text" th:id="'texttorgue' + ${servo.servoId}" th:value="${servo.torgue}"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary setTorgue" th:attr="servoId=${servo.servoId}">Set</button>
                                         </div>
                                     </div>
-                                    <div class="row voffset1">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Temperature:</label>
-                                            <div class="col-sm-8">
-                                                <input style="width: 100%;" type="text" th:id="'temp' + ${servo.servoId}" th:value="${servo.temperature}"/>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-4 control-label">Temperature:</label>
+                                        <div class="col-sm-6">
+                                            <input style="width: 100%;" type="text" th:id="'temp' + ${servo.servoId}" th:value="${servo.temperature}"/>
                                         </div>
                                     </div>
-                                    <div class="row voffset1">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Voltage:</label>
-                                            <div class="col-sm-8">
-                                                <input style="width: 100%;" type="text" th:id="'volt' + ${servo.servoId}" th:value="${servo.voltage}"/>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-4 control-label">Voltage:</label>
+                                        <div class="col-sm-6">
+                                            <input style="width: 100%;" type="text" th:id="'volt' + ${servo.servoId}" th:value="${servo.voltage}"/>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <div class="row">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">CW Limit:</label>
-                                            <div class="col-sm-8">
-                                                <input style="width: 100%;" type="text" th:id="'cw' + ${servo.servoId}" th:value="${servo.minPosition}"/>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-primary setMinPosition" th:attr="servoId=${servo.servoId}">Set</button>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-2 control-label">CW Limit:</label>
+                                        <div class="col-sm-8">
+                                            <input style="width: 100%;" type="text" th:id="'cw' + ${servo.servoId}" th:value="${servo.minPosition}"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary setMinPosition" th:attr="servoId=${servo.servoId}">Set</button>
                                         </div>
                                     </div>
-                                    <div class="row voffset1">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">CCW Limit:</label>
-                                            <div class="col-sm-8">
-                                                <input style="width: 100%;" type="text" th:id="'ccw' + ${servo.servoId}" th:value="${servo.maxPosition}"/>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-primary setMaxPosition" th:attr="servoId=${servo.servoId}">Set</button>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-2 control-label">CCW Limit:</label>
+                                        <div class="col-sm-8">
+                                            <input style="width: 100%;" type="text" th:id="'ccw' + ${servo.servoId}" th:value="${servo.maxPosition}"/>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary setMaxPosition" th:attr="servoId=${servo.servoId}">Set</button>
                                         </div>
                                     </div>
-                                    <div class="row voffset1">
-                                        <div class="form-group">
-                                            <label class="col-sm-2 control-label">Operating Mode:</label>
-                                            <div class="col-sm-8">
-                                                <select class="form-control" th:id="'opMode' + ${servo.servoId}">
-                                                    <option value="POSITION_CONTROL">Position Control</option>
-                                                    <option value="VELOCITY_MODE">Velocity Control</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-sm-2">
-                                                <button type="button" class="btn btn-primary setOperatingMode" th:attr="servoId=${servo.servoId}">Set</button>
-                                            </div>
+                                    <div class="row form-group">
+                                        <label class="col-sm-2 control-label">Operating Mode:</label>
+                                        <div class="col-sm-8">
+                                            <select class="form-control" th:id="'opMode' + ${servo.servoId}">
+                                                <option value="POSITION_CONTROL">Position Control</option>
+                                                <option value="VELOCITY_MODE">Velocity Control</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-sm-2">
+                                            <button type="button" class="btn btn-primary setOperatingMode" th:attr="servoId=${servo.servoId}">Set</button>
                                         </div>
                                     </div>
-
                                 </div>
                             </div>
 
-                            <div class="row voffset1">
-                                <div class="form-group">
-                                    <label class="col-sm-2 control-label">Set Servo Position:</label>
-                                    <div class="col-sm-10">
-                                        <input style="width: 100%;" type="text" th:id="'position' + ${servo.servoId}"
-                                               th:attr="servoId=${servo.servoId},slider='position',data-slider-value=${servo.position}"
-                                               data-slider-min="1" data-slider-max="2000" data-slider-step="10" data-slider-value="0"/>
-                                    </div>
+                            <div class="row form-group">
+                                <label class="col-sm-2 control-label">Set Servo Position:</label>
+                                <div class="col-sm-10">
+                                    <input style="width: 100%;" type="text" th:id="'position' + ${servo.servoId}"
+                                           th:attr="servoId=${servo.servoId},slider='position',data-slider-value=${servo.position}"
+                                           data-slider-min="1" data-slider-max="2000" data-slider-step="10" data-slider-value="0"/>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-offset-2 col-md-8">
+                                <div class="offset-md-2 col-md-8">
                                     <button type="button" class="btn btn-primary torgueEnable" th:attr="servoId=${servo.servoId}">Enable Torgue</button>
                                     <button type="button" class="btn btn-primary torgueDisable" th:attr="servoId=${servo.servoId}">Disable Torgue</button>
                                 </div>
@@ -135,23 +116,22 @@
             </div>
         </div>
         <div class="col-md-4">
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">General Controls</h3>
+            <div class="card mb-3">
+                <div class="card-header text-white bg-primary">
+                    <b>General Controls</b>
                 </div>
-
-                <div class="panel-body">
+                <div class="card-body">
                         <button type="button" class="btn btn-primary enableAllTorgue">Enable Torgue</button>
 
                         <button type="button" class="btn btn-primary disableAllTorgue">Disable Torgue</button>
                 </div>
             </div>
 
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Motions</h3>
+            <div class="card mb-3">
+                <div class="card-header text-white bg-primary">
+                    <b>Motions</b>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="form-group">
                         <label class="col-md-2" for="motions">Motions:</label>
                         <div class="col-md-10">
@@ -168,11 +148,11 @@
                 </div>
             </div>
 
-            <div class="panel panel-primary">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Edit Motion Keyframes: <p id="kfMotionName"></p></h3>
+            <div class="card mb-3">
+                <div class="card-header text-white bg-primary">
+                    <b>Edit Motion Keyframes: <p id="kfMotionName"></p></b>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="col-md-6">
                         <div class="form-group">
                             <select class="form-control" id="keyframes" size="10">

@@ -33,9 +33,16 @@ public class Scale {
 
     public int convertToScale(int value, Scale targetScale) {
         if(isValid(value)) {
-            double factor = (double)targetScale.getMax() / (double)getMax();
+            double rangeSource = max + Math.abs(min);
+            double rangeTarget = targetScale.getMax() + Math.abs(targetScale.getMin());
 
-            return (int)(factor * value);
+            double factor = rangeTarget / rangeSource;
+
+            int correctedValue = value + Math.abs(getMin());
+
+            LOG.debug("Range Source: {} target: {} factor: {} correctedValue: {}", rangeSource, rangeTarget, factor, correctedValue);
+
+            return (int)(factor * correctedValue) - Math.abs(targetScale.getMin());
         } else {
             LOG.debug("Scale conversion issue source scale: {} value: {} target scale: {}", this, value, targetScale);
             return value;
