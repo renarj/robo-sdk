@@ -10,6 +10,7 @@ public enum DynamixelInstruction {
     REG_WRITE(0x04),
     ACTION(0x05),
     RESET(0x06),
+    REBOOT(0x08),
     SYNC_WRITE(0x83);
 
     private int instruction;

@@ -9,5 +9,9 @@ public interface Joint extends Behaviour {
 
     String getJointType();
 
+    int getMaxDegrees();
+
+    int getMinDegrees();
+
     boolean moveTo(int degrees);
 }

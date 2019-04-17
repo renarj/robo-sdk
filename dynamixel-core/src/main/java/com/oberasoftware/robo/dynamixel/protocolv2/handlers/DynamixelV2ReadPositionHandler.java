@@ -71,7 +71,14 @@ public class DynamixelV2ReadPositionHandler implements EventHandler {
                 LOG.warn("Incorrect number of parameters in return package was: {}", bb2hex(params));
             }
         } else {
-            LOG.error("Received an error: {} for speed and position for servo: {}", returnPacket.getErrorReason(), servoId, bb2hex(received));
+            LOG.error("Received an error: {} for speed and position for servo: {} data: {}", returnPacket.getErrorReason(), servoId, bb2hex(received));
+
+            byte[] de = new DynamixelV2CommandPacket(DynamixelInstruction.READ_DATA, servoId)
+                    .addInt16Bit(DynamixelV2Address.SHUTDOWN, 0x01)
+                    .build();
+            byte[] re = connector.sendAndReceive(de);
+            LOG.error("Received Servo: {} shutdown readout: {}", servoId, bb2hex(re));
+
         }
 
         return null;

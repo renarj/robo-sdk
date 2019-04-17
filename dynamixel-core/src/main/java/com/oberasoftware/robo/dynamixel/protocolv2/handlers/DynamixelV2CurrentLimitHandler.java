@@ -2,7 +2,7 @@ package com.oberasoftware.robo.dynamixel.protocolv2.handlers;
 
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
-import com.oberasoftware.robo.core.commands.VelocityModeCommand;
+import com.oberasoftware.robo.core.commands.CurrentLimitCommand;
 import com.oberasoftware.robo.dynamixel.DynamixelConnector;
 import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2Address;
@@ -15,36 +15,36 @@ import org.springframework.stereotype.Component;
 
 import java.nio.ByteBuffer;
 
-import static com.oberasoftware.robo.core.ConverterUtil.intTo32BitByte;
-import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
+import static com.oberasoftware.robo.core.ConverterUtil.*;
 import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket.bb2hex;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
 @ConditionalOnProperty(value = "protocol.v2.enabled", havingValue = "true", matchIfMissing = false)
-public class DynamixelV2AccelerationProfile implements EventHandler {
-    private static final Logger LOG = getLogger(DynamixelV2AccelerationProfile.class);
+public class DynamixelV2CurrentLimitHandler implements EventHandler {
+    private static final Logger LOG = getLogger(DynamixelV2CurrentLimitHandler.class);
 
     @Autowired
     private DynamixelConnector connector;
 
     @EventSubscribe
-    public void receive(VelocityModeCommand command) {
+    public void receive(CurrentLimitCommand command) {
         int servoId = toSafeInt(command.getServoId());
-        LOG.debug("Received a servo: {} acceleration profile: {}", command.getServoId(), command);
+        LOG.debug("Received a servo: {} current limit: {}", command.getServoId(), command);
 
-        ByteBuffer buffer = ByteBuffer.allocate(8);
-        buffer.put(intTo32BitByte(command.getAcceleration()));
-        buffer.put(intTo32BitByte(command.getVelocity()));
+        DynamixelV2CommandPacket packet = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId);
 
-        byte[] data = new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId)
-                .addParam(DynamixelV2Address.PROFILE_ACCELERATION, buffer.array()).build();
-        LOG.info("Sending acceleration and velocity data: {} to Servo: {}", bb2hex(data), servoId);
+        LOG.debug("Setting Servo: {} current limit: {}", servoId, command.getLimit());
+        ByteBuffer buffer = ByteBuffer.allocate(2);
+        buffer.put(intTo16BitByte(command.getLimit()));
 
+        byte[] data = packet.addParam(DynamixelV2Address.CURRENT_LIMIT, buffer.array()).build();
+        LOG.debug("Setting Servo: {} current limit with command: {}", servoId, bb2hex(data));
         byte[] received = connector.sendAndReceive(data);
-        DynamixelV2ReturnPacket packet = new DynamixelV2ReturnPacket(received);
-        if(packet.hasErrors()) {
-            LOG.error("Could not send velocity and acceleration data: {} for servo: {}", bb2hex(received), servoId);
+        DynamixelV2ReturnPacket rp = new DynamixelV2ReturnPacket(received);
+        if(rp.hasErrors()) {
+            LOG.error("Servo: {} current limit package error: {}", servoId, bb2hex(received));
         }
+
     }
 }

@@ -120,7 +120,7 @@ public class DynamixelServoDriver implements ServoDriver {
 
 
                         int modelNr = ConverterUtil.byteToInt(params[0], params[1]);
-                        LOG.info("We have model number: {}", modelNr);
+                        LOG.debug("We have model number: {} for ID: {}", modelNr, m);
 
                         if(modelNr != OPENCR_MODEL) {
                             DynamixelServo servo = applicationContext.getBean(DynamixelServo.class, m, modelNr);
