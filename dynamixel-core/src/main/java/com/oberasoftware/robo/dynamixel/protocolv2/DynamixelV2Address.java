@@ -18,7 +18,7 @@ public enum DynamixelV2Address {
     CCW_ANGLE_LIMIT_H(0x09),
     ALARM_LED(0x11),
     ALARM_SHUTDOWN(0x12),
-    SHUTDOWN(0x99),
+    HARDWARE_ERROR_STATUS(0x46),
     CURRENT_LIMIT(0x26),
     TORGUE_ENABLE(0x40),
     MOVING_SPEED_L(0x20),
