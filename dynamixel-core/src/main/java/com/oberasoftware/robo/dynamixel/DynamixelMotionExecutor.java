@@ -12,7 +12,6 @@ import com.oberasoftware.robo.api.motion.*;
 import com.oberasoftware.robo.api.servo.ServoDataManager;
 import com.oberasoftware.robo.api.servo.ServoProperty;
 import com.oberasoftware.robo.core.motion.MotionImpl;
-import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelSyncWriteMovementHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +48,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     private MotionManager motionManager;
 
     @Autowired
-    private DynamixelSyncWriteMovementHandler syncWriteMovementHandler;
+    private BulkWriteMovementHandler syncWriteMovementHandler;
 
     private Queue<MotionTaskImpl> queue = new LinkedBlockingQueue<>();
     private ExecutorService executor = Executors.newSingleThreadExecutor();

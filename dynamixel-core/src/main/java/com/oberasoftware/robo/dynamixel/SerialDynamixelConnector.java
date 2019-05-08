@@ -1,6 +1,5 @@
 package com.oberasoftware.robo.dynamixel;
 
-import com.google.common.util.concurrent.Uninterruptibles;
 import jssc.SerialPort;
 import jssc.SerialPortEvent;
 import jssc.SerialPortEventListener;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket.bb2hex;
 
 
@@ -76,7 +76,7 @@ public class SerialDynamixelConnector implements DynamixelConnector {
         try {
             boolean writeSuccess = serialPort.writeBytes(bytes);
             if(writeSuccess) {
-                Uninterruptibles.sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+                sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
                 return readBytes();
             } else {
                 LOG.warn("Write was not successful");

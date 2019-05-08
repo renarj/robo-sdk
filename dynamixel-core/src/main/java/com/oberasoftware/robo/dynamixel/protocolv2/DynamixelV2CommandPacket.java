@@ -1,8 +1,6 @@
 package com.oberasoftware.robo.dynamixel.protocolv2;
 
-import com.oberasoftware.robo.api.converters.Converter;
 import com.oberasoftware.robo.core.ConverterUtil;
-import com.oberasoftware.robo.dynamixel.DynamixelAddress;
 import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -198,7 +196,7 @@ public class DynamixelV2CommandPacket {
         for (byte b : buffer) {
             result = result + String.format("%02X ", b);
         }
-        return result;
+        return result.trim();
     }
 
     public static String bb2hex(List<Byte> buffer) {

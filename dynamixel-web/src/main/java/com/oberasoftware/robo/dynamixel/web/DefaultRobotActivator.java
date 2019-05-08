@@ -9,7 +9,6 @@ import com.oberasoftware.robo.dynamixel.motion.RoboPlusMotionEngine;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -23,7 +22,7 @@ import static org.slf4j.LoggerFactory.getLogger;
  * @author renarj
  */
 @Component
-@ConditionalOnProperty(value = "dynamixel.port", havingValue = "true", matchIfMissing = false)
+//@ConditionalOnProperty(value = "dynamixel.port", havingValue = "true", matchIfMissing = false)
 public class DefaultRobotActivator {
     private static final Logger LOG = getLogger(DefaultRobotActivator.class);
 

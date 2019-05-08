@@ -10,7 +10,7 @@ import com.oberasoftware.robo.dynamixel.*;
 import com.oberasoftware.robo.dynamixel.DynamixelCommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
-import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelServoMovementHandler;
+import com.oberasoftware.robo.dynamixel.DynamixelServoMovementHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

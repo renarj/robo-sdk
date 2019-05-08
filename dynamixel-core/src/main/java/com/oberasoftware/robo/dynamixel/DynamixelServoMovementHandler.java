@@ -1,4 +1,4 @@
-package com.oberasoftware.robo.dynamixel.protocolv2.handlers;
+package com.oberasoftware.robo.dynamixel;
 
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;

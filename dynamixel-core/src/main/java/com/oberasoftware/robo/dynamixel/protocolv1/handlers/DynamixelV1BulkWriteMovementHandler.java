@@ -4,14 +4,12 @@ import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.commands.BulkPositionSpeedCommand;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
-import com.oberasoftware.robo.dynamixel.DynamixelAddress;
-import com.oberasoftware.robo.dynamixel.DynamixelCommandPacket;
-import com.oberasoftware.robo.dynamixel.DynamixelConnector;
-import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
+import com.oberasoftware.robo.dynamixel.*;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -25,13 +23,15 @@ import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
  * @author Renze de Vries
  */
 @Component
-public class DynamixelSyncWriteMovementHandler implements EventHandler {
-    private static final Logger LOG = LoggerFactory.getLogger(DynamixelSyncWriteMovementHandler.class);
+@ConditionalOnProperty(value = "protocol.v2.enabled", havingValue = "false", matchIfMissing = true)
+public class DynamixelV1BulkWriteMovementHandler implements EventHandler, BulkWriteMovementHandler {
+    private static final Logger LOG = LoggerFactory.getLogger(DynamixelV1BulkWriteMovementHandler.class);
 
     @Autowired
     private DynamixelConnector connector;
 
     @EventSubscribe
+    @Override
     public void receive(BulkPositionSpeedCommand command) {
         LOG.debug("Received a bulk command: {}", command);
 

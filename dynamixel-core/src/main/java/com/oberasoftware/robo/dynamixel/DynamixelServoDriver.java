@@ -9,10 +9,8 @@ import com.oberasoftware.robo.api.servo.ServoDriver;
 import com.oberasoftware.robo.core.ConverterUtil;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1ReturnPacket;
-import com.oberasoftware.robo.dynamixel.protocolv1.handlers.DynamixelSyncWriteMovementHandler;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket;
 import com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2ReturnPacket;
-import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelServoMovementHandler;
 import com.oberasoftware.robo.dynamixel.protocolv2.handlers.DynamixelTorgueHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +48,7 @@ public class DynamixelServoDriver implements ServoDriver {
     private ApplicationContext applicationContext;
 
     @Autowired
-    private DynamixelSyncWriteMovementHandler syncWriteMovementHandler;
+    private BulkWriteMovementHandler bulkWriteMovementHandler;
 
     @Autowired
     private DynamixelServoMovementHandler servoMovementHandler;
@@ -209,7 +207,12 @@ public class DynamixelServoDriver implements ServoDriver {
 
     @Override
     public boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands) {
-        syncWriteMovementHandler.receive(new BulkPositionSpeedCommand(commands));
+        return bulkSetPositionAndSpeed(commands, BulkPositionSpeedCommand.WRITE_MODE.SYNC);
+    }
+
+    @Override
+    public boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands, BulkPositionSpeedCommand.WRITE_MODE mode) {
+        bulkWriteMovementHandler.receive(new BulkPositionSpeedCommand(commands, mode));
         return true;
     }
 
