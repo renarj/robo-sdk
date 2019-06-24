@@ -1,9 +1,9 @@
 package com.oberasoftware.robo.core;
 
+import com.oberasoftware.base.event.Event;
 import com.oberasoftware.base.event.EventBus;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.robo.api.*;
-import com.oberasoftware.robo.api.events.RobotEvent;
 import com.oberasoftware.robo.api.servo.ServoDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public class GenericRobot implements Robot {
     }
 
     @Override
-    public void publish(RobotEvent robotEvent) {
+    public void publish(Event robotEvent) {
         eventBus.publish(robotEvent);
     }
 

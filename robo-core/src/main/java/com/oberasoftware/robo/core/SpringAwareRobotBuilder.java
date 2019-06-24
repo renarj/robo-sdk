@@ -25,7 +25,7 @@ public class SpringAwareRobotBuilder {
     private final String robotName;
 
     private final ApplicationContext context;
-    private final EventBus eventBus = new LocalEventBus();
+    private final EventBus eventBus;
 
     private List<SensorHolder> sensors = new ArrayList<>();
     private List<CapabilityHolder> capabilities = new ArrayList<>();
@@ -34,6 +34,7 @@ public class SpringAwareRobotBuilder {
     public SpringAwareRobotBuilder(String robotName, ApplicationContext context) {
         this.context = context;
         this.robotName = robotName;
+        this.eventBus = context.getBean(LocalEventBus.class);
     }
 
     public SpringAwareRobotBuilder motionEngine(MotionEngine motionEngine, MotionResource resource) {

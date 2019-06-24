@@ -5,9 +5,13 @@ import com.oberasoftware.robo.api.behavioural.Behaviour;
 import java.util.List;
 
 public interface MotionControl extends Behaviour {
-    JointData getJoint(String jointId);
+    JointData getJointData(String jointId);
 
-    List<JointData> getJoints();
+    List<JointData> getJointsData();
+
+    Joint getJoint(String jointId);
+
+    List<Joint> getJoints();
 
     void setJointPosition(JointData position);
 

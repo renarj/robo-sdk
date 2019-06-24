@@ -1,6 +1,7 @@
 package com.oberasoftware.robo.cloud;
 
 import com.oberasoftware.robo.api.commands.BasicCommand;
+import com.oberasoftware.robo.api.commands.BulkPositionSpeedCommand;
 import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.core.model.BasicCommandBuilder;
 import com.oberasoftware.robo.api.Robot;
@@ -81,6 +82,11 @@ public class RemoteServoDriver implements ServoDriver {
 
     @Override
     public boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands) {
+        return false;
+    }
+
+    @Override
+    public boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands, BulkPositionSpeedCommand.WRITE_MODE mode) {
         return false;
     }
 

@@ -13,16 +13,18 @@ public class StepBuilder {
     private int commonSpeed = -1;
     private long timeInMs;
     private String frameId;
+    private String motionId;
     
     private final List<ServoStepImpl> servoSteps = new ArrayList<>();
 
-    private StepBuilder(String frameId, long timeInMs) {
+    private StepBuilder(String motionId, String frameId, long timeInMs) {
+        this.motionId = motionId;
         this.timeInMs = timeInMs;
         this.frameId = frameId;
     }
 
-    public static StepBuilder create(String frameId, long timeInMs) {
-        return new StepBuilder(frameId, timeInMs);
+    public static StepBuilder create(String motionId, String frameId, long timeInMs) {
+        return new StepBuilder(motionId, frameId, timeInMs);
     }
 
     public StepBuilder servo(String servoId, int goalPosition, int speed) {
@@ -41,7 +43,7 @@ public class StepBuilder {
     }
 
     public KeyFrame build() {
-        KeyFrameImpl step = new KeyFrameImpl(frameId, timeInMs);
+        KeyFrameImpl step = new KeyFrameImpl(motionId, frameId, timeInMs);
         servoSteps.forEach(step::addServoStep);
 
         return step;

@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
@@ -115,7 +116,8 @@ public class RoboPlusMotionEngine implements MotionEngine {
 
     @Override
     public KeyFrame getCurrentPositionAsKeyFrame() {
-        KeyFrameImpl keyFrame = new KeyFrameImpl(Long.toString(System.currentTimeMillis()), 0);
+        String motionId = new Random(System.currentTimeMillis()).nextInt() + "";
+        KeyFrameImpl keyFrame = new KeyFrameImpl(motionId, Long.toString(System.currentTimeMillis()), 0);
         servoDriver.getServos().forEach(s -> {
             ServoData servoData = s.getData();
             keyFrame.addServoStep(new ServoStepImpl(s.getId(), servoData.getValue(ServoProperty.POSITION),

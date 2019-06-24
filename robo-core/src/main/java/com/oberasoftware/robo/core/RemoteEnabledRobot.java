@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.core;
 
+import com.oberasoftware.base.event.Event;
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
 import com.oberasoftware.robo.api.Capability;
@@ -43,7 +44,7 @@ public class RemoteEnabledRobot implements Robot, CommandListener, EventHandler 
     }
 
     @Override
-    public void publish(RobotEvent robotEvent) {
+    public void publish(Event robotEvent) {
         localRobot.publish(robotEvent);
     }
 

@@ -7,6 +7,8 @@ public interface Joint extends Behaviour {
 
     String getName();
 
+    boolean isInverted();
+
     String getJointType();
 
     int getMaxDegrees();

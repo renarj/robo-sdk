@@ -18,13 +18,24 @@ public class KeyFrameImpl implements KeyFrame {
 
     private long timeInMs;
     private String keyFrameId;
+    private String motionId;
 
-    public KeyFrameImpl(String keyFrameId, long timeInMs) {
+    public KeyFrameImpl(String motionId, String keyFrameId, long timeInMs) {
+        this.motionId = motionId;
         this.keyFrameId = keyFrameId;
         this.timeInMs = timeInMs;
     }
 
     public KeyFrameImpl() {
+    }
+
+    @Override
+    public String getMotionId() {
+        return motionId;
+    }
+
+    public void setMotionId(String motionId) {
+        this.motionId = motionId;
     }
 
     public void setKeyFrameId(String keyFrameId) {

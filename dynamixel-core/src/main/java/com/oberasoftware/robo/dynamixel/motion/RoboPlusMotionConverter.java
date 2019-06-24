@@ -90,27 +90,28 @@ public class RoboPlusMotionConverter implements MotionConverter {
 
             LOG.debug("Found a motion[{}]: {} linkedMotion: {}", counter, motionName, nextMotion);
 
-            List<KeyFrame> keyFrames = loadSteps(attributes.get(STEP), servoIndexes, speedRate);
-            motions.add(new MotionImpl(Integer.toString(counter), motionName, nextMotion, exitMotion, keyFrames));
+            String motionId = Integer.toString(counter);
+            List<KeyFrame> keyFrames = loadSteps(motionId, attributes.get(STEP), servoIndexes, speedRate);
+            motions.add(new MotionImpl(motionId, motionName, nextMotion, exitMotion, keyFrames));
             counter++;
         }
 
         return motions;
     }
 
-    private List<KeyFrame> loadSteps(Collection<String> steps, List<Integer> servoIndexes, double speedRate) {
+    private List<KeyFrame> loadSteps(String motionId, Collection<String> steps, List<Integer> servoIndexes, double speedRate) {
         final AtomicInteger stepCounter = new AtomicInteger(0);
 
-        return steps.stream().map(s -> loadStep(stepCounter.incrementAndGet(), s, servoIndexes, speedRate))
+        return steps.stream().map(s -> loadStep(motionId, stepCounter.incrementAndGet(), s, servoIndexes, speedRate))
                 .collect(Collectors.toList());
     }
 
-    private KeyFrame loadStep(int frameId, String step, List<Integer> servoIndexes, double speedRate) {
+    private KeyFrame loadStep(String motionId, int frameId, String step, List<Integer> servoIndexes, double speedRate) {
         String[] stepData = step.split(" ");
         double time = Double.parseDouble(stepData[stepData.length - 1]);
         double msTime = (time * 1000) / speedRate;
 
-        StepBuilder stepBuilder = StepBuilder.create(Integer.toString(frameId), (long)msTime);
+        StepBuilder stepBuilder = StepBuilder.create(motionId, Integer.toString(frameId), (long)msTime);
         for(int i=0; i<(servoIndexes.size()); i++) {
             if(servoIndexes.get(i) == SERVO_ENABLED) {
                 int value = toSafeInt(stepData[i]);
