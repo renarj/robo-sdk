@@ -32,7 +32,12 @@ public class SerialDynamixelConnector implements DynamixelConnector {
     private List<Byte> buffer = new CopyOnWriteArrayList<>();
 
     @Value("${dynamixel.baudrate:57600}")
-    private int baudRate;
+    protected int baudRate = 57600;
+
+    /*
+     * Response delay time in ms. before reading buffer for a serial response
+     */
+    protected int responseDelayTime = 200;
 
     @Override
     public void connect(String portName) {
@@ -76,7 +81,7 @@ public class SerialDynamixelConnector implements DynamixelConnector {
         try {
             boolean writeSuccess = serialPort.writeBytes(bytes);
             if(writeSuccess) {
-                sleepUninterruptibly(50, TimeUnit.MILLISECONDS);
+                sleepUninterruptibly(responseDelayTime, TimeUnit.MILLISECONDS);
                 return readBytes();
             } else {
                 LOG.warn("Write was not successful");
@@ -88,7 +93,7 @@ public class SerialDynamixelConnector implements DynamixelConnector {
         return new byte[0];
     }
 
-    private byte[] readBytes() {
+    public byte[] readBytes() {
         List<Byte> copyBytes = new ArrayList<>(buffer);
         buffer.clear();
 

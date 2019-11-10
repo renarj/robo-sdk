@@ -192,11 +192,18 @@ public class DynamixelV2CommandPacket {
     }
 
     public static String bb2hex(byte[] buffer) {
-        String result = "";
+        return bb2hex(buffer, true);
+    }
+
+    public static String bb2hex(byte[] buffer, boolean formatSpaced) {
+        StringBuilder result = new StringBuilder();
         for (byte b : buffer) {
-            result = result + String.format("%02X ", b);
+            result.append(String.format("%02X", b));
+            if(formatSpaced) {
+                result.append(" ");
+            }
         }
-        return result.trim();
+        return result.toString().trim();
     }
 
     public static String bb2hex(List<Byte> buffer) {

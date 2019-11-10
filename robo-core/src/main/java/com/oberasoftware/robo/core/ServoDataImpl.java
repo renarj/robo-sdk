@@ -12,9 +12,16 @@ import java.util.Set;
 public class ServoDataImpl implements ServoData {
 
     private final Map<ServoProperty, Object> data;
+    private final String servoId;
 
-    public ServoDataImpl(Map<ServoProperty, Object> data) {
+    public ServoDataImpl(String servoId, Map<ServoProperty, Object> data) {
         this.data = data;
+        this.servoId = servoId;
+    }
+
+    @Override
+    public String getServoId() {
+        return servoId;
     }
 
     @Override
@@ -41,6 +48,7 @@ public class ServoDataImpl implements ServoData {
     public String toString() {
         return "ServoDataImpl{" +
                 "data=" + data +
+                ", servoId='" + servoId + '\'' +
                 '}';
     }
 }

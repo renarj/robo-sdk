@@ -7,6 +7,8 @@ import java.util.Set;
  * @author Renze de Vries
  */
 public interface ServoData {
+    String getServoId();
+
     Set<ServoProperty> getKeys();
 
     <T> T getValue(ServoProperty key);

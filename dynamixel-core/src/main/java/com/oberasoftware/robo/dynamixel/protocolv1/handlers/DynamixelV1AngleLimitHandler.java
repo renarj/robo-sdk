@@ -80,7 +80,7 @@ public class DynamixelV1AngleLimitHandler implements EventHandler {
                         .put(ServoProperty.MAX_ANGLE_LIMIT, maxAngleLimit)
                         .build();
 
-                return new ServoDataReceivedEvent(valueOf(servoId), new ServoDataImpl(map));
+                return new ServoDataReceivedEvent(valueOf(servoId), new ServoDataImpl(command.getServoId(), map));
             } else {
                 LOG.warn("Incorrect number of parameters in return package was: {}", bb2hex(params));
             }

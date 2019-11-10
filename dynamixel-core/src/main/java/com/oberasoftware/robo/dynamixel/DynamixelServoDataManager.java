@@ -108,7 +108,7 @@ public class DynamixelServoDataManager implements ServoDataManager, EventHandler
         holder.signal();
 
         if(changed) {
-            return new ServoUpdateEvent(servoId, new ServoDataImpl(holder.getValues()));
+            return new ServoUpdateEvent(servoId, new ServoDataImpl(servoId, holder.getValues()));
         } else {
             return null;
         }

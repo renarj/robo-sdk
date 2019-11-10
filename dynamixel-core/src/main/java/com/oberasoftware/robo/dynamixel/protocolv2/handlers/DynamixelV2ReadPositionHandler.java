@@ -45,6 +45,7 @@ public class DynamixelV2ReadPositionHandler implements EventHandler {
         byte[] data = new DynamixelV2CommandPacket(DynamixelInstruction.READ_DATA, servoId)
                 .addInt16Bit(DynamixelV2Address.PRESENT_SPEED_L, 0x08)
                 .build();
+        LOG.debug("Requesting speed and position for servo: {} using request: {}", servoId, bb2hex(data));
         byte[] received = connector.sendAndReceive(data);
         LOG.debug("Received a speed and position reply: {} for servo: {}", bb2hex(received), servoId);
 
@@ -66,7 +67,7 @@ public class DynamixelV2ReadPositionHandler implements EventHandler {
                         .put(ServoProperty.SPEED, speed)
                         .build();
 
-                return new ServoDataReceivedEvent(valueOf(servoId), new ServoDataImpl(map));
+                return new ServoDataReceivedEvent(valueOf(servoId), new ServoDataImpl(command.getServoId(), map));
             } else {
                 LOG.warn("Incorrect number of parameters in return package was: {}", bb2hex(params));
             }

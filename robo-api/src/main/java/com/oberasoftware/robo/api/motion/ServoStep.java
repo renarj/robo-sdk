@@ -8,5 +8,5 @@ public interface ServoStep {
 
     int getTargetPosition();
 
-    int getSpeed();
+    int getTargetAngle();
 }

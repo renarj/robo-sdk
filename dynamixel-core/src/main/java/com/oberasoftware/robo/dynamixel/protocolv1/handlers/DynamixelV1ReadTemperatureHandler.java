@@ -59,7 +59,7 @@ public class DynamixelV1ReadTemperatureHandler implements EventHandler {
                         .put(ServoProperty.VOLTAGE, voltage)
                         .build();
 
-                return new ServoDataReceivedEvent(valueOf(servoId), new ServoDataImpl(map));
+                return new ServoDataReceivedEvent(valueOf(servoId), new ServoDataImpl(command.getServoId(), map));
             } else {
                 LOG.warn("Incorrect number of parameters in return package was: {}", bb2hex(params));
             }

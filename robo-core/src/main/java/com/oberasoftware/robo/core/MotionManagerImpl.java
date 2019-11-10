@@ -29,11 +29,6 @@ public class MotionManagerImpl implements MotionManager {
     }
 
     @Override
-    public Optional<Motion> findMotionById(String motionId) {
-        return motions.values().stream().filter(m -> m.getId().equals(motionId)).findFirst();
-    }
-
-    @Override
     public List<Motion> findMotions() {
         return new ArrayList<>(motions.values());
     }

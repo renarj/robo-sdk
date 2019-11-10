@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -73,7 +72,7 @@ public class ServoSensorDriver implements SensorDriver<DirectPort<PositionValue>
         executorService.submit(() -> {
             while(!Thread.currentThread().isInterrupted()) {
                 servoDriver.getServos().forEach(s -> {
-                    localEventBus.publish(new ReadPositionAndSpeedCommand(s.getId()));
+                    localEventBus.publishSync(new ReadPositionAndSpeedCommand(s.getId()), TimeUnit.SECONDS, 1);
                     sleepUninterruptibly(SERVO_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
                 });
             }
@@ -83,7 +82,7 @@ public class ServoSensorDriver implements SensorDriver<DirectPort<PositionValue>
             while(!Thread.currentThread().isInterrupted()) {
                 servoDriver.getServos().forEach(s -> {
                     LOG.debug("Requesting servo temps: {}", s.getId());
-                    localEventBus.publish(new ReadTemperatureCommand(s.getId()));
+                    localEventBus.publishSync(new ReadTemperatureCommand(s.getId()), TimeUnit.SECONDS, 1);
                     sleepUninterruptibly(TEMP_CHECK_INTERVAL, TimeUnit.MILLISECONDS);
                 });
             }

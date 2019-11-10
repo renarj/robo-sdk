@@ -23,6 +23,11 @@ public class AsyncServoData implements ServoData {
     }
 
     @Override
+    public String getServoId() {
+        return servoId;
+    }
+
+    @Override
     public Set<ServoProperty> getKeys() {
         return Sets.newHashSet(ServoProperty.values());
     }
