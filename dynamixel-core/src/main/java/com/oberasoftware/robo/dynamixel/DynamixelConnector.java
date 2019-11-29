@@ -9,4 +9,6 @@ public interface DynamixelConnector {
     void disconnect();
 
     byte[] sendAndReceive(byte[] bytes);
+
+    void sendNoReceive(byte[] bytes);
 }

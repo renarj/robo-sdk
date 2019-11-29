@@ -167,7 +167,7 @@ public class DynamixelServoDataManager implements ServoDataManager, EventHandler
             }
 
             values.put(property, value);
-            updateTimes.putIfAbsent(property, System.currentTimeMillis());
+            updateTimes.put(property, System.currentTimeMillis());
 
             return changed;
         }

@@ -32,17 +32,12 @@ public class DashboardController {
         Stopwatch w = Stopwatch.createStarted();
         List<Robot> robots = robotRegistry.getRobots();
 
-        Stopwatch m = Stopwatch.createStarted();
-        List<String> motionIds = robots.stream().map(r -> r.getMotionEngine().getMotions()).flatMap(Collection::stream)
-                .collect(Collectors.toList());
-        LOG.info("Motions requested in: {}", m.elapsed(TimeUnit.MILLISECONDS));
 
         Stopwatch s = Stopwatch.createStarted();
         List<Servo> servos = robots.stream().map(r -> r.getServoDriver().getServos())
                 .flatMap(Collection::stream).collect(Collectors.toList());
         LOG.info("Servo request took: {}", s.elapsed(TimeUnit.MILLISECONDS));
 
-        model.addAttribute("motions", motionIds);
         model.addAttribute("servos", servos.stream()
                 .map(SimpleServo::new)
                 .collect(Collectors.toList()));

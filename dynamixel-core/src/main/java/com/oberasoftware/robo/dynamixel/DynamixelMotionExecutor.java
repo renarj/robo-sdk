@@ -103,19 +103,19 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         while(motion != null) {
             lastKeyFrame = executeMotion(motion, lastKeyFrame);
 
-            motion = getNextChainedMotion(motion, !motionTask.isRunning());
+            motion = null; //getNextChainedMotion(motion, !motionTask.isRunning());
         }
     }
 
     @Override
     public MotionTask execute(KeyFrame keyFrame) {
         String motionId = UUID.randomUUID().toString();
-        return execute(new MotionImpl(motionId, motionId, null, null, Lists.newArrayList(keyFrame)));
+        return execute(new MotionImpl(motionId, Lists.newArrayList(keyFrame)));
     }
 
     private KeyFrame executeMotion(Motion motion, KeyFrame previousKeyFrame) {
         LOG.info("Motion: {} execution", motion.getName());
-        List<KeyFrame> keyFrames = motion.getKeyFrames();
+        List<KeyFrame> keyFrames = motion.getFrames();
         KeyFrame lastKeyFrame = previousKeyFrame;
         Stopwatch motionWatch = createStarted();
         for (int c = 0; c < keyFrames.size(); c++) {
@@ -124,7 +124,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
 
             KeyFrame keyFrame = keyFrames.get(c);
 
-            executeKeyFrame(motion.getId(), lastKeyFrame, keyFrame);
+            executeKeyFrame(motion.getName(), lastKeyFrame, keyFrame);
             lastKeyFrame = keyFrame;
 
             LOG.info("Finished keyFrame: {} execution in: {} ms. target time: {}", c,
@@ -134,26 +134,26 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         return lastKeyFrame;
     }
 
-    private Motion getNextChainedMotion(Motion currentMotion, boolean exitMotion) {
-        String nextMotionId = currentMotion.getNextMotion();
-        if(exitMotion) {
-            nextMotionId = currentMotion.getExitMotion();
-        }
-        return findMotion(nextMotionId);
-    }
+//    private Motion getNextChainedMotion(Motion currentMotion, boolean exitMotion) {
+//        String nextMotionId = currentMotion.getNextMotion();
+//        if(exitMotion) {
+//            nextMotionId = currentMotion.getExitMotion();
+//        }
+//        return findMotion(nextMotionId);
+//    }
 
-    private Motion findMotion(String motionId) {
-        if (motionId != null) {
-            Optional<Motion> motion = motionManager.findMotionById(motionId);
-            if (motion.isPresent()) {
-                return motion.get();
-            } else {
-                LOG.debug("Motion: {} could not be found", motionId);
-            }
-        }
-        return null;
-
-    }
+//    private Motion findMotion(String motionId) {
+//        if (motionId != null) {
+//            Optional<Motion> motion = motionManager.findMotionById(motionId);
+//            if (motion.isPresent()) {
+//                return motion.get();
+//            } else {
+//                LOG.debug("Motion: {} could not be found", motionId);
+//            }
+//        }
+//        return null;
+//
+//    }
 
     private void executeKeyFrame(String motionId, KeyFrame previousKeyFrame, KeyFrame keyFrame) {
         long timeInMs = keyFrame.getTimeInMs();
@@ -161,7 +161,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
         String previousFrameId = previousKeyFrame != null ? previousKeyFrame.getKeyFrameId() : "";
         String cacheKey = motionId + "_" + previousFrameId + "_" + keyFrame.getKeyFrameId();
         if(!cachedCommands.containsKey(cacheKey)) {
-            Map<String, PositionAndSpeedCommand> commands = keyFrame.getServoSteps().stream()
+            Map<String, PositionAndSpeedCommand> commands = keyFrame.getJointTargets().stream()
                     .map(s -> new PositionAndSpeedCommand(s.getServoId(), s.getTargetPosition(), new Scale(0, 1023),
                             calculateSpeed(previousKeyFrame, s.getServoId(), s.getTargetPosition(), timeInMs), new Scale(0, 1023)))
                     .collect(Collectors.toMap(PositionAndSpeedCommand::getServoId, Function.identity()));
@@ -182,7 +182,7 @@ public class DynamixelMotionExecutor implements MotionExecutor {
     private int calculateSpeed(KeyFrame previousKeyFrame, String servoId, int targetPosition, long timeInMs) {
         int currentPosition;
         if(previousKeyFrame != null) {
-            ServoStep previousServoStep = previousKeyFrame.getServoSteps().stream().filter(s -> s.getServoId().equals(servoId)).findFirst().get();
+            JointTarget previousServoStep = previousKeyFrame.getJointTargets().stream().filter(s -> s.getServoId().equals(servoId)).findFirst().get();
             currentPosition = previousServoStep.getTargetPosition();
         } else {
             currentPosition = dataManager.readServoProperty(servoId, ServoProperty.POSITION);

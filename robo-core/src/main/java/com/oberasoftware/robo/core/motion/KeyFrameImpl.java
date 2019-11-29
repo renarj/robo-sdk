@@ -1,20 +1,21 @@
 package com.oberasoftware.robo.core.motion;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.oberasoftware.robo.api.motion.ServoStep;
+import com.google.common.collect.Lists;
+import com.oberasoftware.robo.api.motion.JointTarget;
 import com.oberasoftware.robo.api.motion.KeyFrame;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Renze de Vries
  */
 public class KeyFrameImpl implements KeyFrame {
 
-    @JsonDeserialize(contentAs = ServoStepImpl.class)
-    private List<ServoStep> servoSteps = new ArrayList<>();
-
-    private Set<String> servoIds = new HashSet<>();
+    @JsonDeserialize(contentAs = JointTargetImpl.class)
+    private List<JointTarget> jointTargets = new ArrayList<>();
 
     private long timeInMs;
     private String keyFrameId;
@@ -46,32 +47,28 @@ public class KeyFrameImpl implements KeyFrame {
     }
 
     @Override
-    public Set<String> getServoIds() {
-        return servoIds;
+    public List<JointTarget> getJointTargets() {
+        return jointTargets;
     }
 
-    public void setServoIds(Set<String> servoIds) {
-        this.servoIds = servoIds;
+    public void setJointTargets(List<JointTarget> jointTargets) {
+        this.jointTargets = jointTargets;
+    }
+
+    public void addServoStep(JointTarget servoStep) {
+        this.jointTargets.add(servoStep);
     }
 
     @Override
-    public List<ServoStep> getServoSteps() {
-        return servoSteps;
-    }
-
-    public void setServoSteps(List<ServoStep> servoSteps) {
-        this.servoSteps = servoSteps;
-    }
-
-    public void addServoStep(ServoStep servoStep) {
-        this.servoSteps.add(servoStep);
-        this.servoIds.add(servoStep.getServoId());
+    @JsonIgnore
+    public List<KeyFrame> getFrames() {
+        return Lists.newArrayList(this);
     }
 
     @Override
     public String toString() {
         return "KeyFrameImpl{" +
-                "servoSteps=" + servoSteps +
+                "jointTargets=" + jointTargets +
                 ", timeInMs=" + timeInMs +
                 ", keyFrameId='" + keyFrameId + '\'' +
                 '}';

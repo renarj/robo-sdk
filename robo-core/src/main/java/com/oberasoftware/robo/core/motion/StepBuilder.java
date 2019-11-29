@@ -13,7 +13,7 @@ public class StepBuilder {
     private long timeInMs;
     private String frameId;
 
-    private final List<ServoStepImpl> servoSteps = new ArrayList<>();
+    private final List<JointTargetImpl> servoSteps = new ArrayList<>();
 
     private StepBuilder(String frameId, long timeInMs) {
         this.timeInMs = timeInMs;
@@ -25,7 +25,7 @@ public class StepBuilder {
     }
 
     public StepBuilder servo(String servoId, int goalPosition) {
-        this.servoSteps.add(new ServoStepImpl(servoId, goalPosition));
+        this.servoSteps.add(new JointTargetImpl(servoId, goalPosition));
         return this;
     }
 

@@ -1,5 +1,6 @@
 package com.oberasoftware.robo.dynamixel;
 
+import com.google.common.base.Stopwatch;
 import com.oberasoftware.base.event.impl.LocalEventBus;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.*;
@@ -100,11 +101,13 @@ public class DynamixelServoDriver implements ServoDriver {
             if(v2Enabled) {
                 data = new DynamixelV2CommandPacket(DynamixelInstruction.PING, m).build();
             }
+            Stopwatch w = Stopwatch.createStarted();
             byte[] received = connector.sendAndReceive(data);
+            w.stop();
 
             if(received != null && received.length > 0) {
                 try {
-                    LOG.debug("Received: {}", bb2hex(received));
+                    LOG.debug("Received: {} in {} ms.", bb2hex(received), w.elapsed(TimeUnit.MILLISECONDS));
                     DynamixelReturnPacket packet;
                     if(v2Enabled) {
                         packet = new DynamixelV2ReturnPacket(received);
@@ -112,7 +115,7 @@ public class DynamixelServoDriver implements ServoDriver {
                         packet = new DynamixelV1ReturnPacket(received);
                     }
                     if (packet.getErrorCode() == 0) {
-                        LOG.debug("Ping received from Servo: {} with data: {}", m, bb2hex(received));
+                        LOG.info("Ping received from Servo: {} with data: {}", m, bb2hex(received));
 
                         byte[] params = packet.getParameters();
 
@@ -135,7 +138,7 @@ public class DynamixelServoDriver implements ServoDriver {
                     LOG.error("Could not read servo response on ping");
                 }
             } else {
-                LOG.debug("No Servo detected on ID: {}", m);
+                LOG.debug("No Servo detected on ID: {} in {} ms.", m, w.elapsed(TimeUnit.MILLISECONDS));
             }
         });
 

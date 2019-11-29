@@ -5,7 +5,6 @@ import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.core.SpringAwareRobotBuilder;
 import com.oberasoftware.robo.core.sensors.ServoSensorDriver;
 import com.oberasoftware.robo.dynamixel.DynamixelServoDriver;
-import com.oberasoftware.robo.dynamixel.motion.RoboPlusMotionEngine;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,7 +47,6 @@ public class DefaultRobotActivator {
 
         Robot robot = new SpringAwareRobotBuilder("default", applicationContext)
                 .servoDriver(DynamixelServoDriver.class, servoProperties)
-                .motionEngine(RoboPlusMotionEngine.class)
                 .capability(ServoSensorDriver.class)
                 .build();
         LOG.info("Robot: {} was created", robot);

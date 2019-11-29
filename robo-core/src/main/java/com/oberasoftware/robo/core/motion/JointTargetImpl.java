@@ -1,28 +1,28 @@
 package com.oberasoftware.robo.core.motion;
 
-import com.oberasoftware.robo.api.motion.ServoStep;
+import com.oberasoftware.robo.api.motion.JointTarget;
 
 /**
  * @author Renze de Vries
  */
-public class ServoStepImpl implements ServoStep {
+public class JointTargetImpl implements JointTarget {
 
     private String servoId;
     private int targetPosition;
     private int targetAngle = 0;
 
-    public ServoStepImpl(String servoId, int targetPosition, int targetAngle) {
+    public JointTargetImpl(String servoId, int targetPosition, int targetAngle) {
         this.servoId = servoId;
         this.targetPosition = targetPosition;
         this.targetAngle = targetAngle;
     }
 
-    public ServoStepImpl(String servoId, int targetPosition) {
+    public JointTargetImpl(String servoId, int targetPosition) {
         this.servoId = servoId;
         this.targetPosition = targetPosition;
     }
 
-    public ServoStepImpl() {
+    public JointTargetImpl() {
     }
 
     @Override

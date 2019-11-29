@@ -14,11 +14,11 @@ public class MotionImpl implements Motion {
     private String name;
 
     @JsonDeserialize(contentAs=KeyFrameImpl.class)
-    private List<KeyFrame> keyFrames;
+    private List<KeyFrame> frames;
 
-    public MotionImpl(String name, List<KeyFrame> keyFrames) {
+    public MotionImpl(String name, List<KeyFrame> frames) {
         this.name = name;
-        this.keyFrames = keyFrames;
+        this.frames = frames;
     }
 
     public MotionImpl() {
@@ -33,19 +33,19 @@ public class MotionImpl implements Motion {
         return name;
     }
 
-    public void setKeyFrames(List<KeyFrame> keyFrames) {
-        this.keyFrames = keyFrames;
+    public void setFrames(List<KeyFrame> frames) {
+        this.frames = frames;
     }
 
-    public List<KeyFrame> getKeyFrames() {
-        return Lists.newArrayList(keyFrames);
+    public List<KeyFrame> getFrames() {
+        return Lists.newArrayList(frames);
     }
 
     @Override
     public String toString() {
         return "MotionImpl{" +
                 "name='" + name + '\'' +
-                ", keyFrames=" + keyFrames.size() +
+                ", keyFrames=" + frames.size() +
                 '}';
     }
 }

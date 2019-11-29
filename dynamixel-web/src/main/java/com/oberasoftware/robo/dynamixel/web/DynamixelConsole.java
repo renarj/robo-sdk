@@ -26,6 +26,13 @@ public class DynamixelConsole {
         DynamixelServoDriver servoDriver = c.getBean(DynamixelServoDriver.class);
         SerialDynamixelConnector connector = c.getBean(SerialDynamixelConnector.class);
 
+
+        for(int i=0; i<10; i++) {
+            LOG.info("Scanning: {}", i);
+            servoDriver.scan();
+        }
+
+        LOG.info("All scans complete");
 //        servoDriver.sendCommand(new WriteIDCommand("1", "141"));
 
 

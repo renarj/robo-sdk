@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.oberasoftware.robo.core.ConverterUtil.intTo32BitByte;
+
 /**
  * @author Renze de Vries
  */
@@ -45,6 +47,19 @@ public class DynamixelV2CommandPacket {
         return this;
     }
 
+    public DynamixelV2CommandPacket add8BitParam(int param) {
+        parameters.add((byte) param);
+
+        return this;
+    }
+
+    public DynamixelV2CommandPacket add32BitParam(int param) {
+        byte[] params = intTo32BitByte(param);
+        for(byte p : params) {
+            parameters.add(p);
+        }
+        return this;
+    }
 
     public DynamixelV2CommandPacket addParam(DynamixelV2Address address, byte... params) {
         addInt16Param(address.getAddress());
@@ -94,23 +109,12 @@ public class DynamixelV2CommandPacket {
         int crc = update_crc(0, buffer.array(), FIXED_MESSAGE_LENGTH + parameters.size());
         byte[] checksum = ConverterUtil.intTo16BitByte(crc);
 
-//        byte[] checksum = calculateChecksum();
         buffer.put(checksum[0]);
         buffer.put(checksum[1]);
 
         return buffer.array();
     }
 
-//    public byte[] calculateChecksum() {
-//        int length = FIXED_PARAM_LENGTH + parameters.size();
-//
-//        int total = id + length + dynamixelInstruction.getInstruction();
-//        total += parameters.stream().mapToInt(Byte::intValue).sum();
-//
-//        int checksum = (byte) (255 - ((total) % 256));
-
-//        return checksum;
-//    }
 
     private int update_crc(int crc_accum, byte[] data_blk_ptr, int data_blk_size) {
 

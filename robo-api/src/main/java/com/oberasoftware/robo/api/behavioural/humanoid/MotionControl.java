@@ -13,6 +13,8 @@ public interface MotionControl extends Behaviour {
 
     List<Joint> getJoints();
 
+    void runMotion(String motionId);
+
     void setJointPosition(JointData position);
 
     void setJointPositions(List<JointData> jointPositions);
