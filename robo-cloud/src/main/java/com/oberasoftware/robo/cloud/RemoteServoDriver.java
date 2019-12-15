@@ -118,6 +118,18 @@ public class RemoteServoDriver implements ServoDriver {
     }
 
     @Override
+    public boolean setTorgueAll(boolean state) {
+        BasicCommand command = BasicCommandBuilder.create(robot.getName())
+                .item("servos").label("torgue")
+                .property("torgue", Boolean.toString(state))
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
+        return true;
+    }
+
+    @Override
     public List<Servo> getServos() {
         return null;
     }

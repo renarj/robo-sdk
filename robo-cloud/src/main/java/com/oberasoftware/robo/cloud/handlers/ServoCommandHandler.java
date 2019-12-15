@@ -39,7 +39,7 @@ public class ServoCommandHandler implements EventHandler {
     @EventSubscribe
     @MQTTPath(group = MessageGroup.COMMANDS, device = "servos", label = "position")
     public void convert(MQTTMessage mqttMessage) {
-        LOG.debug("Executing Servo command from topic: {}", mqttMessage.getMessage(), mqttMessage.getTopic());
+        LOG.debug("Executing Servo command from topic: {} {}", mqttMessage.getMessage(), mqttMessage.getTopic());
         BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
 
         Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
@@ -65,7 +65,7 @@ public class ServoCommandHandler implements EventHandler {
     @EventSubscribe
     @MQTTPath(group = MessageGroup.COMMANDS, device = "servos", label = "torgue")
     public void torgue(MQTTMessage mqttMessage) {
-        LOG.debug("Executing Servo command from topic: {}", mqttMessage.getMessage(), mqttMessage.getTopic());
+        LOG.debug("Executing Servo command from topic: {} {}", mqttMessage.getMessage(), mqttMessage.getTopic());
         BasicCommand basicCommand = mapFromJson(mqttMessage.getMessage(), BasicCommandImpl.class);
 
         Robot robot = robotRegistry.getRobot(basicCommand.getControllerId());
@@ -74,10 +74,14 @@ public class ServoCommandHandler implements EventHandler {
         String servoId = basicCommand.getProperty("servoId");
         boolean torgueEnabled = Boolean.parseBoolean(basicCommand.getProperty("torgue"));
         Optional<Integer> tl = IntUtils.toInt(basicCommand.getProperty("torgueLimit"));
-        if(tl.isPresent()) {
-            servoDriver.setTorgue(servoId, tl.get());
+        if(servoId != null) {
+            if (tl.isPresent()) {
+                servoDriver.setTorgue(servoId, tl.get());
+            } else {
+                servoDriver.setTorgue(servoId, torgueEnabled);
+            }
         } else {
-            servoDriver.setTorgue(servoId, torgueEnabled);
+            servoDriver.setTorgueAll(torgueEnabled);
         }
     }
 }
