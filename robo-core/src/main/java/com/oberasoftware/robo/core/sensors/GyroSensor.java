@@ -1,15 +1,12 @@
 package com.oberasoftware.robo.core.sensors;
 
 import com.oberasoftware.robo.api.Robot;
-import com.oberasoftware.robo.api.sensors.AnalogPort;
-import com.oberasoftware.robo.api.sensors.PercentageValue;
-import com.oberasoftware.robo.api.sensors.Sensor;
-import com.oberasoftware.robo.api.sensors.SensorConverter;
+import com.oberasoftware.robo.api.sensors.*;
 
 /**
  * @author Renze de Vries
  */
-public class GyroSensor implements Sensor<PercentageValue> {
+public class GyroSensor implements SingeValueSensor<PercentageValue> {
 
     private final String name;
     private final AnalogPort xAxis;

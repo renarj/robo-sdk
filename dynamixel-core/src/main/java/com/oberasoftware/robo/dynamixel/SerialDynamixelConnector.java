@@ -13,10 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
 import static com.oberasoftware.robo.dynamixel.protocolv1.DynamixelV1CommandPacket.bb2hex;
 
 
@@ -33,11 +34,12 @@ public class SerialDynamixelConnector implements DynamixelConnector {
 
     private List<Byte> buffer = new CopyOnWriteArrayList<>();
 
+    private AtomicBoolean responseReceived = new AtomicBoolean(false);
+
     @Value("${dynamixel.baudrate:57600}")
     protected int baudRate = 57600;
 
     private Lock lock = new ReentrantLock();
-    private Condition condition = lock.newCondition();
 
     /*
      * Response delay time in ms. before reading buffer for a serial response
@@ -85,26 +87,22 @@ public class SerialDynamixelConnector implements DynamixelConnector {
     }
 
     @Override
-    public void sendNoReceive(byte[] bytes) {
+    public synchronized void sendNoReceive(byte[] bytes) {
         send(bytes, false);
     }
 
-    protected byte[] send(byte[] bytes, boolean wait) {
+    protected synchronized byte[] send(byte[] bytes, boolean wait) {
         LOG.debug("Sending message: {} waiting for response: {}", bb2hex(bytes), wait);
 
+        lock.lock();
         try {
+            buffer.clear();
+
             boolean writeSuccess = serialPort.writeBytes(bytes);
             if(writeSuccess && wait) {
 
-                lock.lock();
-                try {
-                    condition.await(responseDelayTime, TimeUnit.MILLISECONDS);
-                    return readBytes();
-                } catch (InterruptedException e) {
-                    return readBytes();
-                } finally {
-                    lock.unlock();
-                }
+                waitForResponse();
+                return readBytes();
             }
 
             if(!writeSuccess) {
@@ -112,9 +110,18 @@ public class SerialDynamixelConnector implements DynamixelConnector {
             }
         } catch (SerialPortException e) {
             LOG.error("Unable to write message to dynamixel controller", e);
+        } finally {
+            lock.unlock();
         }
 
         return new byte[0];
+    }
+
+    private void waitForResponse() {
+        long start = System.currentTimeMillis();
+        while(!responseReceived.get() && !Thread.currentThread().isInterrupted() && (System.currentTimeMillis() - start) < responseDelayTime) {
+            sleepUninterruptibly(10, TimeUnit.MILLISECONDS);
+        }
     }
 
     private byte[] readBytes() {
@@ -125,6 +132,7 @@ public class SerialDynamixelConnector implements DynamixelConnector {
         for(int i=0; i<copyBytes.size(); i++) {
             bu[i] = copyBytes.get(i);
         }
+        responseReceived.set(false);
         return bu;
     }
 
@@ -132,17 +140,14 @@ public class SerialDynamixelConnector implements DynamixelConnector {
         @Override
         public void serialEvent(SerialPortEvent serialPortEvent) {
             LOG.debug("Bytes in buffer: {}", serialPortEvent.getEventValue());
-            lock.lock();
             try {
                 byte[] readBytes = serialPort.readBytes();
                 for(byte b : readBytes) {
                     buffer.add(b);
                 }
-                condition.signal();
+                responseReceived.set(true);
             } catch (SerialPortException e) {
                 LOG.error("", e);
-            } finally {
-                lock.unlock();
             }
         }
     }

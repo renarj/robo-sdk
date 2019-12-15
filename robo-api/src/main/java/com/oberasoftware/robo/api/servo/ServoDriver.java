@@ -32,6 +32,8 @@ public interface ServoDriver extends ActivatableCapability {
 
     boolean setTorgue(String servoId, boolean state);
 
+    boolean setTorgueAll(boolean state);
+
     List<Servo> getServos();
 
     Servo getServo(String servoId);

@@ -66,7 +66,7 @@ public class DynamixelV2ReadTemperatureHandler implements EventHandler {
                 LOG.warn("Incorrect number of parameters in return package was: {}", bb2hex(params));
             }
         } else {
-            LOG.warn("Received an error: {} for speed and position for servo: {}", returnPacket.getErrorCode(), servoId);
+            LOG.warn("Received an error: {} for speed and position for servo: {} data: {}", returnPacket.getErrorCode(), servoId, bb2hex(received));
         }
 
 

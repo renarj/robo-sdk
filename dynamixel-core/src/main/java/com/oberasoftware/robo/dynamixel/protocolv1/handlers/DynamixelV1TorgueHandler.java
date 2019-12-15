@@ -2,7 +2,9 @@ package com.oberasoftware.robo.dynamixel.protocolv1.handlers;
 
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.robo.api.commands.BulkTorgueCommand;
 import com.oberasoftware.robo.api.commands.TorgueLimitCommand;
+import com.oberasoftware.robo.api.exceptions.RoboException;
 import com.oberasoftware.robo.dynamixel.DynamixelAddress;
 import com.oberasoftware.robo.dynamixel.DynamixelConnector;
 import com.oberasoftware.robo.dynamixel.DynamixelInstruction;
@@ -45,6 +47,11 @@ public class DynamixelV1TorgueHandler implements EventHandler, DynamixelTorgueHa
                 .addParam(DynamixelAddress.TORGUE_ENABLE, targetTorgueState)
                 .build());
 
+    }
+
+    @Override
+    public void receive(BulkTorgueCommand torgueCommand) {
+        throw new RoboException("No bulk torgue command is implemented");
     }
 
     @EventSubscribe

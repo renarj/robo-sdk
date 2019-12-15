@@ -117,14 +117,14 @@ public class ServoController {
             consumes = "application/json", produces = "application/json")
     public void enableTorgue() {
         LOG.info("Enabling torgue on all servos");
-        getServoDriver().getServos().forEach(s -> getServoDriver().setTorgue(s.getId(), true));
+        getServoDriver().setTorgueAll(true);
     }
 
     @RequestMapping(value = "/disable/torgue", method = RequestMethod.POST,
             consumes = "application/json", produces = "application/json")
     public void disableTorgue() {
         LOG.info("Disabling torgue on all servos");
-        getServoDriver().getServos().forEach(s -> getServoDriver().setTorgue(s.getId(), false));
+        getServoDriver().setTorgueAll(false);
     }
 
 

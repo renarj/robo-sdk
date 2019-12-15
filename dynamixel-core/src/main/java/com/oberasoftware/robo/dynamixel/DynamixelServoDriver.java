@@ -72,9 +72,30 @@ public class DynamixelServoDriver implements ServoDriver {
         this.portName = properties.get(PORT);
         connector.connect(portName);
 
-        if(!initialize()) {
+        boolean motorsFound;
+        if(properties.containsKey("motors")) {
+            String motorIdentifiers = properties.get("motors");
+
+            motorsFound = !scan(parseMotorIdentifiers(motorIdentifiers), true).isEmpty();
+        } else {
+            motorsFound = !scan().isEmpty();
+        }
+
+        if(!motorsFound) {
             LOG.error("Could not find any servos");
         }
+    }
+
+    private IntStream parseMotorIdentifiers(String motorIdentifiers) {
+        String[] motorIds = motorIdentifiers.split(",");
+        int[] servoIds = new int[motorIds.length];
+        for(int i=0; i<motorIds.length; i++) {
+            String id = motorIds[i].trim();
+            if(id.length() > 0) {
+                servoIds[i] = ConverterUtil.toSafeInt(id);
+            }
+        }
+        return IntStream.of(servoIds);
     }
 
     @Override
@@ -82,20 +103,14 @@ public class DynamixelServoDriver implements ServoDriver {
         this.connector.disconnect();
     }
 
-    private boolean initialize() {
-        return !scan(true).isEmpty();
-    }
-
     public List<Servo> scan() {
-        return scan(false);
+        return scan(IntStream.range(1, MAX_ID), false);
     }
 
-    public List<Servo> scan(boolean register) {
-        LOG.info("Starting servo scan");
+    public List<Servo> scan(IntStream motorRange, boolean register) {
+        LOG.info("Starting servo scan from stream: {}", motorRange);
 
         List<Servo> foundServos = new ArrayList<>();
-
-        IntStream motorRange = IntStream.range(1, MAX_ID);
         motorRange.forEach((m) -> {
             byte[] data = new DynamixelV1CommandPacket(DynamixelInstruction.PING, m).build();
             if(v2Enabled) {
@@ -205,6 +220,12 @@ public class DynamixelServoDriver implements ServoDriver {
     @Override
     public boolean setTorgue(String s, boolean b) {
         torgueHandler.receive(new TorgueCommand(s, b));
+        return true;
+    }
+
+    @Override
+    public boolean setTorgueAll(boolean state) {
+        torgueHandler.receive(new BulkTorgueCommand(state));
         return true;
     }
 

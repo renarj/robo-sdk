@@ -1,16 +1,17 @@
 package com.oberasoftware.robo.api.sensors;
 
-import com.oberasoftware.robo.api.Capability;
 import com.oberasoftware.robo.api.Robot;
 
-/**
- * @author Renze de Vries
- */
-public interface Sensor extends Capability {
+import java.util.Map;
+import java.util.Set;
 
-    default String getName() {
-        return this.getClass().getName();
-    }
+public interface MultiValueSensor<T extends SensorValue> extends Sensor {
+
+    T getValue(String attribute);
+
+    Set<String> getAttributes();
+
+    Map<String, T> getValues();
 
     default void activate(Robot robot, SensorDriver sensorDriver) {
         //no activiation needed by default

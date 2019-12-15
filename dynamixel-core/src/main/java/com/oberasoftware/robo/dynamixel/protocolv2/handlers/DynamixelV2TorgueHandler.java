@@ -2,6 +2,7 @@ package com.oberasoftware.robo.dynamixel.protocolv2.handlers;
 
 import com.oberasoftware.base.event.EventHandler;
 import com.oberasoftware.base.event.EventSubscribe;
+import com.oberasoftware.robo.api.commands.BulkTorgueCommand;
 import com.oberasoftware.robo.api.commands.TorgueCommand;
 import com.oberasoftware.robo.api.commands.TorgueLimitCommand;
 import com.oberasoftware.robo.dynamixel.DynamixelAddress;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Component;
 
 import static com.oberasoftware.robo.core.ConverterUtil.intTo16BitByte;
 import static com.oberasoftware.robo.core.ConverterUtil.toSafeInt;
+import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket.BROADCAST_ID;
 import static com.oberasoftware.robo.dynamixel.protocolv2.DynamixelV2CommandPacket.bb2hex;
 
 /**
@@ -54,6 +56,19 @@ public class DynamixelV2TorgueHandler implements EventHandler, DynamixelTorgueHa
             LOG.error("Could not set torgue response: {} for servo: {}", bb2hex(response), servoId);
         }
         LOG.debug("Received torgue response: {} for servo: {} errors: {} reason: {}", bb2hex(response), servoId, packet.hasErrors(), packet.getErrorReason());
+    }
+
+    @Override
+    public void receive(BulkTorgueCommand torgueCommand) {
+        LOG.info("Received a bulk torgue command: {}", torgueCommand);
+        int targetTorgueState = 0x00;
+        if(torgueCommand.isTorgueState()) {
+            targetTorgueState = 0x01;
+        }
+
+        connector.sendNoReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, BROADCAST_ID)
+                .add8BitParam(DynamixelV2Address.TORGUE_ENABLE, targetTorgueState)
+                .build());
     }
 
     @Override
