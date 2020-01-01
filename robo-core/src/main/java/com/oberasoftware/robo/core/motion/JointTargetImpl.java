@@ -10,6 +10,7 @@ public class JointTargetImpl implements JointTarget {
     private String servoId;
     private int targetPosition;
     private int targetAngle = 0;
+    private int targetVelocity = 0;
 
     public JointTargetImpl(String servoId, int targetPosition, int targetAngle) {
         this.servoId = servoId;
@@ -50,6 +51,15 @@ public class JointTargetImpl implements JointTarget {
 
     public void setTargetPosition(int targetPosition) {
         this.targetPosition = targetPosition;
+    }
+
+    @Override
+    public int getTargetVelocity() {
+        return targetVelocity;
+    }
+
+    public void setTargetVelocity(int targetVelocity) {
+        this.targetVelocity = targetVelocity;
     }
 
     @Override

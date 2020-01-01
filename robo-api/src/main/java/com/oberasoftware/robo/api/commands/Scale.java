@@ -31,6 +31,10 @@ public class Scale {
         return value >= min && value <= max;
     }
 
+    public boolean isValid(double value) {
+        return value > min && value < max;
+    }
+
     public int convertToScale(int value, Scale targetScale) {
         if(isValid(value)) {
             double rangeSource = max + Math.abs(min);
@@ -44,7 +48,26 @@ public class Scale {
 
             return (int)(factor * correctedValue) - Math.abs(targetScale.getMin());
         } else {
-            LOG.debug("Scale conversion issue source scale: {} value: {} target scale: {}", this, value, targetScale);
+            LOG.warn("Scale conversion issue source scale: {} value: {} target scale: {}", this, value, targetScale);
+            new Exception().printStackTrace();
+            return value;
+        }
+    }
+
+    public double convertToScale(double value, Scale targetScale) {
+        if(isValid(value)) {
+            double rangeSource = max + Math.abs(min);
+            double rangeTarget = targetScale.getMax() + Math.abs(targetScale.getMin());
+
+            double factor = rangeTarget / rangeSource;
+
+            double correctedValue = value + Math.abs(getMin());
+
+            LOG.debug("Range Source: {} target: {} factor: {} correctedValue: {}", rangeSource, rangeTarget, factor, correctedValue);
+
+            return (factor * correctedValue) - Math.abs(targetScale.getMin());
+        } else {
+            LOG.warn("Scale conversion issue source scale: {} value: {} target scale: {}", this, value, targetScale);
             return value;
         }
     }

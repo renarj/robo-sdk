@@ -3,6 +3,7 @@ package com.oberasoftware.robo.dynamixel.web;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.RobotRegistry;
 import com.oberasoftware.robo.api.commands.Scale;
+import com.oberasoftware.robo.api.commands.TorgueCommand;
 import com.oberasoftware.robo.api.servo.ServoDriver;
 import com.oberasoftware.robo.core.commands.AngleLimitCommand;
 import com.oberasoftware.robo.core.commands.OperationModeCommand;
@@ -118,6 +119,12 @@ public class ServoController {
     public void enableTorgue() {
         LOG.info("Enabling torgue on all servos");
         getServoDriver().setTorgueAll(true);
+    }
+
+    @RequestMapping(value = "/set/torgue", method = RequestMethod.POST,
+            consumes = "application/json", produces = "application/json")
+    public void setTorgue(TorgueCommand torgueCommand) {
+        LOG.info("Torgue request: {}", torgueCommand);
     }
 
     @RequestMapping(value = "/disable/torgue", method = RequestMethod.POST,

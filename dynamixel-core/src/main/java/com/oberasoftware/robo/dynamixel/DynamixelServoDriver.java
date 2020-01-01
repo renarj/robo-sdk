@@ -230,6 +230,12 @@ public class DynamixelServoDriver implements ServoDriver {
     }
 
     @Override
+    public boolean setTorgueAll(boolean state, List<String> servos) {
+        torgueHandler.receive(new BulkTorgueCommand(state, servos));
+        return true;
+    }
+
+    @Override
     public boolean bulkSetPositionAndSpeed(Map<String, PositionAndSpeedCommand> commands) {
         return bulkSetPositionAndSpeed(commands, BulkPositionSpeedCommand.WRITE_MODE.SYNC);
     }

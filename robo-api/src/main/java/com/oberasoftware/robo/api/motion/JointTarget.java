@@ -9,4 +9,6 @@ public interface JointTarget {
     int getTargetPosition();
 
     int getTargetAngle();
+
+    int getTargetVelocity();
 }

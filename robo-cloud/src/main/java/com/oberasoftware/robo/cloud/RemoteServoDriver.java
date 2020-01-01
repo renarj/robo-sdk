@@ -1,14 +1,14 @@
 package com.oberasoftware.robo.cloud;
 
+import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.BasicCommand;
 import com.oberasoftware.robo.api.commands.BulkPositionSpeedCommand;
-import com.oberasoftware.robo.api.commands.Scale;
-import com.oberasoftware.robo.core.model.BasicCommandBuilder;
-import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.commands.PositionAndSpeedCommand;
+import com.oberasoftware.robo.api.commands.Scale;
 import com.oberasoftware.robo.api.servo.Servo;
 import com.oberasoftware.robo.api.servo.ServoCommand;
 import com.oberasoftware.robo.api.servo.ServoDriver;
+import com.oberasoftware.robo.core.model.BasicCommandBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -122,6 +122,19 @@ public class RemoteServoDriver implements ServoDriver {
         BasicCommand command = BasicCommandBuilder.create(robot.getName())
                 .item("servos").label("torgue")
                 .property("torgue", Boolean.toString(state))
+                .build();
+
+        robot.getRemoteDriver().publish(command);
+
+        return true;
+    }
+
+    @Override
+    public boolean setTorgueAll(boolean state, List<String> servos) {
+        BasicCommand command = BasicCommandBuilder.create(robot.getName())
+                .item("servos").label("torgue")
+                .property("torgue", Boolean.toString(state))
+                .property("servos", String.join(",", servos))
                 .build();
 
         robot.getRemoteDriver().publish(command);

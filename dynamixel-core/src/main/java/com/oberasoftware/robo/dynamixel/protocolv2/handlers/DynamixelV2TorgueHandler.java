@@ -40,11 +40,7 @@ public class DynamixelV2TorgueHandler implements EventHandler, DynamixelTorgueHa
         LOG.info("Received a torgue command: {}", torgueCommand);
         int servoId = toSafeInt(torgueCommand.getServoId());
 
-        int targetTorgueState = 0x00;
-        if(torgueCommand.isEnableTorque()) {
-            targetTorgueState = 0x01;
-        }
-
+        int targetTorgueState = getTargetTorgueState(torgueCommand.isEnableTorque());
         LOG.debug("Setting torgue to: {} for servo: {}", targetTorgueState, servoId);
 
         byte[] response = connector.sendAndReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, servoId)
@@ -61,14 +57,28 @@ public class DynamixelV2TorgueHandler implements EventHandler, DynamixelTorgueHa
     @Override
     public void receive(BulkTorgueCommand torgueCommand) {
         LOG.info("Received a bulk torgue command: {}", torgueCommand);
-        int targetTorgueState = 0x00;
-        if(torgueCommand.isTorgueState()) {
-            targetTorgueState = 0x01;
-        }
 
-        connector.sendNoReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, BROADCAST_ID)
-                .add8BitParam(DynamixelV2Address.TORGUE_ENABLE, targetTorgueState)
-                .build());
+        if(torgueCommand.getServos().isEmpty()) {
+            //assume broadcast to all servos
+            connector.sendNoReceive(new DynamixelV2CommandPacket(DynamixelInstruction.WRITE_DATA, BROADCAST_ID)
+                    .add8BitParam(DynamixelV2Address.TORGUE_ENABLE, getTargetTorgueState(torgueCommand.isTorgueState()))
+                    .build());
+        } else {
+            DynamixelV2CommandPacket cmd = new DynamixelV2CommandPacket(DynamixelInstruction.SYNC_WRITE, 0xFE);
+            cmd.addParam(DynamixelV2Address.TORGUE_ENABLE, (byte)0x01, (byte)0x00);
+            torgueCommand.getServos().forEach(s -> {
+                cmd.add8BitParam(toSafeInt(s));
+                cmd.add8BitParam(getTargetTorgueState(torgueCommand.isTorgueState()));
+            });
+            byte[] pkg = cmd.build();
+
+            LOG.info("Sending sync write torgue command: {}", bb2hex(pkg));
+            connector.sendNoReceive(pkg);
+        }
+    }
+
+    private int getTargetTorgueState(boolean state) {
+        return state ? 0x01 : 0x00;
     }
 
     @Override
