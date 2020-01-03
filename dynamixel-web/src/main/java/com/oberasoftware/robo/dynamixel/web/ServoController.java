@@ -3,17 +3,16 @@ package com.oberasoftware.robo.dynamixel.web;
 import com.oberasoftware.robo.api.Robot;
 import com.oberasoftware.robo.api.RobotRegistry;
 import com.oberasoftware.robo.api.commands.Scale;
-import com.oberasoftware.robo.api.commands.TorgueCommand;
 import com.oberasoftware.robo.api.servo.ServoDriver;
 import com.oberasoftware.robo.core.commands.AngleLimitCommand;
 import com.oberasoftware.robo.core.commands.OperationModeCommand;
+import com.oberasoftware.robo.dynamixel.web.commands.TorgueCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -121,10 +120,14 @@ public class ServoController {
         getServoDriver().setTorgueAll(true);
     }
 
-    @RequestMapping(value = "/set/torgue", method = RequestMethod.POST,
+    @RequestMapping(value = "/torgue", method = RequestMethod.POST,
             consumes = "application/json", produces = "application/json")
-    public void setTorgue(TorgueCommand torgueCommand) {
+    public ResponseEntity<String> setTorgue(@RequestBody TorgueCommand torgueCommand) {
         LOG.info("Torgue request: {}", torgueCommand);
+
+        getServoDriver().setTorgueAll(torgueCommand.isEnable(), torgueCommand.getServos());
+
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @RequestMapping(value = "/disable/torgue", method = RequestMethod.POST,
